@@ -98,61 +98,28 @@ public struct JoyDocField: Codable, Identifiable, Equatable {
             return
         }
         
-        if var cells = elements[index].cells {
-            if let cellIndex = cells.firstIndex(where: { $0.key == editedCell.id }) {
-                if editedCell.type == "text" {
-                    cells[editedCell.id ?? ""] = ValueUnion.string(editedCell.title ?? "")
-                    elements[index].cells = cells
-                    self.value = ValueUnion.valueElementArray(elements)
-                }
-                
-                if editedCell.type == "dropdown" {
-                    cells[editedCell.id ?? ""] = ValueUnion.string(editedCell.defaultDropdownSelectedId ?? "")
-                    elements[index].cells = cells
-                    self.value = ValueUnion.valueElementArray(elements)
-                }
-                
-                if editedCell.type == "image" {
-                    cells[editedCell.id ?? ""] = ValueUnion.valueElementArray(editedCell.images ?? [])
-                    elements[index].cells = cells
-                    self.value = ValueUnion.valueElementArray(elements)
-                }
-            }
-            else {
-                if editedCell.type == "text" {
-                    cells[editedCell.id ?? ""] = ValueUnion.string(editedCell.title ?? "")
-                    elements[index].cells = cells
-                    self.value = ValueUnion.valueElementArray(elements)
-                }
-                
-                if editedCell.type == "dropdown" {
-                    cells[editedCell.id ?? ""] = ValueUnion.string(editedCell.defaultDropdownSelectedId ?? "")
-                    elements[index].cells = cells
-                    self.value = ValueUnion.valueElementArray(elements)
-                }
-                
-                if editedCell.type == "image" {
-                    cells[editedCell.id ?? ""] = ValueUnion.valueElementArray(editedCell.images ?? [])
-                    elements[index].cells = cells
-                    self.value = ValueUnion.valueElementArray(elements)
-                }
-            }
-        } else {
-            if editedCell.type == "text" {
-                elements[index].cells = [editedCell.id ?? "" : ValueUnion.string(editedCell.title ?? "")]
-                self.value = ValueUnion.valueElementArray(elements)
-            }
-            
-            if editedCell.type == "dropdown" {
-                elements[index].cells = [editedCell.id ?? "" : ValueUnion.string(editedCell.defaultDropdownSelectedId ?? "")]
-                self.value = ValueUnion.valueElementArray(elements)
-            }
-            
-            if editedCell.type == "image" {
-                elements[index].cells = [editedCell.id ?? "" : ValueUnion.valueElementArray(editedCell.images ?? [])]
-                self.value = ValueUnion.valueElementArray(elements)
-            }
+        switch editedCell.type {
+        case "text":
+            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
+        case "dropdown":
+            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.defaultDropdownSelectedId ?? ""))
+        case "image":
+            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.valueElementArray(editedCell.images ?? []))
+        default:
+            return
         }
+    }
+    
+    private mutating func changeCell(elements: [ValueElement], index: Int, editedCellId: String?, newCell: ValueUnion) {
+        var elements = elements
+        if var cells = elements[index].cells {
+            cells[editedCellId ?? ""] = newCell
+            elements[index].cells = cells
+        } else {
+            elements[index].cells = [editedCellId ?? "" : newCell]
+        }
+        
+        self.value = ValueUnion.valueElementArray(elements)
     }
     
 }
