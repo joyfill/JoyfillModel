@@ -257,6 +257,12 @@ public struct Point: Codable,Hashable {
         case id = "_id"
         case label, y, x
     }
+    public init(id: String? = nil, label: String? = nil, y: CGFloat? = nil, x: CGFloat? = nil) {
+        self.id = id
+        self.label = label
+        self.y = y
+        self.x = x
+    }
 }
 
 // MARK: - File
