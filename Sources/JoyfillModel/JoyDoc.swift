@@ -123,6 +123,25 @@ public struct JoyDocField: Codable, Identifiable, Equatable {
     }
     
 }
+public struct ChartAxisConfiguration: Equatable{
+    
+    public var yTitle: String?
+    public var yMax, yMin: Int?
+    public var xTitle: String?
+    public var xMax, xMin: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case yTitle, yMax, yMin, xTitle, xMax, xMin
+    }
+    public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
+        self.yTitle = yTitle
+        self.yMax = yMax
+        self.yMin = yMin
+        self.xTitle = xTitle
+        self.xMax = xMax
+        self.xMin = xMin
+    }
+}
 
 // MARK: - Metadata
 public struct Metadata: Codable {
