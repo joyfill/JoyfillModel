@@ -15,18 +15,19 @@ public struct JoyDoc: Codable {
         case id = "_id"
         case type, stage, metadata, identifier, name, createdOn, files, fields, categories
     }
+}
+
+// MARK: - JoyDoc
+public struct UpdateDocument: Codable {
+    public var files: [File] = []
+    public var fields: [JoyDocField]?
     
-    public var fieldPosition: FieldPosition? {
-        guard !self.files.isEmpty else {
-            return nil
-        }
-        let fileIndex = 0
-        let pageIndex = 0
-        let fieldPositionIndex = 0
-        let file = files[fileIndex]
-        let page = file.pages?[pageIndex]
-        let fieldPosition = page?.fieldPositions?[fieldPositionIndex]
-        return fieldPosition
+    enum CodingKeys: String, CodingKey {
+        case  files, fields
+    }
+    public init(files: [File], fields: [JoyDocField]? = nil) {
+        self.files = files
+        self.fields = fields
     }
 }
 
