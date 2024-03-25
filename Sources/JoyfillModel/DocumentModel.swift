@@ -294,31 +294,6 @@ public struct FieldEvent {
     }
 }
 
-public struct FieldChange {
-    public let changeData: [String: Any]
-    public init(changeData: [String : Any]) {
-        self.changeData = changeData
-    }
-}
-
-public struct FieldChangeEvent {
-    public let fieldPosition: FieldPosition
-    public let field: JoyDocField?
-    public var page: Page?
-    public var file: File?
-    public let changes: FieldChange
-    public var document: JoyDoc?
-    
-    public init(fieldPosition: FieldPosition, field: JoyDocField?, page: Page? = nil, file: File? = nil, changes: FieldChange, document: JoyDoc? = nil) {
-        self.fieldPosition = fieldPosition
-        self.field = field
-        self.page = page
-        self.file = file
-        self.changes = changes
-        self.document = document
-    }
-}
-
 public struct UploadEvent {
     public var field: JoyDocField
     public var page: Page?
@@ -344,7 +319,37 @@ public protocol FormInterface {
     var events: FormChangeEvent? { get set}
 }
 
-public struct Change {
+public struct FieldChangeEvent {
+    public let fieldPosition: FieldPosition
+    public let field: JoyDocField?
+    public var page: Page?
+    public var file: File?
+    
+    public init(fieldPosition: FieldPosition, field: JoyDocField?, page: Page? = nil, file: File? = nil) {
+        self.fieldPosition = fieldPosition
+        self.field = field
+        self.page = page
+        self.file = file
+    }
+}
+
+public struct Changelog: Codable {
+    public let changelogs: [JoyfillModel.Change]
+
+    public init(changelogs: [JoyfillModel.Change]) {
+        self.changelogs = changelogs
+    }
+}
+
+public struct FieldChange: Codable {
+    public let value:ValueUnion
+    
+    public init(value: ValueUnion) {
+        self.value = value
+    }
+}
+
+public struct Change: Codable {
     public var v: Int
     public var sdk: String
     public var target: String
@@ -355,10 +360,10 @@ public struct Change {
     public var fieldId: String
     public var fieldIdentifier: String
     public var fieldPositionId: String
-    public var change: [String: Any]
+    public var change: FieldChange
     public var createdOn: Double
     
-    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String : Any], createdOn: Double) {
+    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: FieldChange, createdOn: Double) {
         self.v = v
         self.sdk = sdk
         self.target = target
@@ -375,7 +380,7 @@ public struct Change {
 }
 
 public protocol FormChangeEvent {
-    func onChange(change: Change, document: JoyDoc)
+    func onChange(changes: [Change], document: JoyDoc)
     func onFocus(event: FieldEvent)
     func onBlur(event: FieldEvent)
     func onUpload(event:UploadEvent)
