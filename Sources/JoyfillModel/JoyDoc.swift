@@ -183,7 +183,7 @@ public struct FieldTableColumn: Codable {
 }
 
 public enum ValueUnion: Codable,Hashable{
-    case integer(Double)
+    case double(Double)
     case string(String)
     case array([String])
     case valueElementArray([ValueElement])
@@ -193,7 +193,7 @@ public enum ValueUnion: Codable,Hashable{
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let x = try? container.decode(Double.self) {
-            self = .integer(x)
+            self = .double(x)
             return
         }
         if let x = try? container.decode([ValueElement].self) {
@@ -218,7 +218,7 @@ public enum ValueUnion: Codable,Hashable{
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case .integer(let x):
+        case .double(let x):
             if x.truncatingRemainder(dividingBy: 1) == 0 {
                 try container.encode(Int(x))
             } else {

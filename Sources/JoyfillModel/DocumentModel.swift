@@ -191,7 +191,7 @@ public extension ValueUnion {
     
     var number: Double? {
         switch self {
-        case .integer(let int):
+        case .double(let int):
             return int
         default:
             return nil
@@ -226,7 +226,7 @@ public extension ValueUnion {
         case .string(let string):
             let date = getTimeFromISO8601Format(iso8601String: string)
             return date
-        case .integer(let integer):
+        case .double(let integer):
             let date = timestampMillisecondsToDate(value: Int(integer), format: format)
             return date
         default:
