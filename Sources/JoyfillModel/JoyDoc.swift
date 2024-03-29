@@ -220,7 +220,7 @@ public enum ValueUnion: Codable,Hashable{
         switch self {
         case .double(let x):
             if x.truncatingRemainder(dividingBy: 1) == 0 {
-                try container.encode(Int(x))
+                try container.encode(Double(x))
             } else {
                 try container.encode(x)
             }
