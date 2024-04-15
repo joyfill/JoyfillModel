@@ -307,13 +307,15 @@ public struct Page: Codable {
     public var name: String?
     public var fieldPositions: [FieldPosition]?
     public var metadata: Metadata?
-    public var width, height, cols, rowHeight: Int?
+    public var width, height, cols, rowHeight: Double?
     public var layout, presentation: String?
-    public var margin, padding, borderWidth: Int?
+    public var margin, padding, borderWidth: Double?
     public var id: String?
-    
+    public var backgroundImage: String?
+    public let hidden: Bool?
+
     public enum CodingKeys: String, CodingKey {
-        case name, fieldPositions, metadata, width, height, cols, rowHeight, layout, presentation, margin, padding, borderWidth
+        case name, fieldPositions, metadata, width, height, cols, rowHeight, layout, presentation, margin, padding, borderWidth, backgroundImage, hidden
         case id = "_id"
     }
 }
