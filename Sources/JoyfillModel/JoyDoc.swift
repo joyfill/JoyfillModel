@@ -328,9 +328,10 @@ public struct FieldPosition: Codable {
     public let height: Double?
     public let x: Double?
     public var y: Double?
-    public var id, targetValue: String?
+    public let lineHeight: Double?
+    public var id, targetValue, condition, targetValueDisplayType, titleDisplay: String?
     public var type: FieldTypes
-    public let fontSize: Int?
+    public let fontSize: Double?
     public let fontColor, fontStyle, fontWeight, textAlign: String?
     public let primaryDisplayOnly: Bool?
     public let format: String?
@@ -338,13 +339,13 @@ public struct FieldPosition: Codable {
     public let backgroundColor: String?
     public let borderColor: String?
     public let textDecoration: String?
-    public let borderWidth: Int?
-    public let borderRadius: Int?
-    
+    public let borderWidth: Double?
+    public let borderRadius: Double?
+
     enum CodingKeys: String, CodingKey {
-        case field, displayType, width, height, x, y
+        case field, displayType, width, height, x, y, lineHeight
         case id = "_id"
-        case type, targetValue, fontSize, fontColor, fontStyle, fontWeight, textAlign, primaryDisplayOnly, format, column
+        case type, targetValue, condition, targetValueDisplayType, titleDisplay, fontSize, fontColor, fontStyle, fontWeight, textAlign, primaryDisplayOnly, format, column
         case backgroundColor, borderColor, textDecoration, borderWidth, borderRadius
     }
 }
