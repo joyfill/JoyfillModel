@@ -307,13 +307,15 @@ public struct Page: Codable {
     public var name: String?
     public var fieldPositions: [FieldPosition]?
     public var metadata: Metadata?
-    public var width, height, cols, rowHeight: Int?
+    public var width, height, cols, rowHeight: Double?
     public var layout, presentation: String?
-    public var margin, padding, borderWidth: Int?
+    public var margin, padding, borderWidth: Double?
     public var id: String?
-    
+    public var backgroundImage: String?
+    public let hidden: Bool?
+
     public enum CodingKeys: String, CodingKey {
-        case name, fieldPositions, metadata, width, height, cols, rowHeight, layout, presentation, margin, padding, borderWidth
+        case name, fieldPositions, metadata, width, height, cols, rowHeight, layout, presentation, margin, padding, borderWidth, backgroundImage, hidden
         case id = "_id"
     }
 }
@@ -326,9 +328,10 @@ public struct FieldPosition: Codable {
     public let height: Double?
     public let x: Double?
     public var y: Double?
-    public var id, targetValue: String?
+    public let lineHeight: Double?
+    public var id, targetValue, condition, targetValueDisplayType, titleDisplay: String?
     public var type: FieldTypes
-    public let fontSize: Int?
+    public let fontSize: Double?
     public let fontColor, fontStyle, fontWeight, textAlign: String?
     public let primaryDisplayOnly: Bool?
     public let format: String?
@@ -336,13 +339,13 @@ public struct FieldPosition: Codable {
     public let backgroundColor: String?
     public let borderColor: String?
     public let textDecoration: String?
-    public let borderWidth: Int?
-    public let borderRadius: Int?
-    
+    public let borderWidth: Double?
+    public let borderRadius: Double?
+
     enum CodingKeys: String, CodingKey {
-        case field, displayType, width, height, x, y
+        case field, displayType, width, height, x, y, lineHeight
         case id = "_id"
-        case type, targetValue, fontSize, fontColor, fontStyle, fontWeight, textAlign, primaryDisplayOnly, format, column
+        case type, targetValue, condition, targetValueDisplayType, titleDisplay, fontSize, fontColor, fontStyle, fontWeight, textAlign, primaryDisplayOnly, format, column
         case backgroundColor, borderColor, textDecoration, borderWidth, borderRadius
     }
 }
