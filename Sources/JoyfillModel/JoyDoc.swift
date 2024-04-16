@@ -40,6 +40,7 @@ public struct JoyDocField: Codable, Identifiable, Equatable {
     public var type, id, identifier, title: String?
     public var value: ValueUnion?
     public var fieldRequired: Bool?
+    public var disabled: Bool?
     public var metadata: Metadata?
     public var file: String?
     public var options: [Option]?
@@ -59,7 +60,7 @@ public struct JoyDocField: Codable, Identifiable, Equatable {
         case id = "_id"
         case identifier, title, value
         case fieldRequired = "required"
-        case metadata, file, options, multi, yTitle, yMax, yMin, xTitle, xMax, xMin, rowOrder, tableColumns, tableColumnOrder
+        case disabled, metadata, file, options, multi, yTitle, yMax, yMin, xTitle, xMax, xMin, rowOrder, tableColumns, tableColumnOrder
         case tipTitle, tipDescription, tipVisible
     }
     
