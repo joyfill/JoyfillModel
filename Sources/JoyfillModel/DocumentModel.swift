@@ -121,6 +121,7 @@ public enum FieldTypes: String, Codable {
     case table
     case image
 }
+
 public enum DateFormatType: String {
     case dateOnly = "MM/DD/YYYY"
     case timeOnly = "hh:mma"
@@ -150,6 +151,16 @@ public extension ValueUnion {
             return nil
         }
     }
+
+    var bool: Bool? {
+        switch self {
+        case .bool(let bool):
+            return bool
+        default:
+            return nil
+        }
+    }
+
     var displayText: String? {
         switch self {
         case .string(let string):
