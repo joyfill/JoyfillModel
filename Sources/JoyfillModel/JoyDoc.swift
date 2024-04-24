@@ -537,20 +537,25 @@ public enum ValueUnion: Codable, Hashable {
 
     public init?(valueFromDcitonary: [String: Any]) {
         guard let value = valueFromDcitonary["value"] else { return nil }
-           if let codableValue = value as? Codable {
-               let data = try? JSONEncoder().encode(codableValue)
-               self = try! JSONDecoder().decode(ValueUnion.self, from: data!)
-           } else if JSONSerialization.isValidJSONObject(value) {
-               let data = try? JSONSerialization.data(withJSONObject: value)
-               self = try! JSONDecoder().decode(ValueUnion.self, from: data!)
-           } else {
+//           if let codableValue = value as? Codable {
+//               let data = try? JSONEncoder().encode(codableValue)
+//               self = try! JSONDecoder().decode(ValueUnion.self, from: data!)
+//           } else if JSONSerialization.isValidJSONObject(value) {
+//               let data = try? JSONSerialization.data(withJSONObject: value)
+//               self = try! JSONDecoder().decode(ValueUnion.self, from: data!)
+//           } else {
                self.init(value: value)
-           }
+//           }
     }
 
     init?(value: Any) {
         if let strValue = value as? String {
             self = .string(strValue)
+            return
+        }
+        
+        if let doubleValue = value as? Int {
+            self = .double(Double(doubleValue))
             return
         }
 
@@ -570,7 +575,7 @@ public enum ValueUnion: Codable, Hashable {
         }
 
         if let valueDictonary = value as? [String: Any] {
-            self = ValueUnion.init(valueFromDcitonary: valueDictonary)!
+            self = ValueUnion.init(dcitonary: valueDictonary)
             return
         }
 
@@ -578,7 +583,7 @@ public enum ValueUnion: Codable, Hashable {
             self = .bool(boolValue)
             return
         }
-
+//fatalError()
         return nil
     }
 
@@ -664,9 +669,7 @@ public struct ValueElement: Codable, Equatable, Hashable {
 
     public init(dictionary: [String: Any] = [:]) {
          dictionary.forEach { (key: String, value: Any) in
-            guard let data = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted) else { return }
-             guard let value = try? JSONDecoder().decode(ValueUnion.self, from: data) else { return }
-             self.dictionary[key] = value
+             self.dictionary[key] = ValueUnion(value: value)
         }
     }
 
