@@ -161,9 +161,7 @@ public struct JoyDocField: Equatable {
 
     public var value: ValueUnion? {
         get { ValueUnion.init(valueFromDcitonary: dictionary)}
-        set {
-            dictionary["value"] = newValue?.dictonary
-        }
+        set { dictionary["value"] = newValue?.dictonary }
     }
 
     public var fieldRequired: Bool? {
@@ -537,25 +535,12 @@ public enum ValueUnion: Codable, Hashable {
 
     public init?(valueFromDcitonary: [String: Any]) {
         guard let value = valueFromDcitonary["value"] else { return nil }
-//           if let codableValue = value as? Codable {
-//               let data = try? JSONEncoder().encode(codableValue)
-//               self = try! JSONDecoder().decode(ValueUnion.self, from: data!)
-//           } else if JSONSerialization.isValidJSONObject(value) {
-//               let data = try? JSONSerialization.data(withJSONObject: value)
-//               self = try! JSONDecoder().decode(ValueUnion.self, from: data!)
-//           } else {
-               self.init(value: value)
-//           }
+        self.init(value: value)
     }
 
     init?(value: Any) {
         if let strValue = value as? String {
             self = .string(strValue)
-            return
-        }
-        
-        if let doubleValue = value as? Int {
-            self = .double(Double(doubleValue))
             return
         }
 
@@ -659,6 +644,7 @@ public enum ValueUnion: Codable, Hashable {
         }
     }
 }
+
 // MARK: - ValueElement
 public struct ValueElement: Codable, Equatable, Hashable {
     var dictionary = [String: ValueUnion]()
@@ -707,20 +693,14 @@ public struct ValueElement: Codable, Equatable, Hashable {
         guard let value = value else {
             return
         }
-        guard let data = Data(base64Encoded: value) else {
-            return
-        }
-        self.dictionary[key] = try? JSONDecoder().decode(ValueUnion.self, from: data)
+        self.dictionary[key] = .string(value)
     }
 
     mutating func setValue(_ value: Bool?, key: String) {
         guard let value = value else {
             return
         }
-        guard let data = try? JSONEncoder().encode(value) else {
-            return
-        }
-        self.dictionary[key] = try? JSONDecoder().decode(ValueUnion.self, from: data)
+        self.dictionary[key] = .bool(value)
     }
 
     public var id: String? {
@@ -768,10 +748,15 @@ public struct ValueElement: Codable, Equatable, Hashable {
             guard let value = newValue else {
                 return
             }
-            guard let dict = value.flatMap { $0.dictionary } as? [String : ValueUnion] else {
+            guard let dictValueUnion = value.flatMap { $0.dictionary } as? [String : ValueUnion] else {
                 return
             }
-            self.dictionary["points"] = .dictonary(dict)
+
+//            let dictAny = dictValueUnion.map({ (key: String, value: ValueUnion) in
+//                [key: value.dictonary]
+//            })
+//
+            self.dictionary["points"] = .dictonary(dictValueUnion)
         }
     }
 
@@ -839,20 +824,15 @@ public struct Point: Codable {
         guard let value = value else {
             return
         }
-        guard let data = Data(base64Encoded: value) else {
-            return
-        }
-        self.dictionary[key] = try? JSONDecoder().decode(ValueUnion.self, from: data)
+
+        self.dictionary[key] = .string(value)
     }
 
     mutating func setValue(_ value: CGFloat?, key: String) {
         guard let value = value else {
             return
         }
-        guard let data = try? JSONEncoder().encode(value) else {
-            return
-        }
-        self.dictionary[key] = try? JSONDecoder().decode(ValueUnion.self, from: data)
+        self.dictionary[key] = .double(value)
     }
 
     public var id: String? {
