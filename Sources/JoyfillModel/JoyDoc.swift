@@ -2,6 +2,7 @@ import Foundation
 
 // MARK: - JoyDoc
 public struct JoyDoc {
+
     private var dictionary: [String: Any]
 
     public init(dictionary: [String: Any] = [:]) {
@@ -539,6 +540,11 @@ public enum ValueUnion: Codable, Hashable {
     }
 
     init?(value: Any) {
+        if let valueUnion = value as? ValueUnion {
+            self = valueUnion
+            return
+        }
+
         if let strValue = value as? String {
             self = .string(strValue)
             return
@@ -556,6 +562,11 @@ public enum ValueUnion: Codable, Hashable {
 
         if let valueElementArray = value as? [[String: Any]] {
             self = .valueElementArray(valueElementArray.map(ValueElement.init))
+            return
+        }
+
+        if let valueElementArray = value as? [ValueElement] {
+            self = .valueElementArray(valueElementArray)
             return
         }
 
@@ -674,7 +685,8 @@ public struct ValueElement: Codable, Equatable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         for (key, value) in dictionary {
             if let value = value as? ValueUnion {
-                try container.encode(value, forKey: CodingKeys(stringValue: key)!)
+                guard let codingKey = CodingKeys(stringValue: key) else { return }
+                try container.encode(value, forKey: codingKey)
             }
         }
     }
@@ -742,21 +754,29 @@ public struct ValueElement: Codable, Equatable, Hashable {
     }
 
     public var points: [Point]? {
-        get { (dictionary["points"] as? [[String: Any]])?.compactMap(Point.init) }
+        get {
+            let value = ((dictionary["points"] as? ValueUnion)?.dictonary as? [ValueElement])
+            return value?.compactMap(Point.init)
+        }
 
         set {
             guard let value = newValue else {
                 return
             }
-            guard let dictValueUnion = value.flatMap { $0.dictionary } as? [String : ValueUnion] else {
+             let dictValueUnion = value.flatMap { point in
+                var dictAny = [String: ValueUnion]()
+                let dict = point.dictionary.forEach { (key, value) in
+                    dictAny[key] = ValueUnion(value: value)
+                }
+                return ValueElement(dictionary: dictAny)
+            } as? [ValueElement]
+
+
+
+            guard let dictValueUnion else {
                 return
             }
-
-//            let dictAny = dictValueUnion.map({ (key: String, value: ValueUnion) in
-//                [key: value.dictonary]
-//            })
-//
-            self.dictionary["points"] = .dictonary(dictValueUnion)
+            self.dictionary["points"] = .valueElementArray(dictValueUnion)
         }
     }
 
@@ -814,6 +834,10 @@ public struct Point: Codable {
             guard let value = try? JSONDecoder().decode(ValueUnion.self, from: data) else { return }
             self.dictionary[key] = value
        }
+    }
+
+    init(valueElement: ValueElement) {
+        self.dictionary = valueElement.dictionary
     }
 
     public init(id: String) {
