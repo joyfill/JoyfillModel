@@ -602,6 +602,26 @@ public enum ValueUnion: Codable, Hashable {
         return nil
     }
 
+    public var anyDictonary: Any? {
+        switch self {
+        case .double(let double):
+            return double
+        case .string(let string):
+            return string
+        case .array(let stringArray):
+            return stringArray
+        case .valueElementArray(let valueElementArray):
+            return valueElementArray
+            return valueElementArray.map { $0.anyDictionary }
+        case .bool(let bool):
+            return bool
+        case .null:
+            return nil
+        case .dictonary(let dictonary):
+            return dictonary
+        }
+    }
+
     public var dictonary: Any? {
         switch self {
         case .double(let double):
@@ -611,6 +631,7 @@ public enum ValueUnion: Codable, Hashable {
         case .array(let stringArray):
             return stringArray
         case .valueElementArray(let valueElementArray):
+            return valueElementArray
             return valueElementArray
         case .bool(let bool):
             return bool
@@ -678,6 +699,14 @@ public enum ValueUnion: Codable, Hashable {
 // MARK: - ValueElement
 public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     var dictionary = [String: ValueUnion]()
+
+    public var anyDictionary: [String: Any] {
+        var dict = [String: Any]()
+        dictionary.forEach { (key: String, value: ValueUnion) in
+            dict[key] = value.dictonary
+        }
+        return dict
+    }
 
     public static func == (lhs: ValueElement, rhs: ValueElement) -> Bool {
         lhs.id == rhs.id

@@ -345,54 +345,44 @@ public struct FieldChangeEvent {
     }
 }
 
-public struct Changelog: Codable {
-    public let changelogs: [JoyfillModel.Change]
+public struct Change {
+    public var dictionary = [String: Any]()
 
-    public init(changelogs: [JoyfillModel.Change]) {
-        self.changelogs = changelogs
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
     }
-}
-
-public struct FieldChange: Codable {
-    public let value:ValueUnion
+//    public var v: Int
+//    public var sdk: String
+//    public var target: String
+//    public var _id: String
+//    public var identifier: String?
+//    public var fileId: String
+//    public var pageId: String
+//    public var fieldId: String
+//    public var fieldIdentifier: String
+//    public var fieldPositionId: String
+//    public var change: JSONAny
+//    public var createdOn: Double
     
-    public init(value: ValueUnion) {
-        self.value = value
-    }
-}
-
-public struct Change: Codable {
-    public var v: Int
-    public var sdk: String
-    public var target: String
-    public var _id: String
-    public var identifier: String?
-    public var fileId: String
-    public var pageId: String
-    public var fieldId: String
-    public var fieldIdentifier: String
-    public var fieldPositionId: String
-    public var change: FieldChange
-    public var createdOn: Double
-    
-    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: FieldChange, createdOn: Double) {
-        self.v = v
-        self.sdk = sdk
-        self.target = target
-        self._id = _id
-        self.identifier = identifier
-        self.fileId = fileId
-        self.pageId = pageId
-        self.fieldId = fieldId
-        self.fieldIdentifier = fieldIdentifier
-        self.fieldPositionId = fieldPositionId
-        self.change = change
-        self.createdOn = createdOn
+    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
+        dictionary["v"] = v
+        dictionary["sdk"] = sdk
+        dictionary["target"] = target
+        dictionary["_id"] = _id
+        dictionary["identifier"] = identifier
+        dictionary["fileId"] = fileId
+        dictionary["pageId"] = pageId
+        dictionary["fieldId"] = fieldId
+        dictionary["fieldIdentifier"] = fieldIdentifier
+        dictionary["fieldPositionId"] = fieldPositionId
+        dictionary["change"] = change
+        dictionary["createdOn"]
     }
 }
 
 public protocol FormChangeEvent {
-    func onChange(changes: [Change], document: JoyDoc)
+    func onChange(changes: [[String: Any]], document: JoyDoc)
     func onFocus(event: FieldEvent)
     func onBlur(event: FieldEvent)
     func onUpload(event:UploadEvent)
