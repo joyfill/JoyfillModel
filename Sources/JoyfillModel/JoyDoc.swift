@@ -327,10 +327,67 @@ public struct JoyDocField: Equatable {
 }
 
 // MARK: - ChartAxisConfiguration
-public struct ChartAxisConfiguration: Equatable {
-    private var dictionary = [String: Any]()
-    private var id = UUID()
+//public struct ChartAxisConfiguration: Equatable {
+//    private var dictionary = [String: Any]()
+//    private var id = UUID()
+//
+//    public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
+//        self.yTitle = yTitle
+//        self.yMax = yMax
+//        self.yMin = yMin
+//        self.xTitle = xTitle
+//        self.xMax = xMax
+//        self.xMin = xMin
+//    }
+//
+//    public static func == (lhs: ChartAxisConfiguration, rhs: ChartAxisConfiguration) -> Bool {
+//        lhs.id == rhs.id
+//    }
+//
+//    public init(dictionary: [String: Any] = [:]) {
+//        self.dictionary = dictionary
+//    }
+//
+//    public var yTitle: String? {
+//        get { dictionary["yTitle"] as? String }
+//        set { dictionary["yTitle"] = newValue }
+//    }
+//
+//    public var yMax: Int? {
+//        get { dictionary["yMax"] as? Int }
+//        set { dictionary["yMax"] = newValue }
+//    }
+//
+//    public var yMin: Int? {
+//        get { dictionary["yMin"] as? Int }
+//        set { dictionary["yMin"] = newValue }
+//    }
+//
+//    public var xTitle: String? {
+//        get { dictionary["xTitle"] as? String }
+//        set { dictionary["xTitle"] = newValue }
+//    }
+//
+//    public var xMax: Int? {
+//        get { dictionary["xMax"] as? Int }
+//        set { dictionary["xMax"] = newValue }
+//    }
+//
+//    public var xMin: Int? {
+//        get { dictionary["xMin"] as? Int }
+//        set { dictionary["xMin"] = newValue }
+//    }
+//}
 
+public struct ChartAxisConfiguration: Equatable{
+    public var yTitle: String?
+    public var yMax, yMin: Int?
+    public var xTitle: String?
+    public var xMax, xMin: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case yTitle, yMax, yMin, xTitle, xMax, xMin
+    }
     public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
         self.yTitle = yTitle
         self.yMax = yMax
@@ -338,44 +395,6 @@ public struct ChartAxisConfiguration: Equatable {
         self.xTitle = xTitle
         self.xMax = xMax
         self.xMin = xMin
-    }
-
-    public static func == (lhs: ChartAxisConfiguration, rhs: ChartAxisConfiguration) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    public init(dictionary: [String: Any] = [:]) {
-        self.dictionary = dictionary
-    }
-
-    public var yTitle: String? {
-        get { dictionary["yTitle"] as? String }
-        set { dictionary["yTitle"] = newValue }
-    }
-
-    public var yMax: Int? {
-        get { dictionary["yMax"] as? Int }
-        set { dictionary["yMax"] = newValue }
-    }
-
-    public var yMin: Int? {
-        get { dictionary["yMin"] as? Int }
-        set { dictionary["yMin"] = newValue }
-    }
-
-    public var xTitle: String? {
-        get { dictionary["xTitle"] as? String }
-        set { dictionary["xTitle"] = newValue }
-    }
-
-    public var xMax: Int? {
-        get { dictionary["xMax"] as? Int }
-        set { dictionary["xMax"] = newValue }
-    }
-
-    public var xMin: Int? {
-        get { dictionary["xMin"] as? Int }
-        set { dictionary["xMin"] = newValue }
     }
 }
 
@@ -579,7 +598,7 @@ public enum ValueUnion: Codable, Hashable {
             self = .bool(boolValue)
             return
         }
-//fatalError()
+        fatalError()
         return nil
     }
 
@@ -657,7 +676,7 @@ public enum ValueUnion: Codable, Hashable {
 }
 
 // MARK: - ValueElement
-public struct ValueElement: Codable, Equatable, Hashable {
+public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     var dictionary = [String: ValueUnion]()
 
     public static func == (lhs: ValueElement, rhs: ValueElement) -> Bool {
@@ -771,9 +790,8 @@ public struct ValueElement: Codable, Equatable, Hashable {
                 return ValueElement(dictionary: dictAny)
             } as? [ValueElement]
 
-
-
             guard let dictValueUnion else {
+                fatalError()
                 return
             }
             self.dictionary["points"] = .valueElementArray(dictValueUnion)
@@ -830,9 +848,7 @@ public struct Point: Codable {
 
     public init(dictionary: [String: Any] = [:]) {
         dictionary.forEach { (key: String, value: Any) in
-           guard let data = try? JSONSerialization.data(withJSONObject: value, options: .prettyPrinted) else { return }
-            guard let value = try? JSONDecoder().decode(ValueUnion.self, from: data) else { return }
-            self.dictionary[key] = value
+            self.dictionary[key] = ValueUnion(value: value)
        }
     }
 
@@ -860,22 +876,28 @@ public struct Point: Codable {
     }
 
     public var id: String? {
-        get { dictionary["_id"] as? String }
+        get { (dictionary["_id"] as? ValueUnion)?.text }
         set { setValue(newValue, key: "_id") }
     }
 
     public var label: String? {
-        get { dictionary["label"] as? String }
+        get { (dictionary["label"] as? ValueUnion)?.text }
         set { setValue(newValue, key: "label") }
     }
 
     public var y: CGFloat? {
-        get { dictionary["y"] as? CGFloat }
+        get {
+            guard let valueUnion = (dictionary["y"] as? ValueUnion)?.number else { return nil }
+            return CGFloat(valueUnion)
+        }
         set { setValue(newValue, key: "y") }
     }
 
     public var x: CGFloat? {
-        get { dictionary["x"] as? CGFloat }
+        get { 
+            guard let valueUnion = (dictionary["x"] as? ValueUnion)?.number else { return nil }
+            return CGFloat(valueUnion)
+        }
         set { setValue(newValue, key: "x") }
     }
 }

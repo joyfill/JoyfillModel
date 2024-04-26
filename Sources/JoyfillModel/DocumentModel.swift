@@ -208,6 +208,7 @@ public extension ValueUnion {
             return nil
         }
     }
+
     var dropdownValue: String? {
         switch self {
         case .string(let string):
@@ -245,7 +246,7 @@ public extension ValueUnion {
         }
     }
     
-    var images: [ValueElement]? {
+    var valueElements: [ValueElement]? {
         switch self {
         case .valueElementArray(let valueElements):
             return valueElements
