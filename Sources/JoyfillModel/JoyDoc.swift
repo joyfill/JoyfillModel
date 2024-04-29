@@ -23,6 +23,11 @@ public struct JoyDoc {
         get { dictionary["stage"] as? String }
         set { dictionary["stage"] = newValue }
     }
+    
+    public var source: String? {
+        get { dictionary["source"] as? String }
+        set { dictionary["source"] = newValue }
+    }
 
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
@@ -159,13 +164,18 @@ public struct JoyDocField: Equatable {
         get { dictionary["title"] as? String }
         set { dictionary["title"] = newValue }
     }
+    
+    public var description: String? {
+        get { dictionary["description"] as? String }
+        set { dictionary["description"] = newValue }
+    }
 
     public var value: ValueUnion? {
         get { ValueUnion.init(valueFromDcitonary: dictionary)}
         set { dictionary["value"] = newValue?.dictonary }
     }
 
-    public var fieldRequired: Bool? {
+    public var required: Bool? {
         get { dictionary["required"] as? Bool }
         set { dictionary["required"] = newValue }
     }
@@ -401,7 +411,7 @@ public struct ChartAxisConfiguration: Equatable{
 
 // MARK: - Metadata
 public struct Metadata {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     public init?(dictionary: [String: Any]?) {
         guard let metadata = dictionary else { return nil}
@@ -559,6 +569,11 @@ public enum ValueUnion: Codable, Hashable {
     }
 
     init?(value: Any) {
+        if let boolValue = value as? Bool {
+            self = .bool(boolValue)
+            return
+        }
+
         if let valueUnion = value as? ValueUnion {
             self = valueUnion
             return
@@ -591,11 +606,6 @@ public enum ValueUnion: Codable, Hashable {
 
         if let valueDictonary = value as? [String: Any] {
             self = ValueUnion.init(dcitonary: valueDictonary)
-            return
-        }
-
-        if let boolValue = value as? Bool {
-            self = .bool(boolValue)
             return
         }
         fatalError()
@@ -829,16 +839,12 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
     public var cells: [String: ValueUnion]? {
         get {
-            return dictionary["cells"] as? [String: ValueUnion]
+            let value = dictionary["cells"] as? ValueUnion
+            return value?.dictonary as? [String: ValueUnion]
         }
         set {
-            guard let value = newValue else {
-                return
-            }
-            guard let data = try? JSONEncoder().encode(value) else {
-                return
-            }
-            self.dictionary["cells"] = try? JSONDecoder().decode(ValueUnion.self, from: data)
+            guard let value = newValue else { return }
+            self.dictionary["cells"] = ValueUnion.dictonary(value)
         }
     }
 
