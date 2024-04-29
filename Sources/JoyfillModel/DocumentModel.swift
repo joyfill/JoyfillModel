@@ -352,19 +352,51 @@ public struct Change {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
-//    public var v: Int
-//    public var sdk: String
-//    public var target: String
-//    public var _id: String
-//    public var identifier: String?
-//    public var fileId: String
-//    public var pageId: String
-//    public var fieldId: String
-//    public var fieldIdentifier: String
-//    public var fieldPositionId: String
-//    public var change: JSONAny
-//    public var createdOn: Double
-    
+
+    public var v: Int? {
+        dictionary["v"] as? Int
+    }
+
+    public var sdk: String? {
+        dictionary["sdk"] as? String
+    }
+
+    public var target: String? {
+        dictionary["target"] as? String
+    }
+
+    public var identifier: String? {
+        dictionary["identifier"] as? String
+    }
+
+    public var fileId: String? {
+        dictionary["fileId"] as? String
+    }
+
+    public var pageId: String? {
+        dictionary["pageId"] as? String
+    }
+
+    public var fieldId: String? {
+        dictionary["fieldId"] as? String
+    }
+
+    public var fieldIdentifier: String? {
+        dictionary["fieldIdentifier"] as? String
+    }
+
+    public var fieldPositionId: String? {
+        dictionary["fieldPositionId"] as? String
+    }
+
+    public var change: [String: Any]? {
+        dictionary["change"] as? [String: Any]
+    }
+
+    public var createdOn: Double? {
+        dictionary["createdOn"] as? Double
+    }
+
     public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
         dictionary["v"] = v
         dictionary["sdk"] = sdk
@@ -382,7 +414,7 @@ public struct Change {
 }
 
 public protocol FormChangeEvent {
-    func onChange(changes: [[String: Any]], document: JoyDoc)
+    func onChange(changes: [Change], document: JoyDoc)
     func onFocus(event: FieldEvent)
     func onBlur(event: FieldEvent)
     func onUpload(event:UploadEvent)

@@ -2,7 +2,6 @@ import Foundation
 
 // MARK: - JoyDoc
 public struct JoyDoc {
-
     private var dictionary: [String: Any]
 
     public init(dictionary: [String: Any] = [:]) {
@@ -13,57 +12,50 @@ public struct JoyDoc {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
-
     public var type: String? {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
-
     public var stage: String? {
         get { dictionary["stage"] as? String }
         set { dictionary["stage"] = newValue }
     }
-    
     public var source: String? {
         get { dictionary["source"] as? String }
         set { dictionary["source"] = newValue }
+    }
+    public var identifier: String? {
+        get { dictionary["identifier"] as? String }
+        set { dictionary["identifier"] = newValue }
+    }
+    public var name: String? {
+        get { dictionary["name"] as? String }
+        set { dictionary["name"] = newValue }
+    }
+    public var createdOn: Int? {
+        get { dictionary["createdOn"] as? Int }
+        set { dictionary["createdOn"] = newValue }
     }
 
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
         set { dictionary["metadata"] = newValue?.dictionary }
     }
-
-    public var identifier: String? {
-        get { dictionary["identifier"] as? String }
-        set { dictionary["identifier"] = newValue }
-    }
-
-    public var name: String? {
-        get { dictionary["name"] as? String }
-        set { dictionary["name"] = newValue }
-    }
-
-    public var createdOn: Int? {
-        get { dictionary["createdOn"] as? Int }
-        set { dictionary["createdOn"] = newValue }
-    }
-
     public var files: [File] {
         get { (dictionary["files"] as? [[String: Any]])?.compactMap(File.init) ?? [] }
         set { dictionary["files"] = newValue.compactMap { $0.dictionary } }
     }
-
     public var fields: [JoyDocField] {
         get { (dictionary["fields"] as? [[String: Any]])?.compactMap(JoyDocField.init) ?? [] }
         set { dictionary["fields"] = newValue.compactMap { $0.dictionary } }
     }
-
     public var categories: [JSONAny]? {
         mutating get { getValue(key: "categories") }
         mutating set { setValue(newValue, key: "categories") }
     }
+}
 
+extension JoyDoc {
     mutating private func setValue(_ value: [JSONAny]?, key: String) {
         guard let value = value else {
             return
@@ -73,7 +65,6 @@ public struct JoyDoc {
         }
         self.dictionary[key] = try? JSONDecoder().decode(JSONAny.self, from: data)
     }
-
     mutating private func getValue(key: String) -> [JSONAny]? {
         guard let value = dictionary[key] as? [String: Any] else {
             return nil
