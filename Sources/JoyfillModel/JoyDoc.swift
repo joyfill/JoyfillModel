@@ -53,6 +53,10 @@ public struct JoyDoc {
         mutating get { getValue(key: "categories") }
         mutating set { setValue(newValue, key: "categories") }
     }
+    public var deleted: Bool? {
+        get { dictionary["deleted"] as? Bool }
+        set { dictionary["deleted"] = newValue }
+    }
 }
 
 extension JoyDoc {
