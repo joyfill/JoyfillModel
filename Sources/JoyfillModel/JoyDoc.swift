@@ -327,59 +327,6 @@ public struct JoyDocField: Equatable {
 
 }
 
-// MARK: - ChartAxisConfiguration
-//public struct ChartAxisConfiguration: Equatable {
-//    private var dictionary = [String: Any]()
-//    private var id = UUID()
-//
-//    public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
-//        self.yTitle = yTitle
-//        self.yMax = yMax
-//        self.yMin = yMin
-//        self.xTitle = xTitle
-//        self.xMax = xMax
-//        self.xMin = xMin
-//    }
-//
-//    public static func == (lhs: ChartAxisConfiguration, rhs: ChartAxisConfiguration) -> Bool {
-//        lhs.id == rhs.id
-//    }
-//
-//    public init(dictionary: [String: Any] = [:]) {
-//        self.dictionary = dictionary
-//    }
-//
-//    public var yTitle: String? {
-//        get { dictionary["yTitle"] as? String }
-//        set { dictionary["yTitle"] = newValue }
-//    }
-//
-//    public var yMax: Int? {
-//        get { dictionary["yMax"] as? Int }
-//        set { dictionary["yMax"] = newValue }
-//    }
-//
-//    public var yMin: Int? {
-//        get { dictionary["yMin"] as? Int }
-//        set { dictionary["yMin"] = newValue }
-//    }
-//
-//    public var xTitle: String? {
-//        get { dictionary["xTitle"] as? String }
-//        set { dictionary["xTitle"] = newValue }
-//    }
-//
-//    public var xMax: Int? {
-//        get { dictionary["xMax"] as? Int }
-//        set { dictionary["xMax"] = newValue }
-//    }
-//
-//    public var xMin: Int? {
-//        get { dictionary["xMin"] as? Int }
-//        set { dictionary["xMin"] = newValue }
-//    }
-//}
-
 public struct ChartAxisConfiguration: Equatable{
     public var yTitle: String?
     public var yMax, yMin: Int?
@@ -398,7 +345,6 @@ public struct ChartAxisConfiguration: Equatable{
         self.xMin = xMin
     }
 }
-
 
 // MARK: - Metadata
 public struct Metadata {
@@ -612,14 +558,17 @@ public enum ValueUnion: Codable, Hashable {
         case .array(let stringArray):
             return stringArray
         case .valueElementArray(let valueElementArray):
-            return valueElementArray
             return valueElementArray.map { $0.anyDictionary }
         case .bool(let bool):
             return bool
         case .null:
             return nil
         case .dictonary(let dictonary):
-            return dictonary
+            var anyDict = [String: Any]()
+            dictonary.forEach { (key: String, value: ValueUnion) in
+                anyDict[key] = value.anyDictonary
+            }
+            return anyDict
         }
     }
 
@@ -632,7 +581,6 @@ public enum ValueUnion: Codable, Hashable {
         case .array(let stringArray):
             return stringArray
         case .valueElementArray(let valueElementArray):
-            return valueElementArray
             return valueElementArray
         case .bool(let bool):
             return bool
@@ -704,7 +652,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     public var anyDictionary: [String: Any] {
         var dict = [String: Any]()
         dictionary.forEach { (key: String, value: ValueUnion) in
-            dict[key] = value.dictonary
+            dict[key] = value.anyDictonary
         }
         return dict
     }
