@@ -167,7 +167,7 @@ public struct JoyDocField: Equatable {
 
     public var value: ValueUnion? {
         get { ValueUnion.init(valueFromDcitonary: dictionary)}
-        set { dictionary["value"] = newValue?.dictonary }
+        set { dictionary["value"] = newValue?.dictonaryWithValueUnionTypes }
     }
 
     public var required: Bool? {
@@ -553,7 +553,7 @@ public enum ValueUnion: Codable, Hashable {
         return nil
     }
 
-    public var anyDictonary: Any? {
+    public var dictonary: Any? {
         switch self {
         case .double(let double):
             return double
@@ -570,13 +570,13 @@ public enum ValueUnion: Codable, Hashable {
         case .dictonary(let dictonary):
             var anyDict = [String: Any]()
             dictonary.forEach { (key: String, value: ValueUnion) in
-                anyDict[key] = value.anyDictonary
+                anyDict[key] = value.dictonary
             }
             return anyDict
         }
     }
 
-    public var dictonary: Any? {
+    var dictonaryWithValueUnionTypes: Any? {
         switch self {
         case .double(let double):
             return double
@@ -656,7 +656,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     public var anyDictionary: [String: Any] {
         var dict = [String: Any]()
         dictionary.forEach { (key: String, value: ValueUnion) in
-            dict[key] = value.anyDictonary
+            dict[key] = value.dictonary
         }
         return dict
     }
@@ -756,7 +756,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
     public var points: [Point]? {
         get {
-            let value = ((dictionary["points"] as? ValueUnion)?.dictonary as? [ValueElement])
+            let value = ((dictionary["points"] as? ValueUnion)?.dictonaryWithValueUnionTypes as? [ValueElement])
             return value?.compactMap(Point.init)
         }
 
@@ -783,7 +783,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     public var cells: [String: ValueUnion]? {
         get {
             let value = dictionary["cells"] as? ValueUnion
-            return value?.dictonary as? [String: ValueUnion]
+            return value?.dictonaryWithValueUnionTypes as? [String: ValueUnion]
         }
         set {
             guard let value = newValue else { return }
