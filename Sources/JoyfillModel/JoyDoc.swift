@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - JoyDoc
 public struct JoyDoc {
-    private var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
@@ -110,7 +110,7 @@ public struct File {
     }
 
     public var pages: [Page]? {
-        get { (dictionary["pages"] as? [[String: Any]])?.compactMap(Page.init) ?? [] }
+        get { (dictionary["pages"] as? [[String: Any]])?.compactMap(Page.init) }
         set { dictionary["pages"] = newValue?.compactMap{ $0.dictionary } }
     }
 
