@@ -167,7 +167,7 @@ public struct JoyDocField: Equatable {
 
     public var value: ValueUnion? {
         get { ValueUnion.init(valueFromDcitonary: dictionary)}
-        set { dictionary["value"] = newValue?.dictonaryWithValueUnionTypes }
+        set { dictionary["value"] = newValue?.dictionaryWithValueUnionTypes }
     }
 
     public var required: Bool? {
@@ -488,20 +488,20 @@ public enum ValueUnion: Codable, Hashable {
     case string(String)
     case array([String])
     case valueElementArray([ValueElement])
-    case dictonary([String: ValueUnion])
+    case dictionary([String: ValueUnion])
     case bool(Bool)
     case null
 
     public init(dcitonary: [String: ValueUnion]) {
-        self = .dictonary(dcitonary)
+        self = .dictionary(dcitonary)
     }
 
     public init(dcitonary: [String: Any]) {
-        var dictonary = [String : ValueUnion]()
+        var dictionary = [String : ValueUnion]()
         dcitonary.forEach { dict in
-            dictonary[dict.key] = ValueUnion(value: dict.value)
+            dictionary[dict.key] = ValueUnion(value: dict.value)
         }
-        self = .dictonary(dictonary)
+        self = .dictionary(dictionary)
     }
 
     public init?(valueFromDcitonary: [String: Any]) {
@@ -553,7 +553,7 @@ public enum ValueUnion: Codable, Hashable {
         return nil
     }
 
-    public var dictonary: Any? {
+    public var dictionary: Any? {
         switch self {
         case .double(let double):
             return double
@@ -567,16 +567,16 @@ public enum ValueUnion: Codable, Hashable {
             return bool
         case .null:
             return nil
-        case .dictonary(let dictonary):
+        case .dictionary(let dictionary):
             var anyDict = [String: Any]()
-            dictonary.forEach { (key: String, value: ValueUnion) in
-                anyDict[key] = value.dictonary
+            dictionary.forEach { (key: String, value: ValueUnion) in
+                anyDict[key] = value.dictionary
             }
             return anyDict
         }
     }
 
-    var dictonaryWithValueUnionTypes: Any? {
+    var dictionaryWithValueUnionTypes: Any? {
         switch self {
         case .double(let double):
             return double
@@ -590,8 +590,8 @@ public enum ValueUnion: Codable, Hashable {
             return bool
         case .null:
             return nil
-        case .dictonary(let dictonary):
-            return dictonary
+        case .dictionary(let dictionary):
+            return dictionary
         }
     }
 
@@ -643,8 +643,8 @@ public enum ValueUnion: Codable, Hashable {
             try container.encode(x)
         case .null:
             try container.encodeNil()
-        case .dictonary(let dictonary):
-            try container.encode(dictonary)
+        case .dictionary(let dictionary):
+            try container.encode(dictionary)
         }
     }
 }
@@ -656,7 +656,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     public var anyDictionary: [String: Any] {
         var dict = [String: Any]()
         dictionary.forEach { (key: String, value: ValueUnion) in
-            dict[key] = value.dictonary
+            dict[key] = value.dictionary
         }
         return dict
     }
@@ -756,7 +756,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
     public var points: [Point]? {
         get {
-            let value = ((dictionary["points"] as? ValueUnion)?.dictonaryWithValueUnionTypes as? [ValueElement])
+            let value = ((dictionary["points"] as? ValueUnion)?.dictionaryWithValueUnionTypes as? [ValueElement])
             return value?.compactMap(Point.init)
         }
 
@@ -783,11 +783,11 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     public var cells: [String: ValueUnion]? {
         get {
             let value = dictionary["cells"] as? ValueUnion
-            return value?.dictonaryWithValueUnionTypes as? [String: ValueUnion]
+            return value?.dictionaryWithValueUnionTypes as? [String: ValueUnion]
         }
         set {
             guard let value = newValue else { return }
-            self.dictionary["cells"] = ValueUnion.dictonary(value)
+            self.dictionary["cells"] = ValueUnion.dictionary(value)
         }
     }
 
