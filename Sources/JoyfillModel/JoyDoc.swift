@@ -167,7 +167,7 @@ public struct JoyDocField: Equatable {
 
     public var value: ValueUnion? {
         get { ValueUnion.init(valueFromDcitonary: dictionary)}
-        set { dictionary["value"] = newValue?.dictionaryWithValueUnionTypes }
+        set { dictionary["value"] = newValue?.dictionary }
     }
 
     public var required: Bool? {
