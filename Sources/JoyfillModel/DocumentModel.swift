@@ -204,6 +204,11 @@ public extension ValueUnion {
         switch self {
         case .double(let int):
             return int
+        case .bool(let value):
+            if value {
+                return 1
+            }
+            return 0
         default:
             return nil
         }
