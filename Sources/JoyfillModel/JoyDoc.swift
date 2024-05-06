@@ -509,7 +509,7 @@ public enum ValueUnion: Codable, Hashable {
         self.init(value: value)
     }
 
-    init?(value: Any) {
+    public init?(value: Any) {
         if let boolValue = value as? Bool {
             self = .bool(boolValue)
             return
