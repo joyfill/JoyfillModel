@@ -121,6 +121,7 @@ public enum FieldTypes: String, Codable {
     case table
     case image
 }
+
 public enum DateFormatType: String {
     case dateOnly = "MM/DD/YYYY"
     case timeOnly = "hh:mma"
@@ -150,6 +151,16 @@ public extension ValueUnion {
             return nil
         }
     }
+
+    var bool: Bool? {
+        switch self {
+        case .bool(let bool):
+            return bool
+        default:
+            return nil
+        }
+    }
+
     var displayText: String? {
         switch self {
         case .string(let string):
@@ -197,6 +208,7 @@ public extension ValueUnion {
             return nil
         }
     }
+
     var dropdownValue: String? {
         switch self {
         case .string(let string):
@@ -234,7 +246,7 @@ public extension ValueUnion {
         }
     }
     
-    var images: [ValueElement]? {
+    var valueElements: [ValueElement]? {
         switch self {
         case .valueElementArray(let valueElements):
             return valueElements
@@ -333,49 +345,71 @@ public struct FieldChangeEvent {
     }
 }
 
-public struct Changelog: Codable {
-    public let changelogs: [JoyfillModel.Change]
+public struct Change {
+    public var dictionary = [String: Any]()
 
-    public init(changelogs: [JoyfillModel.Change]) {
-        self.changelogs = changelogs
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
     }
-}
 
-public struct FieldChange: Codable {
-    public let value:ValueUnion
-    
-    public init(value: ValueUnion) {
-        self.value = value
+    public var v: Int? {
+        dictionary["v"] as? Int
     }
-}
 
-public struct Change: Codable {
-    public var v: Int
-    public var sdk: String
-    public var target: String
-    public var _id: String
-    public var identifier: String?
-    public var fileId: String
-    public var pageId: String
-    public var fieldId: String
-    public var fieldIdentifier: String
-    public var fieldPositionId: String
-    public var change: FieldChange
-    public var createdOn: Double
-    
-    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: FieldChange, createdOn: Double) {
-        self.v = v
-        self.sdk = sdk
-        self.target = target
-        self._id = _id
-        self.identifier = identifier
-        self.fileId = fileId
-        self.pageId = pageId
-        self.fieldId = fieldId
-        self.fieldIdentifier = fieldIdentifier
-        self.fieldPositionId = fieldPositionId
-        self.change = change
-        self.createdOn = createdOn
+    public var sdk: String? {
+        dictionary["sdk"] as? String
+    }
+
+    public var target: String? {
+        dictionary["target"] as? String
+    }
+
+    public var identifier: String? {
+        dictionary["identifier"] as? String
+    }
+
+    public var fileId: String? {
+        dictionary["fileId"] as? String
+    }
+
+    public var pageId: String? {
+        dictionary["pageId"] as? String
+    }
+
+    public var fieldId: String? {
+        dictionary["fieldId"] as? String
+    }
+
+    public var fieldIdentifier: String? {
+        dictionary["fieldIdentifier"] as? String
+    }
+
+    public var fieldPositionId: String? {
+        dictionary["fieldPositionId"] as? String
+    }
+
+    public var change: [String: Any]? {
+        dictionary["change"] as? [String: Any]
+    }
+
+    public var createdOn: Double? {
+        dictionary["createdOn"] as? Double
+    }
+
+    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
+        dictionary["v"] = v
+        dictionary["sdk"] = sdk
+        dictionary["target"] = target
+        dictionary["_id"] = _id
+        dictionary["identifier"] = identifier
+        dictionary["fileId"] = fileId
+        dictionary["pageId"] = pageId
+        dictionary["fieldId"] = fieldId
+        dictionary["fieldIdentifier"] = fieldIdentifier
+        dictionary["fieldPositionId"] = fieldPositionId
+        dictionary["change"] = change
+        dictionary["createdOn"]
     }
 }
 
