@@ -510,6 +510,11 @@ public enum ValueUnion: Codable, Hashable {
     }
 
     public init?(value: Any) {
+        if let doubleValue = value as? Double {
+            self = .double(doubleValue)
+            return
+        }
+
         if let boolValue = value as? Bool {
             self = .bool(boolValue)
             return
@@ -522,11 +527,6 @@ public enum ValueUnion: Codable, Hashable {
 
         if let strValue = value as? String {
             self = .string(strValue)
-            return
-        }
-
-        if let doubleValue = value as? Double {
-            self = .double(doubleValue)
             return
         }
 
@@ -700,6 +700,9 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         self.id = id
         self.url = url
         self.points = points
+        self.deleted = false
+        self.description = ""
+        self.title = ""
     }
 
     mutating func setValue(_ value: String?, key: String) {
@@ -836,6 +839,9 @@ public struct Point: Codable {
 
     public init(id: String) {
         self.id = id
+        self.x = 0
+        self.y = 0
+        self.label = ""
     }
 
     mutating func setValue(_ value: String?, key: String) {

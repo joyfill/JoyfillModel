@@ -156,6 +156,8 @@ public extension ValueUnion {
         switch self {
         case .bool(let bool):
             return bool
+        case .double(let double):
+            return double != 0
         default:
             return nil
         }
@@ -414,7 +416,7 @@ public struct Change {
         dictionary["fieldIdentifier"] = fieldIdentifier
         dictionary["fieldPositionId"] = fieldPositionId
         dictionary["change"] = change
-        dictionary["createdOn"]
+        dictionary["createdOn"] = createdOn
     }
 }
 
