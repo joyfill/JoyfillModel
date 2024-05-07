@@ -296,7 +296,6 @@ public struct JoyDocField: Equatable {
         }
 
         elements.append(ValueElement(id: id))
-        // Need to change
         self.value = ValueUnion.valueElementArray(elements)
         rowOrder?.append(id)
     }
