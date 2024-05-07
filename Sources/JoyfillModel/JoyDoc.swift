@@ -696,13 +696,17 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         case _id, url, fileName, filePath, deleted, title, description, points, cells
     }
 
-    public init(id: String, url: String? = nil, points: [Point]? = nil) {
+    public init(id: String, deleted: Bool = false, description: String = "", title: String = "", points: [Point]?) {
         self.id = id
-        self.url = url
         self.points = points
         self.deleted = false
         self.description = ""
         self.title = ""
+    }
+
+    public init(id: String, url: String? = nil) {
+        self.id = id
+        self.url = url
     }
 
     mutating func setValue(_ value: String?, key: String) {

@@ -429,6 +429,7 @@ public protocol FormChangeEvent {
 
 public protocol FormChangeEventInternal {
     func onChange(event: FieldChangeEvent)
+    func addRow(event: FieldChangeEvent)
     func onFocus(event: FieldEvent)
     func onBlur(event: FieldEvent)
     func onUpload(event:UploadEvent)
@@ -436,6 +437,7 @@ public protocol FormChangeEventInternal {
 
 public protocol FieldChangeEvents {
     func onChange(event: FieldChangeEvent)
+    func addRow(event: FieldChangeEvent)
     func onFocus(event: FieldEvent)
     func onUpload(event:UploadEvent)
 }
