@@ -407,6 +407,10 @@ public struct Change {
     public var createdOn: Double? {
         dictionary["createdOn"] as? Double
     }
+    
+    public var xTitle: String? {
+        dictionary["xTitle"] as? String
+    }
 
     public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
         dictionary["v"] = v
