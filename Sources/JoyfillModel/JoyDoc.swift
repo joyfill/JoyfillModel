@@ -159,7 +159,7 @@ public struct JoyDocField: Equatable {
         get { dictionary["title"] as? String }
         set { dictionary["title"] = newValue }
     }
-    
+
     public var description: String? {
         get { dictionary["description"] as? String }
         set { dictionary["description"] = newValue }
@@ -666,8 +666,8 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     }
 
     public init(dictionary: [String: Any] = [:]) {
-         dictionary.forEach { (key: String, value: Any) in
-             self.dictionary[key] = ValueUnion(value: value)
+        dictionary.forEach { (key: String, value: Any) in
+            self.dictionary[key] = ValueUnion(value: value)
         }
     }
 
@@ -771,7 +771,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
             guard let value = newValue else {
                 return
             }
-             let dictValueUnion = value.flatMap { point in
+            let dictValueUnion = value.flatMap { point in
                 var dictAny = [String: ValueUnion]()
                 let dict = point.dictionary.forEach { (key, value) in
                     dictAny[key] = ValueUnion(value: value)
@@ -834,7 +834,7 @@ public struct Point: Codable {
     public init(dictionary: [String: Any] = [:]) {
         dictionary.forEach { (key: String, value: Any) in
             self.dictionary[key] = ValueUnion(value: value)
-       }
+        }
     }
 
     init(valueElement: ValueElement) {
@@ -882,7 +882,7 @@ public struct Point: Codable {
     }
 
     public var x: CGFloat? {
-        get { 
+        get {
             guard let valueUnion = (dictionary["x"] as? ValueUnion)?.number else { return nil }
             return CGFloat(valueUnion)
         }

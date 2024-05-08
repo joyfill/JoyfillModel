@@ -355,6 +355,10 @@ public struct FieldChangeEvent {
 public struct Change {
     public var dictionary = [String: Any]()
 
+    public init(dictionary: [String: Any]) {
+        self.dictionary = dictionary
+    }
+
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
