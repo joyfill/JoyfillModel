@@ -549,8 +549,16 @@ public enum ValueUnion: Codable, Hashable {
             self = ValueUnion.init(dcitonary: valueDictonary)
             return
         }
+
+        if let valueDictonary = value as? NSNull {
+            self = .null
+            return
+        }
+#if DEBUG
         fatalError()
-        return nil
+#else
+        self = .null
+#endif
     }
 
     public var dictionary: Any? {
