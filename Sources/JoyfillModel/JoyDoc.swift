@@ -1283,138 +1283,167 @@ public struct Page {
 }
 
 // MARK: - FieldPosition
+/// Represents the position and properties of a field in a document.
 public struct FieldPosition {
     public var dictionary: [String: Any]
 
+    /// Initializes a `FieldPosition` instance with an optional dictionary.
+    /// - Parameter dictionary: An optional dictionary containing the field position properties.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
 
+    /// The name of the field.
     public var field: String? {
         get { dictionary["field"] as? String }
         set { dictionary["field"] = newValue }
     }
 
+    /// The display type of the field.
     public var displayType: String? {
         get { dictionary["displayType"] as? String }
         set { dictionary["displayType"] = newValue }
     }
 
+    /// The width of the field.
     public var width: Double? {
         get { dictionary["width"] as? Double }
         set { dictionary["width"] = newValue }
     }
 
+    /// The height of the field.
     public var height: Double? {
         get { dictionary["height"] as? Double }
         set { dictionary["height"] = newValue }
     }
 
+    /// The x-coordinate of the field.
     public var x: Double? {
         get { dictionary["x"] as? Double }
         set { dictionary["x"] = newValue }
     }
 
+    /// The y-coordinate of the field.
     public var y: Double? {
         get { dictionary["y"] as? Double }
         set { dictionary["y"] = newValue }
     }
 
+    /// The line height of the field.
     public var lineHeight: Double? {
         get { dictionary["lineHeight"] as? Double }
         set { dictionary["lineHeight"] = newValue }
     }
 
+    /// The unique identifier of the field.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 
+    /// The target value of the field.
     public var targetValue: String? {
         get { dictionary["targetValue"] as? String }
         set { dictionary["targetValue"] = newValue }
     }
 
+    /// The condition associated with the field.
     public var condition: String? {
         get { dictionary["condition"] as? String }
         set { dictionary["condition"] = newValue }
     }
 
+    /// The display type of the target value.
     public var targetValueDisplayType: String? {
         get { dictionary["targetValueDisplayType"] as? String }
         set { dictionary["targetValueDisplayType"] = newValue }
     }
 
+    /// The display title of the field.
     public var titleDisplay: String? {
         get { dictionary["titleDisplay"] as? String }
         set { dictionary["titleDisplay"] = newValue }
     }
 
+    /// The type of the field.
     public var type: FieldTypes {
         get { FieldTypes(rawValue: dictionary["type"] as! String)! }
         set { dictionary["type"] = newValue.rawValue }
     }
 
+    /// The font size of the field.
     public var fontSize: Double? {
         get { dictionary["fontSize"] as? Double }
         set { dictionary["fontSize"] = newValue }
     }
 
+    /// The font color of the field.
     public var fontColor: String? {
         get { dictionary["fontColor"] as? String }
         set { dictionary["fontColor"] = newValue }
     }
 
+    /// The font style of the field.
     public var fontStyle: String? {
         get { dictionary["fontStyle"] as? String }
         set { dictionary["fontStyle"] = newValue }
     }
 
+    /// The font weight of the field.
     public var fontWeight: String? {
         get { dictionary["fontWeight"] as? String }
         set { dictionary["fontWeight"] = newValue }
     }
 
+    /// The text alignment of the field.
     public var textAlign: String? {
         get { dictionary["textAlign"] as? String }
         set { dictionary["textAlign"] = newValue }
     }
 
+    /// Indicates whether the field is for primary display only.
     public var primaryDisplayOnly: Bool? {
         get { dictionary["primaryDisplayOnly"] as? Bool }
         set { dictionary["primaryDisplayOnly"] = newValue }
     }
 
+    /// The format of the field.
     public var format: String? {
         get { dictionary["format"] as? String }
         set { dictionary["format"] = newValue }
     }
 
+    /// The column associated with the field.
     public var column: String? {
         get { dictionary["column"] as? String }
         set { dictionary["column"] = newValue }
     }
 
+    /// The background color of the field.
     public var backgroundColor: String? {
         get { dictionary["backgroundColor"] as? String }
         set { dictionary["backgroundColor"] = newValue }
     }
 
+    /// The border color of the field.
     public var borderColor: String? {
         get { dictionary["borderColor"] as? String }
         set { dictionary["borderColor"] = newValue }
     }
 
+    /// The text decoration of the field.
     public var textDecoration: String? {
         get { dictionary["textDecoration"] as? String }
         set { dictionary["textDecoration"] = newValue }
     }
 
+    /// The border width of the field.
     public var borderWidth: Double? {
         get { dictionary["borderWidth"] as? Double }
         set { dictionary["borderWidth"] = newValue }
     }
 
+    /// The border radius of the field.
     public var borderRadius: Double? {
         get { dictionary["borderRadius"] as? Double }
         set { dictionary["borderRadius"] = newValue }
@@ -1422,34 +1451,44 @@ public struct FieldPosition {
 }
 
 /// MARK: - ModelView
+/// A struct representing a model view.
 public struct ModelView {
     var dictionary: [String: Any]
 
+    /// Initializes a `ModelView` with an optional dictionary.
+    /// - Parameter dictionary: An optional dictionary to initialize the `ModelView` with. Default value is an empty dictionary.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
 
+    /// The type of the model view.
     public var type: String? {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
 
+    /// The page order of the model view.
     public var pageOrder: [String]? {
         get { dictionary["pageOrder"] as? [String] }
         set { dictionary["pageOrder"] = newValue }
     }
 
+    /// The pages of the model view.
     public var pages: [Page]? {
         get { (dictionary["pages"] as? [[String: Any]])?.compactMap(Page.init) ?? [] }
         set { dictionary["pages"] = newValue?.compactMap({ $0.dictionary}) }
     }
 
+    /// The ID of the model view.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 }
 
+/// Generates a unique object ID by combining the current timestamp and a random hexadecimal string.
+///
+/// - Returns: A unique object ID string.
 public func generateObjectId() -> String {
     // Get the current timestamp in seconds and convert to a hexadecimal string
     let timestamp = Int(Date().timeIntervalSince1970)
