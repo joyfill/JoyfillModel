@@ -422,6 +422,7 @@ public struct Change {
     }
 }
 
+/// `FormChangeEvent` is a protocol that defines methods for listening to form change events.
 public protocol FormChangeEvent {
     
     /// Used to listen to any field change events.
