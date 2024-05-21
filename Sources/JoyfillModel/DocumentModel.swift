@@ -429,50 +429,45 @@ public struct Change {
 }
 
 public protocol FormChangeEvent {
-    /**
-     `Text`, `Textarea`, `Number`, `Date`, `Dropdown`, `Chart`, `Signature` - onChange  is fired when the field value is modified.
-
-     `Mulitselect` - onChange is fired when an option is selected or unselected in the field.
-
-     `Image` - onChange is fired when the field images are uploaded or removed.
-     */
+    
+    /// Used to listen to any field change events.
+    ///
+    /// (changelogs: object_array, doc: object) => {}
+    ///
+    /// - changelogs: object_array :
+    ///   - Can contain one ore more of the changelog object types supported.
+    ///
+    /// - doc: object :
+    ///    - Fully updated JoyDoc JSON structure with changes applied.
     func onChange(changes: [Change], document: JoyDoc)
-
-    /**
-     `Text`, `Textarea`, `Number` - onFocus(params: object, e: object) is fired when the field is focused.
-
-     `Date` , `Dropdown` - onFocus is fired when the field is pressed and selection modal is displayed.
-
-     `Mulitselect` - is fired when an option is selected or unselected for the first time on the field.
-
-     `Chart` - onFocus is fired when “view” button is pressed and modal is displayed.
-
-     `Image` - onFocus is fired when “view” button is pressed and modal is displayed.
-     - An empty image field that is focused will also trigger the onUploadAsync request.
-     - A populated image field that is focused will trigger the image modal to open.
-
-     `Signature` - onFocus is fired when open modal button is pressed and modal is displayed.
-     */
+    
+    /// Used to listen to field focus events.
+    ///
+    /// (params: object, e: object) => {}
+    ///
+    ///  params: object :
+    /// - Specifies information about the focused field.
+    ///
+    /// e: object :
+    ///  - Element helper methods.
+    ///  - blur: Function :
+    ///     - Triggers the field blur event for the focused field.
+    ///     - If there are pending changes in the field that have not triggered the `onChange` event yet then the `e.blur()` function will trigger both the change and blur events in the following order: 1) `onChange` 2) `onBlur`.
+    ///     - If the focused field utilizes a modal for field modification, ie. signature, image, tables, etc. the `e.blur()` will close the modal.
     func onFocus(event: FieldEvent)
-
-    /**
-     `Text`, `Textarea`, `Number` - onBlur is fired when the field is blurred.
-
-     `Date` , `Dropdown` - onBlur is fired when the field is blurred and the selection modal is closed.
-
-     `Mulitselect` - onChange is fired when an option is selected or unselected in the field.
-
-     `Image` - onChange is fired when the field images are uploaded or removed.
-     */
+    
+    /// Used to listen to field focus events.
+    ///
+    ///  (params: object) => {}
+    ///
+    ///  params: object :
+    ///  - Specifies information about the blurred field.
     func onBlur(event: FieldEvent)
-
-    /**
-     `Text`, `Textarea`, `Number`, `Date`, `Dropdown`, `Chart`, `Signature` - onChange  is fired when the field value is modified.
-
-     `Mulitselect` - onChange is fired when an option is selected or unselected in the field.
-
-     `Image` - onChange is fired when the field images are uploaded or removed.
-     */
+    
+    /// Used to listen to file upload events.
+    ///
+    /// (params: object) => {} :
+    /// - Specifies information about the uploaded file.
     func onUpload(event:UploadEvent)
 }
 
