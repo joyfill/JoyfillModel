@@ -547,28 +547,37 @@ public struct Metadata {
 }
 
 // MARK: - Option
+/// A struct representing an option information.
+///
+/// This structure uses a dictionary to store option properties. Each property is accessed and modified through its own computed property.
 public struct Option: Identifiable {
     var dictionary: [String: Any]
 
+    /// Initializes an `Option` with the given dictionary.
+    /// - Parameter dictionary: The dictionary representing the option. Default value is an empty dictionary.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
 
+    /// The value of the option.
     public var value: String? {
         get { dictionary["value"] as? String }
         set { dictionary["value"] = newValue }
     }
 
+    /// Indicates whether the option is deleted.
     public var deleted: Bool? {
         get { dictionary["deleted"] as? Bool }
         set { dictionary["deleted"] = newValue }
     }
 
+    /// The ID of the option.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 
+    /// The width of the option.
     public var width: Int? {
         get { dictionary["width"] as? Int }
         set { dictionary["width"] = newValue }
