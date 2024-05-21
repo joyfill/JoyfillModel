@@ -652,19 +652,35 @@ public struct FieldTableColumn {
     }
 }
 
+/// `ValueUnion` is an enumeration that represents different types of values.
+///
+/// It can represent a `Double`, `String`, `Array<String>`, `Array<ValueElement>`, `Dictionary<String, ValueUnion>`, `Bool`, or `null`.
 public enum ValueUnion: Codable, Hashable {
+    /// Represents a `Double` value.
     case double(Double)
+    /// Represents a `String` value.
     case string(String)
+    /// Represents a `Array<String>` value.
     case array([String])
+    /// Represents a `Array<ValueElement>` value.
     case valueElementArray([ValueElement])
+    /// Represents a `Dictionary<String, ValueUnion>` value.
     case dictionary([String: ValueUnion])
+    /// Represents a `Bool` value.
     case bool(Bool)
+    /// Represents a `null` value.
     case null
 
+    /// Creates a new `ValueUnion` with the given dictionary.
+    ///
+    /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
     public init(dcitonary: [String: ValueUnion]) {
         self = .dictionary(dcitonary)
     }
 
+    /// Creates a new `ValueUnion` with the given dictionary.
+    ///
+    /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
     public init(dcitonary: [String: Any]) {
         var dictionary = [String : ValueUnion]()
         dcitonary.forEach { dict in
@@ -673,11 +689,17 @@ public enum ValueUnion: Codable, Hashable {
         self = .dictionary(dictionary)
     }
 
+    /// Creates a new `ValueUnion` with the given dictionary.
+    ///
+    /// - Parameter valueFromDcitonary: The dictionary that contains the initial properties of the column.
     public init?(valueFromDcitonary: [String: Any]) {
         guard let value = valueFromDcitonary["value"] else { return nil }
         self.init(value: value)
     }
 
+    /// Creates a new `ValueUnion` with the given value.
+    ///
+    /// - Parameter value: The value that the `ValueUnion` should represent.
     public init?(value: Any) {
         if let doubleValue = value as? Double {
             self = .double(doubleValue)
@@ -730,6 +752,7 @@ public enum ValueUnion: Codable, Hashable {
 #endif
     }
 
+    /// The dictionary representation of the `ValueUnion`.
     public var dictionary: Any? {
         switch self {
         case .double(let double):
@@ -753,6 +776,7 @@ public enum ValueUnion: Codable, Hashable {
         }
     }
 
+    /// The dictionary representation of the `ValueUnion` with `ValueUnion` types.
     var dictionaryWithValueUnionTypes: Any? {
         switch self {
         case .double(let double):
@@ -772,6 +796,9 @@ public enum ValueUnion: Codable, Hashable {
         }
     }
 
+    /// Creates a new `ValueUnion` by decoding from the given decoder.
+    ///
+    /// - Parameter decoder: The decoder to decode data from.
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let x = try? container.decode(Double.self) {
@@ -800,7 +827,10 @@ public enum ValueUnion: Codable, Hashable {
         }
         throw DecodingError.typeMismatch(ValueUnion.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for ValueUnion"))
     }
-
+    
+    /// Encodes this `ValueUnion` into the given encoder.
+    ///
+    /// - Parameter encoder: The encoder to write data to.
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
