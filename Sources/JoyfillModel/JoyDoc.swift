@@ -481,41 +481,65 @@ public struct Metadata {
         self.dictionary = metadata
     }
 
+    /// A Boolean property that indicates whether there are deficiencies in the metadata.
+    ///
+    /// If `deficiencies` is set to `true`, it means there are deficiencies present.
     public var deficiencies: Bool? {
         get { dictionary["deficiencies"] as? Bool }
         set { dictionary["deficiencies"] = newValue }
     }
 
+    /// A Boolean property that indicates whether importing is blocked for the metadata.
+    ///
+    /// If `blockImport` is set to `true`, importing is blocked.
     public var blockImport: Bool? {
         get { dictionary["blockImport"] as? Bool }
         set { dictionary["blockImport"] = newValue }
     }
 
+    /// A Boolean property that indicates whether auto-population is blocked for the metadata.
+    ///
+    /// If `blockAutoPopulate` is set to `true`, auto-population is blocked.
     public var blockAutoPopulate: Bool? {
         get { dictionary["blockAutoPopulate"] as? Bool }
         set { dictionary["blockAutoPopulate"] = newValue }
     }
 
+    /// A Boolean property that indicates whether a deficiency title is required for the metadata.
+    ///
+    /// If `requireDeficiencyTitle` is set to `true`, a deficiency title is required.
     public var requireDeficiencyTitle: Bool? {
         get { dictionary["requireDeficiencyTitle"] as? Bool }
         set { dictionary["requireDeficiencyTitle"] = newValue }
     }
 
+    /// A Boolean property that indicates whether a deficiency description is required for the metadata.
+    ///
+    /// If `requireDeficiencyDescription` is set to `true`, a deficiency description is required.
     public var requireDeficiencyDescription: Bool? {
         get { dictionary["requireDeficiencyDescription"] as? Bool }
         set { dictionary["requireDeficiencyDescription"] = newValue }
     }
 
+    /// A Boolean property that indicates whether a deficiency photo is required for the metadata.
+    ///
+    /// If `requireDeficiencyPhoto` is set to `true`, a deficiency photo is required.
     public var requireDeficiencyPhoto: Bool? {
         get { dictionary["requireDeficiencyPhoto"] as? Bool }
         set { dictionary["requireDeficiencyPhoto"] = newValue }
     }
 
+    /// The list associated with the metadata.
+    ///
+    /// The `list` property represents the list associated with the metadata.
     public var list: String? {
         get { dictionary["list"] as? String }
         set { dictionary["list"] = newValue }
     }
 
+    /// The list column associated with the metadata.
+    ///
+    /// The `listColumn` property represents the list column associated with the metadata.
     public var listColumn: String? {
         get { dictionary["listColumn"] as? String }
         set { dictionary["listColumn"] = newValue }
