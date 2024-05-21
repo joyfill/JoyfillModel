@@ -1068,9 +1068,13 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 }
 
 // MARK: - Point
+/// A struct representing a point with x and y coordinates.
 public struct Point: Codable {
     var dictionary = [String: ValueUnion]()
 
+    /// Initializes a new instance of `Point` from a decoder.
+    /// - Parameter decoder: The decoder to read data from.
+    /// - Throws: An error if the decoding process fails.
     public init(from decoder: Decoder) throws {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             // Handle the error or return an appropriate value
@@ -1082,6 +1086,9 @@ public struct Point: Codable {
         }
     }
 
+    /// Encodes the `Point` instance into the given encoder.
+    /// - Parameter encoder: The encoder to write data to.
+    /// - Throws: An error if the encoding process fails.
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         for (key, value) in dictionary {
@@ -1091,20 +1098,27 @@ public struct Point: Codable {
         }
     }
 
+    /// The coding keys used for encoding and decoding.
     enum CodingKeys: String, CodingKey {
         case _id, label, y, x
     }
 
+    /// Initializes a new instance of `Point` with a dictionary of values.
+    /// - Parameter dictionary: The dictionary of values to initialize the `Point` instance.
     public init(dictionary: [String: Any] = [:]) {
         dictionary.forEach { (key: String, value: Any) in
             self.dictionary[key] = ValueUnion(value: value)
         }
     }
 
+    /// Initializes a new instance of `Point` from a `ValueElement`.
+    /// - Parameter valueElement: The `ValueElement` to initialize the `Point` instance.
     init(valueElement: ValueElement) {
         self.dictionary = valueElement.dictionary
     }
 
+    /// Initializes a new instance of `Point` with the given id.
+    /// - Parameter id: The id of the `Point`.
     public init(id: String) {
         self.id = id
         self.x = 0
@@ -1112,6 +1126,10 @@ public struct Point: Codable {
         self.label = ""
     }
 
+    /// Sets the value for a given key in the `Point` dictionary.
+    /// - Parameters:
+    ///   - value: The value to set.
+    ///   - key: The key to set the value for.
     mutating func setValue(_ value: String?, key: String) {
         guard let value = value else {
             return
@@ -1120,6 +1138,10 @@ public struct Point: Codable {
         self.dictionary[key] = .string(value)
     }
 
+    /// Sets the value for a given key in the `Point` dictionary.
+    /// - Parameters:
+    ///   - value: The value to set.
+    ///   - key: The key to set the value for.
     mutating func setValue(_ value: CGFloat?, key: String) {
         guard let value = value else {
             return
@@ -1127,16 +1149,19 @@ public struct Point: Codable {
         self.dictionary[key] = .double(value)
     }
 
+    /// The id of the `Point`.
     public var id: String? {
         get { (dictionary["_id"] as? ValueUnion)?.text }
         set { setValue(newValue, key: "_id") }
     }
 
+    /// The label of the `Point`.
     public var label: String? {
         get { (dictionary["label"] as? ValueUnion)?.text }
         set { setValue(newValue, key: "label") }
     }
 
+    /// The y-coordinate of the `Point`.
     public var y: CGFloat? {
         get {
             guard let valueUnion = (dictionary["y"] as? ValueUnion)?.number else { return nil }
@@ -1145,6 +1170,7 @@ public struct Point: Codable {
         set { setValue(newValue, key: "y") }
     }
 
+    /// The x-coordinate of the `Point`.
     public var x: CGFloat? {
         get {
             guard let valueUnion = (dictionary["x"] as? ValueUnion)?.number else { return nil }
