@@ -857,9 +857,15 @@ public enum ValueUnion: Codable, Hashable {
 }
 
 // MARK: - ValueElement
+/// A struct representing a value element.
+///
+/// It uses a dictionary to store various properties of the value element. Each property is accessed and modified using computed properties.
 public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
+    
+    /// The dictionary that stores the properties of the value element.
     var dictionary = [String: ValueUnion]()
 
+    /// The dictionary representation of the `ValueElement` with `Any` types.
     public var anyDictionary: [String: Any] {
         var dict = [String: Any]()
         dictionary.forEach { (key: String, value: ValueUnion) in
@@ -868,16 +874,29 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         return dict
     }
 
+    /// Checks if two value elements are equal.
+    ///
+    /// - Parameters:
+    ///   - lhs: The left-hand side value element.
+    ///   - rhs: The right-hand side value element.
+    /// - Returns: `true` if the value elements are equal, `false` otherwise.
     public static func == (lhs: ValueElement, rhs: ValueElement) -> Bool {
         lhs.id == rhs.id
     }
 
+    /// Initializes a value element with a dictionary.
+    ///
+    /// - Parameter dictionary: The dictionary to initialize the value element with. Default value is an empty dictionary.
     public init(dictionary: [String: Any] = [:]) {
         dictionary.forEach { (key: String, value: Any) in
             self.dictionary[key] = ValueUnion(value: value)
         }
     }
 
+    /// Initializes a value element from a decoder.
+    ///
+    /// - Parameter decoder: The decoder to decode the value element from.
+    /// - Throws: An error if the decoding process fails.
     public init(from decoder: Decoder) throws {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             // Handle the error or return an appropriate value
@@ -889,6 +908,10 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         }
     }
 
+    /// Encodes the value element into an encoder.
+    ///
+    /// - Parameter encoder: The encoder to encode the value element into.
+    /// - Throws: An error if the encoding process fails.
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         for (key, value) in dictionary {
@@ -899,10 +922,19 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         }
     }
 
+    /// The coding keys used for encoding and decoding the value element.
     enum CodingKeys: String, CodingKey {
         case _id, url, fileName, filePath, deleted, title, description, points, cells
     }
 
+    /// Initializes a value element with an ID, deleted flag, description, title, and points.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the value element.
+    ///   - deleted: A flag indicating if the value element is deleted. Default value is `false`.
+    ///   - description: The description of the value element. Default value is an empty string.
+    ///   - title: The title of the value element. Default value is an empty string.
+    ///   - points: The points associated with the value element. Default value is `nil`.
     public init(id: String, deleted: Bool = false, description: String = "", title: String = "", points: [Point]?) {
         self.id = id
         self.points = points
@@ -911,11 +943,21 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         self.title = ""
     }
 
+    /// Initializes a value element with an ID and URL.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the value element.
+    ///   - url: The URL of the value element. Default value is `nil`.
     public init(id: String, url: String? = nil) {
         self.id = id
         self.url = url
     }
 
+    /// Sets a string value for a given key in the value element's dictionary.
+    ///
+    /// - Parameters:
+    ///   - value: The string value to set.
+    ///   - key: The key to set the value for.
     mutating func setValue(_ value: String?, key: String) {
         guard let value = value else {
             return
@@ -923,6 +965,11 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         self.dictionary[key] = .string(value)
     }
 
+    /// Sets a boolean value for a given key in the value element's dictionary.
+    ///
+    /// - Parameters:
+    ///   - value: The boolean value to set.
+    ///   - key: The key to set the value for.
     mutating func setValue(_ value: Bool?, key: String) {
         guard let value = value else {
             return
@@ -930,44 +977,52 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         self.dictionary[key] = .bool(value)
     }
 
+    /// The ID of the value element.
     public var id: String? {
         get { (dictionary["_id"] as? ValueUnion)?.text}
         set { setValue(newValue, key: "_id") }
     }
 
+    /// The URL of the value element.
     public var url: String? {
         get { (dictionary["url"] as? ValueUnion)?.text}
         set { setValue(newValue, key: "url") }
     }
 
+    /// The file name of the value element.
     public var fileName: String? {
         get { (dictionary["fileName"] as? ValueUnion)?.text}
         set { setValue(newValue, key: "fileName") }
     }
 
+    /// The file path of the value element.
     public var filePath: String? {
         get { (dictionary["filePath"] as? ValueUnion)?.text}
         set { setValue(newValue, key: "filePath") }
     }
 
+    /// A flag indicating if the value element is deleted.
     public var deleted: Bool? {
         get { (dictionary["deleted"] as? ValueUnion)?.bool}
         set { setValue(newValue, key: "deleted") }
 
     }
 
+    /// The title of the value element.
     public var title: String? {
         get { (dictionary["title"] as? ValueUnion)?.text}
 
         set { setValue(newValue, key: "title") }
     }
 
+    /// The description of the value element.
     public var description: String? {
         get { (dictionary["description"] as? ValueUnion)?.text}
 
         set { setValue(newValue, key: "description") }
     }
 
+    /// The points associated with the value element.
     public var points: [Point]? {
         get {
             let value = ((dictionary["points"] as? ValueUnion)?.dictionaryWithValueUnionTypes as? [ValueElement])
@@ -994,6 +1049,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         }
     }
 
+    /// The cells associated with the value element.
     public var cells: [String: ValueUnion]? {
         get {
             let value = dictionary["cells"] as? ValueUnion
@@ -1005,6 +1061,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         }
     }
 
+    /// Sets the deleted flag to `true`.
     public mutating func setDeleted() {
         deleted = true
     }
