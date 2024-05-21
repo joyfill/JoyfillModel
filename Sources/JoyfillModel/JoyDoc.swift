@@ -1,58 +1,87 @@
 import Foundation
-
-// MARK: - JoyDoc
+/// Represents a Joy document.
+///
+/// Use the `JoyDoc` struct to create and manipulate Joy documents.
 public struct JoyDoc {
+    /// A structure representing a Joy document.
+    /// The dictionary representation of the Joy document.
     public var dictionary: [String: Any]
-
+    
+    /// Initializes a new Joy document with the given dictionary.
+    /// - Parameter dictionary: The dictionary representation of the Joy document. Default value is an empty dictionary.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
-
+    
+    /// The unique identifier of the Joy document.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
+    
+    /// The type of the Joy document.
     public var type: String? {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
+    
+    /// The stage of the Joy document.
     public var stage: String? {
         get { dictionary["stage"] as? String }
         set { dictionary["stage"] = newValue }
     }
+    
+    /// The source of the Joy document.
     public var source: String? {
         get { dictionary["source"] as? String }
         set { dictionary["source"] = newValue }
     }
+    
+    /// The identifier of the Joy document.
     public var identifier: String? {
         get { dictionary["identifier"] as? String }
         set { dictionary["identifier"] = newValue }
     }
+    
+    /// The name of the Joy document.
     public var name: String? {
         get { dictionary["name"] as? String }
         set { dictionary["name"] = newValue }
     }
+    
+    /// The creation timestamp of the Joy document.
     public var createdOn: Int? {
         get { dictionary["createdOn"] as? Int }
         set { dictionary["createdOn"] = newValue }
     }
 
+    /// The metadata of the Joy document.
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
         set { dictionary["metadata"] = newValue?.dictionary }
     }
+    
+    /// The files associated with the Joy document.
     public var files: [File] {
         get { (dictionary["files"] as? [[String: Any]])?.compactMap(File.init) ?? [] }
         set { dictionary["files"] = newValue.compactMap { $0.dictionary } }
     }
+    
+    /// The fields of the Joy document.
     public var fields: [JoyDocField] {
         get { (dictionary["fields"] as? [[String: Any]])?.compactMap(JoyDocField.init) ?? [] }
         set { dictionary["fields"] = newValue.compactMap { $0.dictionary } }
     }
+    
+    /// The categories associated with the Joy document.
+    ///
+    /// Use this property to get or set the categories of the Joy document.
     public var categories: [JSONAny]? {
         mutating get { getValue(key: "categories") }
         mutating set { setValue(newValue, key: "categories") }
     }
+    
+    /// A flag indicating whether the Joy document is deleted or not.
     public var deleted: Bool? {
         get { dictionary["deleted"] as? Bool }
         set { dictionary["deleted"] = newValue }
@@ -60,6 +89,11 @@ public struct JoyDoc {
 }
 
 extension JoyDoc {
+    /// Sets the value for a given key in the Joy document dictionary.
+    ///
+    /// - Parameters:
+    ///   - value: The value to be set. This value should be an array of `JSONAny` objects.
+    ///   - key: The key for which the value should be set.
     mutating private func setValue(_ value: [JSONAny]?, key: String) {
         guard let value = value else {
             return
@@ -69,6 +103,11 @@ extension JoyDoc {
         }
         self.dictionary[key] = try? JSONDecoder().decode(JSONAny.self, from: data)
     }
+    
+    /// Retrieves the value for a given key from the Joy document dictionary.
+    ///
+    /// - Parameter key: The key for which the value should be retrieved.
+    /// - Returns: The value associated with the given key, or `nil` if the key does not exist or the value cannot be decoded.
     mutating private func getValue(key: String) -> [JSONAny]? {
         guard let value = dictionary[key] as? [String: Any] else {
             return nil
@@ -81,48 +120,62 @@ extension JoyDoc {
 }
 
 // MARK: - File
+/// Represents a file.
+///
+/// Use the `File` struct to work with file objects. It provides a dictionary representation of the file.
 public struct File {
+    /// The dictionary representation of the file.
     public var dictionary: [String: Any]
 
+    /// Initializes a new instance of the `File` struct.
+    /// - Parameter dictionary: The dictionary representation of the file. Default value is an empty dictionary.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
 
+    /// The ID of the file.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 
+    /// The metadata of the file.
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
         set { dictionary["metadata"] = newValue?.dictionary }
     }
 
+    /// The name of the file.
     public var name: String? {
         get { dictionary["name"] as? String }
         set { dictionary["name"] = newValue }
     }
 
+    /// The version of the file.
     public var version: Int? {
         get { dictionary["version"] as? Int }
         set { dictionary["version"] = newValue }
     }
 
+    /// The styles metadata of the file.
     public var styles: Metadata? {
         get { Metadata.init(dictionary: dictionary["styles"] as? [String: Any])}
         set { dictionary["styles"] = newValue?.dictionary }
     }
 
+    /// The pages of the file.
     public var pages: [Page]? {
         get { (dictionary["pages"] as? [[String: Any]])?.compactMap(Page.init) }
         set { dictionary["pages"] = newValue?.compactMap{ $0.dictionary } }
     }
 
+    /// The order of the pages in the file.
     public var pageOrder: [String]? {
         get { dictionary["pageOrder"] as? [String] }
         set { dictionary["pageOrder"] = newValue }
     }
 
+    /// The views of the file.
     public var views: [ModelView]? {
         get { (dictionary["views"] as? [[String: Any]])?.compactMap(ModelView.init) ?? [] }
         set { dictionary["views"] = newValue?.compactMap{ $0.dictionary } }
@@ -130,136 +183,174 @@ public struct File {
 }
 
 // MARK: - JoyDocField
+/// Represents a field in a Joy document.
 public struct JoyDocField: Equatable {
     public static func == (lhs: JoyDocField, rhs: JoyDocField) -> Bool {
         lhs.id == rhs.id
     }
     public var dictionary: [String: Any]
-
+    
     public init(field: [String: Any] = [:]) {
         self.dictionary = field
     }
-
+    /// The type of the field.
     public var type: String? {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
-
+    
+    /// The ID of the field.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
-
+    
+    /// The identifier of the field.
     public var identifier: String? {
         get { dictionary["identifier"] as? String }
         set { dictionary["identifier"] = newValue }
     }
-
+    
+    /// The title of the field.
     public var title: String? {
         get { dictionary["title"] as? String }
         set { dictionary["title"] = newValue }
     }
-
+    
+    /// The description of the field.
     public var description: String? {
         get { dictionary["description"] as? String }
         set { dictionary["description"] = newValue }
     }
-
+    
+    /// The value of the field.
     public var value: ValueUnion? {
         get { ValueUnion.init(valueFromDcitonary: dictionary)}
         set { dictionary["value"] = newValue?.dictionary }
     }
-
+    
+    /// Indicates if the field is required.
     public var required: Bool? {
         get { dictionary["required"] as? Bool }
         set { dictionary["required"] = newValue }
     }
-
+    
+    /// Indicates if the field is disabled.
     public var disabled: Bool? {
         get { dictionary["disabled"] as? Bool }
         set { dictionary["disabled"] = newValue }
     }
-
+    
+    /// The metadata of the field.
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
         set { dictionary["metadata"] = newValue?.dictionary }
     }
-
+    
+    /// The file associated with the field.
     public var file: String? {
         get { dictionary["file"] as? String }
         set { dictionary["file"] = newValue }
     }
-
+    
+    /// The options array available for the field.
     public var options: [Option]? {
         get { (dictionary["options"] as? [[String: Any]])?.compactMap(Option.init) ?? [] }
         set { dictionary["options"] = newValue?.compactMap{ $0.dictionary } }
     }
-
+    
+    /// The title of the tip for the field.
     public var tipTitle: String? {
         get { dictionary["tipTitle"] as? String }
         set { dictionary["tipTitle"] = newValue }
     }
-
+    
+    /// The description of the tip for the field.
     public var tipDescription: String? {
         get { dictionary["tipDescription"] as? String }
         set { dictionary["tipDescription"] = newValue }
     }
-
+    
+    /// Indicates if the tip for the field is visible.
     public var tipVisible: Bool? {
         get { dictionary["tipVisible"] as? Bool }
         set { dictionary["tipVisible"] = newValue }
     }
-
+    
+    /// A Boolean property that indicates whether the field supports multiple values.
+    ///
+    /// If `multi` is set to `true`, the field allows multiple functionalities such as:
+    /// - Uploading multiple images at once.
+    /// - Selecting multiple options in a multi-select field.
+    ///
+    /// The default value is `false`.
+    ///
+    /// Usage:
+    /// ```
+    /// var field = Field()
+    /// field.multi = true
+    /// ```
+    ///
+    /// - Note: The actual behavior and usage of this property may vary depending on the context in which it's used.
     public var multi: Bool? {
         get { dictionary["multi"] as? Bool }
         set { dictionary["multi"] = newValue }
     }
-
+    
+    /// The title of the y-axis for the chart field.
     public var yTitle: String? {
         get { dictionary["yTitle"] as? String }
         set { dictionary["yTitle"] = newValue }
     }
-
+    
+    /// The maximum value of the y-axis for the chart field.
     public var yMax: Int? {
         get { dictionary["yMax"] as? Int }
         set { dictionary["yMax"] = newValue }
     }
-
+    
+    /// The minimum value of the y-axis for the chart field.
     public var yMin: Int? {
         get { dictionary["yMin"] as? Int }
         set { dictionary["yMin"] = newValue }
     }
-
+    
+    /// The title of the x-axis for the chart field.
     public var xTitle: String? {
         get { dictionary["xTitle"] as? String }
         set { dictionary["xTitle"] = newValue }
     }
-
+    
+    /// The maximum value of the x-axis for the chart field.
     public var xMax: Int? {
         get { dictionary["xMax"] as? Int }
         set { dictionary["xMax"] = newValue }
     }
-
+    
+    /// The minimum value of the x-axis for the chart field.
     public var xMin: Int? {
         get { dictionary["xMin"] as? Int }
         set { dictionary["xMin"] = newValue }
     }
-
+    
+    /// The order of the rows in the table field.
     public var rowOrder: [String]? {
         get { dictionary["rowOrder"] as? [String] }
         set { dictionary["rowOrder"] = newValue }
     }
-
+    
+    /// The columns of the field in a table.
     public var tableColumns: [FieldTableColumn]? {
         get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
     }
-
+    
+    /// The order of the columns in the field table.
     public var tableColumnOrder: [String]? {
         get { dictionary["tableColumnOrder"] as? [String] }
         set { dictionary["tableColumnOrder"] = newValue }
     }
-
+    
     enum CodingKeys: String, CodingKey {
         case type
         case id = "_id"
@@ -268,7 +359,8 @@ public struct JoyDocField: Equatable {
         case disabled, metadata, file, options, multi, yTitle, yMax, yMin, xTitle, xMax, xMin, rowOrder, tableColumns, tableColumnOrder
         case tipTitle, tipDescription, tipVisible
     }
-
+    
+    /// Returns the value of the field as an array of `ValueElement` objects.
     public var valueToValueElements: [ValueElement]? {
         switch value {
         case .valueElementArray(let array):
@@ -277,34 +369,46 @@ public struct JoyDocField: Equatable {
             return nil
         }
     }
-
+    
+    /// Deletes a row with the specified ID from the table field.
     public mutating func deleteRow(id: String) {
         guard var elements = valueToValueElements, let index = elements.firstIndex(where: { $0.id == id }) else {
             return
         }
-
+        
         var element = elements[index]
         element.setDeleted()
         elements[index] = element
-
+        
         self.value = ValueUnion.valueElementArray(elements)
     }
-
+    
+    /// Adds a new row with the specified ID to the table field.
     public mutating func addRow(id: String) {
         guard var elements = valueToValueElements else {
             return
         }
-
+        
         elements.append(ValueElement(id: id))
         self.value = ValueUnion.valueElementArray(elements)
         rowOrder?.append(id)
     }
-
+    
+    /// A function that updates the cell value when a change is detected.
+    ///
+    /// This function is called when a cell's value is edited. It updates the corresponding cell in the `elements` array based on the `rowId` and `colIndex` provided. The type of the `editedCell` determines how the cell is updated.
+    ///
+    /// - Parameters:
+    ///   - rowId: The ID of the row containing the cell to be updated.
+    ///   - colIndex: The index of the column containing the cell to be updated.
+    ///   - editedCell: The cell that has been edited.
+    ///
+    /// - Note: The `editedCell` parameter is of type `FieldTableColumn`, which includes properties such as `type`, `id`, `title`, `defaultDropdownSelectedId`, and `images`.
     public mutating func cellDidChange(rowId: String, colIndex: Int, editedCell: FieldTableColumn) {
         guard var elements = valueToValueElements, let index = elements.firstIndex(where: { $0.id == rowId }) else {
             return
         }
-
+        
         switch editedCell.type {
         case "text":
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
@@ -316,7 +420,18 @@ public struct JoyDocField: Equatable {
             return
         }
     }
-
+    
+    /// A private function that updates the cell value in the elements array.
+    ///
+    /// This function is called when a cell's value is edited. It updates the corresponding cell in the `elements` array based on the `index` and `editedCellId` provided. The new cell value is determined by the `newCell` parameter.
+    ///
+    /// - Parameters:
+    ///   - elements: The array of `ValueElement` objects containing the cells to be updated.
+    ///   - index: The index of the element in the array to be updated.
+    ///   - editedCellId: The ID of the cell to be updated.
+    ///   - newCell: The new value for the cell.
+    ///
+    /// - Note: After updating the cell, the function updates the `value` property of the instance with the new `elements` array.
     private mutating func changeCell(elements: [ValueElement], index: Int, editedCellId: String?, newCell: ValueUnion) {
         var elements = elements
         if var cells = elements[index].cells {
@@ -325,21 +440,28 @@ public struct JoyDocField: Equatable {
         } else {
             elements[index].cells = [editedCellId ?? "" : newCell]
         }
-
+        
         self.value = ValueUnion.valueElementArray(elements)
     }
-
+    
 }
 
+/// Represents the configuration for a chart axis.
 public struct ChartAxisConfiguration: Equatable{
+    /// The title of the y-axis.
     public var yTitle: String?
+    /// The maximum value of the y-axis.
     public var yMax, yMin: Int?
+    /// The title of the x-axis.
     public var xTitle: String?
+    /// The maximum value of the x-axis.
     public var xMax, xMin: Int?
 
     enum CodingKeys: String, CodingKey {
         case yTitle, yMax, yMin, xTitle, xMax, xMin
     }
+
+    /// Initializes a new `ChartAxisConfiguration` object.
     public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
         self.yTitle = yTitle
         self.yMax = yMax

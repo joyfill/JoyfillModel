@@ -1,9 +1,3 @@
-//
-//  DocumentModel.swift
-//  JoyFill
-//
-//
-
 import Foundation
 
 public struct Document: Codable, Hashable {
