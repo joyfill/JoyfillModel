@@ -467,10 +467,30 @@ public protocol FormChangeEvent {
 }
 
 public protocol FormChangeEventInternal {
+    
+    /// A method that is called when a field's value changes.
+    /// - Parameter event: The `FieldChangeEvent` object that contains information about the field change event.
     func onChange(event: FieldChangeEvent)
+    
+    /// Adds a row to the form with the specified field change event.
+    ///
+    /// - Parameters:
+    ///   - event: The field change event containing the necessary information for adding a row.
     func addRow(event: FieldChangeEvent)
+    
+    /// Notifies the form view that it has received focus.
+    ///
+    /// - Parameter event: The field event associated with the focus.
     func onFocus(event: FieldEvent)
+    
+    /// Calls the `onBlur` event handler with the specified `event`.
+    ///
+    /// - Parameter event: The `FieldEvent` to pass to the `onBlur` event handler.
     func onBlur(event: FieldEvent)
+    
+    /// Calls the `onUpload` method of the `events` object, passing the provided `event`.
+    ///
+    /// - Parameter event: The `UploadEvent` to be passed to the `onUpload` method.
     func onUpload(event:UploadEvent)
 }
 
