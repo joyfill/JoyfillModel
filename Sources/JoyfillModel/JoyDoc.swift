@@ -585,53 +585,67 @@ public struct Option: Identifiable {
 }
 
 // MARK: - FieldTableColumn
+/// `FieldTableColumn` is a structure that represents a table column in a field.
+///
+///  It uses a dictionary to store various properties of the column. Each property is accessed and modified using computed properties.
 public struct FieldTableColumn {
     var dictionary: [String: Any]
 
+    /// Initializes a new `FieldTableColumn` with the given dictionary.
+    /// - Parameter dictionary: The dictionary representing the column. Default value is an empty dictionary.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
 
+    /// The ID of the column.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 
+    /// The type of the column.
     public var type: String? {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
 
+    /// The title of the column.
     public var title: String? {
         get { dictionary["title"] as? String }
         set { dictionary["title"] = newValue }
     }
 
+    /// The width of the column.
     public var width: Int? {
         get { dictionary["width"] as? Int }
         set { dictionary["width"] = newValue }
     }
 
+    /// The identifier of the column.
     public var identifier: String? {
         get { dictionary["identifier"] as? String }
         set { dictionary["identifier"] = newValue }
     }
 
+    /// The options associated with the column.
     public var options: [Option]? {
         get { (dictionary["options"] as? [[String: Any]])?.compactMap(Option.init) ?? [] }
         set { dictionary["options"] = newValue?.compactMap{ $0.dictionary } }
     }
 
+    /// The value of the column.
     public var value: String? {
         get { dictionary["value"] as? String }
         set { dictionary["value"] = newValue }
     }
 
+    /// The default selected ID for dropdown options.
     public var defaultDropdownSelectedId: String? {
         get { dictionary["defaultDropdownSelectedId"] as? String }
         set { dictionary["defaultDropdownSelectedId"] = newValue }
     }
 
+    /// The images associated with the column.
     public var images: [ValueElement]? {
         get { (dictionary["images"] as? [[String: Any]])?.compactMap(ValueElement.init) ?? [] }
         set { dictionary["images"] = newValue?.compactMap{ $0.dictionary } }
