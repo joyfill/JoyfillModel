@@ -1181,83 +1181,101 @@ public struct Point: Codable {
 }
 
 // MARK: - Page
+/// Represents a page in a document.
 public struct Page {
     var dictionary: [String: Any]
 
+    /// Initializes a new `Page` instance with the given dictionary.
+    /// - Parameter dictionary: The dictionary representing the page.
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
     }
 
+    /// The name of the page.
     public var name: String? {
         get { dictionary["name"] as? String }
         set { dictionary["name"] = newValue }
     }
 
+    /// The positions of the fields on the page.
     public var fieldPositions: [FieldPosition]? {
         get { (dictionary["fieldPositions"] as? [[String: Any]])?.compactMap(FieldPosition.init) ?? [] }
         set { dictionary["fieldPositions"] = newValue?.compactMap{ $0.dictionary } }
     }
 
+    /// The metadata associated with the page.
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
         set { dictionary["metadata"] = newValue?.dictionary }
     }
 
+    /// The width of the page.
     public var width: Double? {
         get { dictionary["width"] as? Double }
         set { dictionary["width"] = newValue }
     }
 
+    /// The height of the page.
     public var height: Double? {
         get { dictionary["height"] as? Double }
         set { dictionary["height"] = newValue }
     }
 
+    /// The number of columns in the page.
     public var cols: Double? {
         get { dictionary["cols"] as? Double }
         set { dictionary["cols"] = newValue }
     }
 
+    /// The height of each row in the page.
     public var rowHeight: Double? {
         get { dictionary["rowHeight"] as? Double }
         set { dictionary["rowHeight"] = newValue }
     }
 
+    /// The layout of the page.
     public var layout: String? {
         get { dictionary["layout"] as? String }
         set { dictionary["layout"] = newValue }
     }
 
+    /// The presentation style of the page.
     public var presentation: String? {
         get { dictionary["presentation"] as? String }
         set { dictionary["presentation"] = newValue }
     }
 
+    /// The margin of the page.
     public var margin: Double? {
         get { dictionary["margin"] as? Double }
         set { dictionary["margin"] = newValue }
     }
 
+    /// The padding of the page.
     public var padding: Double? {
         get { dictionary["padding"] as? Double }
         set { dictionary["padding"] = newValue }
     }
 
+    /// The border width of the page.
     public var borderWidth: Double? {
         get { dictionary["borderWidth"] as? Double }
         set { dictionary["borderWidth"] = newValue }
     }
 
+    /// The ID of the page.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 
+    /// The background image of the page.
     public var backgroundImage: String? {
         get { dictionary["backgroundImage"] as? String }
         set { dictionary["backgroundImage"] = newValue }
     }
 
+    /// Indicates whether the page is hidden.
     public var hidden: Bool? {
         get { dictionary["hidden"] as? Bool }
         set { dictionary["hidden"] = newValue }
