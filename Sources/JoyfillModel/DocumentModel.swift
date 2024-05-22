@@ -349,6 +349,12 @@ public extension ValueUnion {
     }
 }
 
+/// Converts an ISO8601 formatted string to a time string.
+///
+/// - Parameters:
+///   - iso8601String: The ISO8601 formatted string representing a date and time.
+///
+/// - Returns: A formatted time string in the format "hh:mm a".
 public func getTimeFromISO8601Format(iso8601String: String) -> String {
     let dateFormatter = ISO8601DateFormatter()
     let instant = dateFormatter.date(from: iso8601String)
@@ -364,6 +370,13 @@ public func getTimeFromISO8601Format(iso8601String: String) -> String {
     return timeString
 }
 
+/// Converts a timestamp value in milliseconds to a formatted date string.
+///
+/// - Parameters:
+///   - value: The timestamp value in milliseconds.
+///   - format: The desired format for the date string. Supported formats are "MM/DD/YYYY", "hh:mma", and any other custom format.
+///
+/// - Returns: A formatted date string based on the provided timestamp value and format.
 public func timestampMillisecondsToDate(value: Int, format: String) -> String {
     let timestampMilliseconds: TimeInterval = TimeInterval(value)
     let date = Date(timeIntervalSince1970: timestampMilliseconds / 1000.0)
@@ -381,17 +394,32 @@ public func timestampMillisecondsToDate(value: Int, format: String) -> String {
     return formattedDate
 }
 
+/// Converts a given `Date` object to a timestamp in milliseconds.
+///
+/// - Parameter date: The `Date` object to be converted.
+/// - Returns: The timestamp in milliseconds.
 public func dateToTimestampMilliseconds(date: Date) -> Double {
     let timestampSeconds = date.timeIntervalSince1970
     let timestampMilliseconds = Double(timestampSeconds * 1000)
     return timestampMilliseconds
 }
 
+/// Represents an event related to a field in a document.
 public struct FieldEvent {
+    /// The field associated with the event.
     public let field: JoyDocField?
+    
+    /// The page associated with the event.
     public var page: Page?
+    
+    /// The file associated with the event.
     public var file: File?
     
+    /// Initializes a new instance of `FieldEvent`.
+    /// - Parameters:
+    ///   - field: The field associated with the event. Default value is `nil`.
+    ///   - page: The page associated with the event. Default value is `nil`.
+    ///   - file: The file associated with the event. Default value is `nil`.
     public init(field: JoyDocField? = nil, page: Page? = nil, file: File? = nil) {
         self.field = field
         self.page = page
@@ -399,10 +427,13 @@ public struct FieldEvent {
     }
 }
 
+/// `UploadEvent` is a structure that encapsulates an upload event in the JoyDoc system.
 public struct UploadEvent {
     public var field: JoyDocField
     public var page: Page?
     public var file: File?
+    
+    ///  A closure of type `([String]) -> Void` that handles the upload process.
     public var uploadHandler: ([String]) -> Void
     
     public init(field: JoyDocField, page: Page? = nil, file: File? = nil, uploadHandler: @escaping ([String]) -> Void) {
@@ -413,15 +444,25 @@ public struct UploadEvent {
       }
 }
 
+/// Represents the mode of a document.
 public enum Mode {
+    /// The fill mode allows modifying the document.
     case fill
+    
+    /// The readonly mode allows only reading the document.
     case readonly
 }
 
+/// A protocol that defines the interface for a form.
 public protocol FormInterface {
+    /// The document associated with the form.
     var document: JoyDoc { get }
+    
+    /// The mode of the form.
     var mode: Mode { get }
-    var events: FormChangeEvent? { get set}
+    
+    /// An optional closure that handles form change events.
+    var events: FormChangeEvent? { get set }
 }
 
 public struct FieldChangeEvent {
