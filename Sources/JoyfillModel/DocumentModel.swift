@@ -455,16 +455,14 @@ public enum Mode {
 
 /// A protocol that defines the interface for a form.
 public protocol FormInterface {
-    /// The document associated with the form.
     var document: JoyDoc { get }
-    
-    /// The mode of the form.
     var mode: Mode { get }
-    
-    /// An optional closure that handles form change events.
     var events: FormChangeEvent? { get set }
 }
 
+/// `FieldChangeEvent` is a structure that encapsulates the changes in a field.
+///
+/// It contains information about the position of the field, the field itself, the page containing the field, and the file associated with the field.
 public struct FieldChangeEvent {
     public let fieldPosition: FieldPosition
     public let field: JoyDocField?
@@ -479,66 +477,84 @@ public struct FieldChangeEvent {
     }
 }
 
+/// A struct representing a change in a document.
 public struct Change {
+    /// The dictionary representation of the change.
     public var dictionary = [String: Any]()
 
+    /// Initializes a `Change` instance with a dictionary.
+    /// - Parameter dictionary: The dictionary representation of the change.
     public init(dictionary: [String: Any]) {
         self.dictionary = dictionary
     }
 
+    /// The ID of the change.
     public var id: String? {
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
 
+    /// The version of the change.
     public var v: Int? {
         dictionary["v"] as? Int
     }
 
+    /// The SDK used for the change.
     public var sdk: String? {
         dictionary["sdk"] as? String
     }
 
+    /// The target of the change.
     public var target: String? {
         dictionary["target"] as? String
     }
 
+    /// The identifier of the change.
     public var identifier: String? {
         dictionary["identifier"] as? String
     }
 
+    /// The file ID associated with the change.
     public var fileId: String? {
         dictionary["fileId"] as? String
     }
 
+    /// The page ID associated with the change.
     public var pageId: String? {
         dictionary["pageId"] as? String
     }
 
+    /// The field ID associated with the change.
     public var fieldId: String? {
         dictionary["fieldId"] as? String
     }
 
+    /// The field identifier associated with the change.
     public var fieldIdentifier: String? {
         dictionary["fieldIdentifier"] as? String
     }
 
+    /// The field position ID associated with the change.
     public var fieldPositionId: String? {
         dictionary["fieldPositionId"] as? String
     }
 
+    /// The details of the change.
     public var change: [String: Any]? {
         dictionary["change"] as? [String: Any]
     }
 
+    /// The timestamp when the change was created.
     public var createdOn: Double? {
         dictionary["createdOn"] as? Double
     }
     
+    /// The title of the change.
     public var xTitle: String? {
         dictionary["xTitle"] as? String
     }
 
+    /// Initializes a `Change` instance with the provided values.
     public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
         dictionary["v"] = v
         dictionary["sdk"] = sdk
@@ -599,9 +615,11 @@ public protocol FormChangeEvent {
     func onUpload(event:UploadEvent)
 }
 
+/// `FormChangeEventInternal` is a protocol that defines the methods to handle form change events.
 public protocol FormChangeEventInternal {
     
     /// A method that is called when a field's value changes.
+    ///
     /// - Parameter event: The `FieldChangeEvent` object that contains information about the field change event.
     func onChange(event: FieldChangeEvent)
     
@@ -627,9 +645,26 @@ public protocol FormChangeEventInternal {
     func onUpload(event:UploadEvent)
 }
 
+/// A protocol that defines the field change events for a document.
 public protocol FieldChangeEvents {
+    
+    /// Notifies the conforming object when a field change event occurs.
+    ///
+    /// - Parameter event: The `FieldChangeEvent` object that represents the field change event.
     func onChange(event: FieldChangeEvent)
+    
+    /// Adds a new row to the document when a field change event occurs.
+    ///
+    /// - Parameter event: The `FieldChangeEvent` object that represents the field change event.
     func addRow(event: FieldChangeEvent)
+    
+    /// Notifies the conforming object when a field gains focus.
+    ///
+    /// - Parameter event: The `FieldEvent` object that represents the field event.
     func onFocus(event: FieldEvent)
-    func onUpload(event:UploadEvent)
+    
+    /// Notifies the conforming object when an upload event occurs.
+    ///
+    /// - Parameter event: The `UploadEvent` object that represents the upload event.
+    func onUpload(event: UploadEvent)
 }
