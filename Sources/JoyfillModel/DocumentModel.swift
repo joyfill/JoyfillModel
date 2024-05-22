@@ -125,26 +125,38 @@ public struct RetrieveGroup: Codable {
     }
 }
 
+/// `ListAllUsers` is a structure that represents a user.
+///
+/// It includes properties for the user's id, organization, type, identifier, creation date, first name, last name, and email.
 public struct ListAllUsers: Codable {
     public let id, organization, type, identifier: String
     public let createdOn: Int
     public let firstName, lastName, email: String
 
+    /// Coding keys for the `ListAllUsers` structure.
     public enum CodingKeys: String, CodingKey {
         case id = "_id"
         case organization, type, identifier, createdOn, firstName, lastName, email
     }
 }
 
+/// `ListAllUsersResponse` is a structure that represents a response containing a list of users.
+///
+/// It includes a property for the data which is an array of `ListAllUsers`.
 public struct ListAllUsersResponse: Codable {
+    /// The data of the response which is an array of `ListAllUsers`.
     public let data: [ListAllUsers]
 }
 
+/// `RetrieveUsers` is a structure that represents a user to be retrieved.
+///
+/// It includes properties for the user's id, organization, type, identifier, creation date, first name, last name, and email.
 public struct RetrieveUsers: Codable {
     public let id, organization, type, identifier: String
     public let createdOn: Int
     public let firstName, lastName, email: String
 
+    /// Coding keys for the `RetrieveUsers` structure.
     public enum CodingKeys: String, CodingKey {
         case id = "_id"
         case organization, type, identifier, createdOn, firstName, lastName, email
