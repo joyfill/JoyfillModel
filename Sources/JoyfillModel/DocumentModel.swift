@@ -163,6 +163,9 @@ public struct RetrieveUsers: Codable {
     }
 }
 
+/// `FieldTypes` is an enumeration that represents the types of fields.
+///
+/// It includes cases for text, multiSelect, dropdown, textarea, date, signature, block, number, chart, richText, table, and image.
 public enum FieldTypes: String, Codable {
     case text
     case multiSelect
@@ -178,12 +181,16 @@ public enum FieldTypes: String, Codable {
     case image
 }
 
+/// `DateFormatType` is an enumeration that represents the types of date formats.
+///
+/// It includes cases for dateOnly, timeOnly, dateTime, and empty. Each case has a corresponding date format.
 public enum DateFormatType: String {
     case dateOnly = "MM/DD/YYYY"
     case timeOnly = "hh:mma"
     case dateTime = "MM/DD/YYYY hh:mma"
     case empty = ""
     
+    /// The date format corresponding to the `DateFormatType`.
    public var dateFormat: String {
         switch self {
         case .dateOnly:
@@ -198,7 +205,10 @@ public enum DateFormatType: String {
     }
 }
 
+/// Extension on `ValueUnion` to provide computed properties and methods for different types of values.
 public extension ValueUnion {
+    
+    /// Returns the text value if the `ValueUnion` is a string, otherwise returns `nil`.
     var text: String? {
         switch self {
         case .string(let string):
@@ -208,6 +218,8 @@ public extension ValueUnion {
         }
     }
 
+    /// Returns the boolean value if the `ValueUnion` is a boolean, otherwise returns `nil`.
+    /// If the `ValueUnion` is a double, it returns `true` if the double value is not equal to 0, otherwise returns `false`.
     var bool: Bool? {
         switch self {
         case .bool(let bool):
@@ -219,6 +231,7 @@ public extension ValueUnion {
         }
     }
 
+    /// Returns the display text value if the `ValueUnion` is a string, otherwise returns `nil`.
     var displayText: String? {
         switch self {
         case .string(let string):
@@ -227,6 +240,8 @@ public extension ValueUnion {
             return nil
         }
     }
+    
+    /// Returns an array of image URLs if the `ValueUnion` is an array of `ValueElement`, otherwise returns `nil`.
     var imageURLs: [String]? {
         switch self {
         case .valueElementArray(let valueElements):
@@ -240,6 +255,7 @@ public extension ValueUnion {
         }
     }
     
+    /// Returns the signature URL value if the `ValueUnion` is a string, otherwise returns `nil`.
     var signatureURL: String? {
         switch self {
         case .string(let string):
@@ -249,6 +265,7 @@ public extension ValueUnion {
         }
     }
     
+    /// Returns the multiline text value if the `ValueUnion` is a string, otherwise returns `nil`.
     var multilineText: String? {
         switch self {
         case .string(let string):
@@ -258,6 +275,8 @@ public extension ValueUnion {
         }
     }
     
+    /// Returns the number value if the `ValueUnion` is a double.
+    /// If the `ValueUnion` is a boolean, it returns 1 if the boolean value is `true`, otherwise returns 0.
     var number: Double? {
         switch self {
         case .double(let int):
@@ -272,6 +291,7 @@ public extension ValueUnion {
         }
     }
 
+    /// Returns the dropdown value if the `ValueUnion` is a string, otherwise returns `nil`.
     var dropdownValue: String? {
         switch self {
         case .string(let string):
@@ -280,6 +300,8 @@ public extension ValueUnion {
             return nil
         }
     }
+    
+    /// Returns the selector value if the `ValueUnion` is a string, otherwise returns `nil`.
     var selector: String? {
         switch self {
         case .string(let string):
@@ -288,6 +310,8 @@ public extension ValueUnion {
             return nil
         }
     }
+    
+    /// Returns an array of strings if the `ValueUnion` is an array, otherwise returns `nil`.
     var multiSelector: [String]? {
         switch self {
         case .array(let array):
@@ -296,6 +320,11 @@ public extension ValueUnion {
             return nil
         }
     }
+    
+    /// Returns a formatted date and time string based on the `format` parameter.
+    /// If the `ValueUnion` is a string, it assumes the string is in ISO8601 format and converts it to the specified format.
+    /// If the `ValueUnion` is a double, it assumes the double value represents a timestamp in milliseconds and converts it to the specified format.
+    /// Returns `nil` if the `ValueUnion` is neither a string nor a double.
     func dateTime(format: String) -> String? {
         switch self {
         case .string(let string):
@@ -309,6 +338,7 @@ public extension ValueUnion {
         }
     }
     
+    /// Returns an array of `ValueElement` if the `ValueUnion` is an array of `ValueElement`, otherwise returns `nil`.
     var valueElements: [ValueElement]? {
         switch self {
         case .valueElementArray(let valueElements):
