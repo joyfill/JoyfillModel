@@ -1,20 +1,49 @@
 import Foundation
 
+/// `Document` is a struct that represents a document with its associated metadata and content.
+///
+/// It conforms to `Codable` and `Hashable` protocols.
 public struct Document: Codable, Hashable {
+    
+    /// Compares two `Document` instances for equality.
+    /// - Parameters:
+    ///   - lhs: The left-hand side `Document` instance.
+    ///   - rhs: The right-hand side `Document` instance.
+    /// - Returns: `true` if the two instances have the same `id`, `false` otherwise.
     public static func == (lhs: Document, rhs: Document) -> Bool {
         lhs.id == rhs.id
     }
     
+    /// The unique identifier of the document.
     public var _id: String
+    
+    /// The type of the document.
     public var type: String
+    
+    /// The identifier of the document.
     public var identifier: String
+    
+    /// The source of the document.
     public var source: String?
+    
+    /// The name of the document.
     public var name: String
+    
+    /// The stage of the document.
     public var stage: String
+    
+    /// The creation timestamp of the document.
     public var createdOn: Int
+    
+    /// The files associated with the document.
     public var files: [Files] = []
+    
+    /// Indicates whether the document is deleted or not.
     public var deleted: Bool
     
+    /// `Files` is a struct that represents a file in the document.
+    ///
+    /// It contains the file's unique identifier, version, name, page order and pages.
     public struct Files: Codable, Hashable {
         public let _id: String
         public let version: Int
@@ -23,6 +52,9 @@ public struct Document: Codable, Hashable {
         public let pages: [Pages]
     }
     
+    /// `Pages` is a struct that represents a page in the document.
+    ///
+    /// It contains the page's unique identifier, name, dimensions, layout, presentation, margin, padding and border width.
     public struct Pages: Codable, Hashable {
         public let _id: String
         public let name: String
@@ -38,15 +70,26 @@ public struct Document: Codable, Hashable {
     }
 }
 
+/// An extension of `Document` that conforms to the `Identifiable` protocol.
+///
+/// This allows `Document` to be used in SwiftUI views that require identifiable data, such as `List` and `ForEach`.
 extension Document: Identifiable {
+    /// The unique identifier of the document. This is the same as `_id`.
     public var id: String { _id }
 }
 
+/// `DocumentListResponse` is a struct that represents a response containing a list of documents.
+///
+/// It conforms to the `Codable` protocol, allowing it to be encoded to and decoded from a serialized format (e.g., JSON).
 public struct DocumentListResponse: Codable {
+    /// The array of `Document` objects contained in the response.
     public let data: [Document]
 }
 
 // MARK: - GroupData
+/// `GroupData` is a struct that represents the data of a group.
+///
+/// It contains the unique id, identifier, and title of the group.
 public struct GroupData: Codable {
     public let id, identifier, title: String
 
@@ -56,11 +99,17 @@ public struct GroupData: Codable {
     }
 }
 
+/// `GroupResponse` is a struct that represents a response containing a list of group data.
+///
+/// It contains an array of `GroupData` objects.
 public struct GroupResponse: Codable {
     public let data: [GroupData]
 }
 
 // MARK: - RetrieveGroup
+/// `RetrieveGroup` is a struct that represents a group to be retrieved.
+///
+/// It contains the unique id, organization, identifier, title, identifiers, creation timestamp, deletion flag, and version of the group.
 public struct RetrieveGroup: Codable {
     public let id, organization, identifier, title: String
     public let identifiers: [String]
@@ -68,6 +117,7 @@ public struct RetrieveGroup: Codable {
     public let deleted: Bool
     public let v: Int
 
+    /// Coding keys to map the JSON keys to the properties.
     public enum CodingKeys: String, CodingKey {
         case id = "_id"
         case organization, identifier, title, identifiers, createdOn, deleted
