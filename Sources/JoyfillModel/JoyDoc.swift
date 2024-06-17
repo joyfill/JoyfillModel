@@ -86,6 +86,29 @@ public struct JoyDoc {
         get { dictionary["deleted"] as? Bool }
         set { dictionary["deleted"] = newValue }
     }
+    
+    public var pages: [Page]? {
+        get {
+            if let views = self.files[0].views, !views.isEmpty, let view = views.first {
+                if let pages = view.pages {
+                    return pages
+                }
+            } else {
+                if let pages = self.files[0].pages {
+                    return pages
+                }
+            }
+            return nil
+        }
+        set {
+            if var views = self.files[0].views, !views.isEmpty {
+                views[0].pages = newValue
+                self.files[0].views = views
+            } else {
+                self.files[0].pages = newValue
+            }
+        }
+    }
 }
 
 extension JoyDoc {
@@ -197,6 +220,11 @@ public struct JoyDocField: Equatable {
     public var type: String? {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
+    }
+    /// Indicates if the field is hidden.
+    public var isHidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
     }
     
     /// The ID of the field.
@@ -1447,6 +1475,11 @@ public struct FieldPosition {
     public var borderRadius: Double? {
         get { dictionary["borderRadius"] as? Double }
         set { dictionary["borderRadius"] = newValue }
+    }
+    /// Indicates if the field is hidden.
+    public var isHidden: Bool? {
+        get { dictionary["isHidden"] as? Bool }
+        set { dictionary["isHidden"] = newValue }
     }
 }
 
