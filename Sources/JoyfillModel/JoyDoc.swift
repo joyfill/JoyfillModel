@@ -221,11 +221,6 @@ public struct JoyDocField: Equatable {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
-    /// Indicates if the field is hidden.
-    public var isHidden: Bool? {
-        get { dictionary["hidden"] as? Bool }
-        set { dictionary["hidden"] = newValue }
-    }
     
     /// The ID of the field.
     public var id: String? {
@@ -303,6 +298,16 @@ public struct JoyDocField: Equatable {
     public var tipVisible: Bool? {
         get { dictionary["tipVisible"] as? Bool }
         set { dictionary["tipVisible"] = newValue }
+    }
+    
+    public var logic: Logic? {
+        get { dictionary["logic"] as? Logic }
+        set { dictionary["logic"] = newValue }
+    }
+    
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
     }
     
     /// A Boolean property that indicates whether the field supports multiple values.
@@ -472,6 +477,78 @@ public struct JoyDocField: Equatable {
         self.value = ValueUnion.valueElementArray(elements)
     }
     
+}
+
+public struct Logic: Equatable{
+    public static func == (lhs: Logic, rhs: Logic) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public var dictionary: [String: Any]
+    
+    public init(field: [String: Any] = [:]) {
+        self.dictionary = field
+    }
+    
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    public var action: String? {
+        get { dictionary["action"] as? String }
+        set { dictionary["action"] = newValue }
+    }
+    
+    public var eval: String? {
+        get { dictionary["eval"] as? String }
+        set { dictionary["eval"] = newValue }
+    }
+    public var conditions: [Condition]? {
+        get { dictionary["conditions"] as? [Condition] }
+        set { dictionary["conditions"] = newValue }
+    }
+}
+
+public struct Condition: Equatable{
+    public static func == (lhs: Condition, rhs: Condition) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public var dictionary: [String: Any]
+    
+    public init(field: [String: Any] = [:]) {
+        self.dictionary = field
+    }
+    
+    public var id: String?{
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    public var file: String? {
+        get { dictionary["file"] as? String }
+        set { dictionary["file"] = newValue }
+    }
+    
+    public var page: String? {
+        get { dictionary["page"] as? String }
+        set { dictionary["page"] = newValue }
+    }
+    
+    public var field: String? {
+        get { dictionary["field"] as? String }
+        set { dictionary["field"] = newValue }
+    }
+    
+    public var condition: String? {
+        get { dictionary["condition"] as? String }
+        set { dictionary["condition"] = newValue }
+    }
+    
+    public var value: String? {
+        get { dictionary["value"] as? String }
+        set { dictionary["value"] = newValue }
+    }
 }
 
 /// Represents the configuration for a chart axis.
@@ -1477,8 +1554,8 @@ public struct FieldPosition {
         set { dictionary["borderRadius"] = newValue }
     }
     /// Indicates if the field is hidden.
-    public var isHidden: Bool? {
-        get { dictionary["isHidden"] as? Bool }
+    public var isHidden: Bool {
+        get { dictionary["isHidden"] as? Bool ?? false }
         set { dictionary["isHidden"] = newValue }
     }
 }
