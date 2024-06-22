@@ -301,12 +301,12 @@ public struct JoyDocField: Equatable {
     }
     
     public var logic: Logic? {
-        get { dictionary["logic"] as? Logic }
+        get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
         set { dictionary["logic"] = newValue }
     }
     
-    public var hidden: Bool? {
-        get { dictionary["hidden"] as? Bool }
+    public var hidden: Bool {
+        get { dictionary["hidden"] as? Bool ?? false }
         set { dictionary["hidden"] = newValue }
     }
     
@@ -486,7 +486,10 @@ public struct Logic: Equatable{
     
     public var dictionary: [String: Any]
     
-    public init(field: [String: Any] = [:]) {
+    public init?(field: [String: Any]?) {
+        guard let field = field else {
+            return nil
+        }
         self.dictionary = field
     }
     
@@ -504,7 +507,7 @@ public struct Logic: Equatable{
         set { dictionary["eval"] = newValue }
     }
     public var conditions: [Condition]? {
-        get { dictionary["conditions"] as? [Condition] }
+        get { (dictionary["conditions"] as? [[String: Any]])?.compactMap(Condition.init) ?? [] }
         set { dictionary["conditions"] = newValue }
     }
 }
@@ -516,7 +519,11 @@ public struct Condition: Equatable{
     
     public var dictionary: [String: Any]
     
-    public init(field: [String: Any] = [:]) {
+
+    public init?(field: [String: Any]?) {
+        guard let field = field else {
+            return nil
+        }
         self.dictionary = field
     }
     
@@ -544,10 +551,10 @@ public struct Condition: Equatable{
         get { dictionary["condition"] as? String }
         set { dictionary["condition"] = newValue }
     }
-    
-    public var value: String? {
-        get { dictionary["value"] as? String }
-        set { dictionary["value"] = newValue }
+
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
     }
 }
 
