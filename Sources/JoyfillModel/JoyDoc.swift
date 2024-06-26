@@ -305,8 +305,8 @@ public struct JoyDocField: Equatable {
         set { dictionary["logic"] = newValue }
     }
     
-    public var hidden: Bool {
-        get { dictionary["hidden"] as? Bool ?? false }
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool}
         set { dictionary["hidden"] = newValue }
     }
     
