@@ -497,6 +497,7 @@ public struct Logic: Equatable{
         get { dictionary["_id"] as? String }
         set { dictionary["_id"] = newValue }
     }
+
     public var action: String? {
         get { dictionary["action"] as? String }
         set { dictionary["action"] = newValue }
@@ -506,9 +507,23 @@ public struct Logic: Equatable{
         get { dictionary["eval"] as? String }
         set { dictionary["eval"] = newValue }
     }
+
     public var conditions: [Condition]? {
         get { (dictionary["conditions"] as? [[String: Any]])?.compactMap(Condition.init) ?? [] }
         set { dictionary["conditions"] = newValue }
+    }
+
+    public func isValid(conditionsResults: [Bool]) -> Bool {
+        if eval == "and" {
+            if conditionsResults.andConditionIsTrue {
+                return true
+            }
+        }  else {
+            if conditionsResults.orConditionIsTrue {
+                return true
+            } 
+        }
+        return false
     }
 }
 
@@ -1620,4 +1635,14 @@ public func generateObjectId() -> String {
 
     // Concatenate the timestamp hex and a portion of the random hex string to match the desired length
     return timestampHex + randomHex.prefix(16)
+}
+
+extension Array where Element == Bool {
+    var andConditionIsTrue: Bool {
+        return self.allSatisfy { $0 }
+    }
+
+    var orConditionIsTrue: Bool {
+        return self.contains { $0 }
+    }
 }
