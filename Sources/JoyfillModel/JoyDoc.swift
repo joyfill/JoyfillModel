@@ -87,7 +87,7 @@ public struct JoyDoc {
         set { dictionary["deleted"] = newValue }
     }
     
-    public var pages: [Page]? {
+    public var pages: [Page] {
         get {
             if let views = self.files[0].views, !views.isEmpty, let view = views.first {
                 if let pages = view.pages {
@@ -98,7 +98,7 @@ public struct JoyDoc {
                     return pages
                 }
             }
-            return nil
+            return []
         }
         set {
             if var views = self.files[0].views, !views.isEmpty {
@@ -302,12 +302,14 @@ public struct JoyDocField: Equatable {
     
     public var logic: Logic? {
         get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
-        set { dictionary["logic"] = newValue }
+        set {
+            dictionary["logic"] = newValue?.dictionary
+        }
     }
     
     public var hidden: Bool? {
         get { dictionary["hidden"] as? Bool}
-        set { dictionary["hidden"] = newValue }
+        set { dictionary["hidden"] = newValue! }
     }
     
     /// A Boolean property that indicates whether the field supports multiple values.
@@ -507,10 +509,15 @@ public struct Logic: Equatable{
         get { dictionary["eval"] as? String }
         set { dictionary["eval"] = newValue }
     }
+    
+    public var hidden: Bool {
+        get { dictionary["hidden"] as? Bool ?? false}
+        set { dictionary["hidden"] = newValue }
+    }
 
     public var conditions: [Condition]? {
         get { (dictionary["conditions"] as? [[String: Any]])?.compactMap(Condition.init) ?? [] }
-        set { dictionary["conditions"] = newValue }
+        set { dictionary["conditions"] = newValue?.compactMap { $0.dictionary } }
     }
 
     public func isValid(conditionsResults: [Bool]) -> Bool {
@@ -1401,7 +1408,11 @@ public struct Page {
         get { dictionary["backgroundImage"] as? String }
         set { dictionary["backgroundImage"] = newValue }
     }
-
+    
+    public var logic: Logic? {
+        get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
+        set { dictionary["logic"] = newValue }
+    }
     /// Indicates whether the page is hidden.
     public var hidden: Bool? {
         get { dictionary["hidden"] as? Bool }
