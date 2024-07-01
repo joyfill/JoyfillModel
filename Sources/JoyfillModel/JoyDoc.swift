@@ -312,6 +312,11 @@ public struct JoyDocField: Equatable {
         set { dictionary["hidden"] = newValue! }
     }
     
+    public var isHidden: Bool? {
+        get { dictionary["isHidden"] as? Bool }
+        set { dictionary["isHidden"] = newValue! }
+    }
+    
     /// A Boolean property that indicates whether the field supports multiple values.
     ///
     /// If `multi` is set to `true`, the field allows multiple functionalities such as:
@@ -510,8 +515,8 @@ public struct Logic: Equatable{
         set { dictionary["eval"] = newValue }
     }
     
-    public var hidden: Bool {
-        get { dictionary["hidden"] as? Bool ?? false}
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
         set { dictionary["hidden"] = newValue }
     }
 
