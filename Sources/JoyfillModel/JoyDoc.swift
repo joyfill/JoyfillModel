@@ -308,14 +308,10 @@ public struct JoyDocField: Equatable {
     }
     
     public var hidden: Bool? {
-        get { dictionary["hidden"] as? Bool}
-        set { dictionary["hidden"] = newValue! }
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
     }
     
-    public var isHidden: Bool? {
-        get { dictionary["isHidden"] as? Bool }
-        set { dictionary["isHidden"] = newValue! }
-    }
     
     /// A Boolean property that indicates whether the field supports multiple values.
     ///
@@ -513,11 +509,6 @@ public struct Logic: Equatable{
     public var eval: String? {
         get { dictionary["eval"] as? String }
         set { dictionary["eval"] = newValue }
-    }
-    
-    public var hidden: Bool? {
-        get { dictionary["hidden"] as? Bool }
-        set { dictionary["hidden"] = newValue }
     }
 
     public var conditions: [Condition]? {
@@ -1590,11 +1581,6 @@ public struct FieldPosition {
     public var borderRadius: Double? {
         get { dictionary["borderRadius"] as? Double }
         set { dictionary["borderRadius"] = newValue }
-    }
-    /// Indicates if the field is hidden.
-    public var isHidden: Bool {
-        get { dictionary["isHidden"] as? Bool ?? false }
-        set { dictionary["isHidden"] = newValue }
     }
 }
 
