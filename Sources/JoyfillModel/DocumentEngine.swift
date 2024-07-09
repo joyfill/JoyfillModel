@@ -7,9 +7,12 @@ import Foundation
 import JoyfillModel
 import SwiftUI
 
-class DocumentEngine {
+public class DocumentEngine {
 
-    func shouldShowItem(fields: [JoyDocField], logic: Logic?, isItemHidden: Bool?) -> Bool {
+    public static func shouldShowItem(fields: [JoyDocField], logic: Logic?, isItemHidden: Bool?) -> Bool {
+        guard fields.count > 1 else {
+            return true
+        }
         guard let logic = logic else { return !(isItemHidden ?? false) }
         
         if let hidden = isItemHidden {
@@ -36,7 +39,7 @@ class DocumentEngine {
         }
     }
             
-    func compareValue(fieldValue: ValueUnion?, condition: Condition) -> Bool {
+    public static func compareValue(fieldValue: ValueUnion?, condition: Condition) -> Bool {
         switch condition.condition {
         case "=":
             return fieldValue == condition.value
@@ -91,14 +94,14 @@ class DocumentEngine {
         }
     }
 
-    enum ReusltType {
+   public enum ReusltType {
         case hide
         case show
         case ignore
     }
     
     
-    func shoulTakeActionOnThisField(fields: [JoyDocField], logic: Logic) -> Bool {
+    public static func shoulTakeActionOnThisField(fields: [JoyDocField], logic: Logic) -> Bool {
         guard let conditions = logic.conditions else {
             return false
         }
@@ -107,9 +110,9 @@ class DocumentEngine {
         
         for condition in conditions {
             guard let fieldID = condition.field else { continue }
-            let field = getField(fields: fields, fieldID: fieldID)
+            guard let field = getField(fields: fields, fieldID: fieldID) else { continue }
             
-            let isValueMatching = compareValue(fieldValue: field?.value, condition: condition)
+            let isValueMatching = compareValue(fieldValue: field.value, condition: condition)
             conditionsResults.append(isValueMatching)
         }
         
@@ -121,7 +124,7 @@ class DocumentEngine {
         
     }
     
-    private func getField(fields: [JoyDocField], fieldID: String) -> JoyDocField? {
+    public static func getField(fields: [JoyDocField], fieldID: String) -> JoyDocField? {
         guard let field = fields.first(where: { $0.id == fieldID }) else {
             return nil
         }

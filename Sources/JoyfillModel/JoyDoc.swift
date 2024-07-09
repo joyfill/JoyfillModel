@@ -111,8 +111,11 @@ public struct JoyDoc {
     }
     
     public var firstPage: Page? {
+        guard let pages = self.files[0].pages, pages.count > 1 else {
+            return self.files[0].pages?.first
+        }
         return (self.files[0].pages?.first(where: { currentPage in
-            DocumentEngine().shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
         }))
     }
     
@@ -123,14 +126,14 @@ public struct JoyDoc {
     public func firstValidPageFor(currentPageID: String) -> Page? {
         return pages.first { currentPage in
             currentPage.id == currentPageID &&
-            DocumentEngine().shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
         } ?? firstPage
     }
 
     public func firstPageFor(currentPageID: String) -> Page? {
         return pages.first { currentPage in
             currentPage.id == currentPageID &&
-            DocumentEngine().shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
         }
     }
 }
