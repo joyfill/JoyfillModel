@@ -119,12 +119,19 @@ public struct JoyDoc {
     public var firstPageId: String? {
         return self.firstPage?.id
     }
-        
-    public func firstPageFor(currentPageID: String) -> Page? {
+
+    public func firstValidPageFor(currentPageID: String) -> Page? {
         return pages.first { currentPage in
             currentPage.id == currentPageID &&
             DocumentEngine().shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
         } ?? firstPage
+    }
+
+    public func firstPageFor(currentPageID: String) -> Page? {
+        return pages.first { currentPage in
+            currentPage.id == currentPageID &&
+            DocumentEngine().shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+        }
     }
 }
 
