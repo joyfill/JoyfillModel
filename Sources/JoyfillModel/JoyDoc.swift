@@ -86,6 +86,56 @@ public struct JoyDoc {
         get { dictionary["deleted"] as? Bool }
         set { dictionary["deleted"] = newValue }
     }
+    
+    public var pages: [Page] {
+        get {
+            if let views = self.files[0].views, !views.isEmpty, let view = views.first {
+                if let pages = view.pages {
+                    return pages
+                }
+            } else {
+                if let pages = self.files[0].pages {
+                    return pages
+                }
+            }
+            return []
+        }
+        set {
+            if var views = self.files[0].views, !views.isEmpty {
+                views[0].pages = newValue
+                self.files[0].views = views
+            } else {
+                self.files[0].pages = newValue
+            }
+        }
+    }
+    
+    public var firstPage: Page? {
+        guard let pages = self.files[0].pages, pages.count > 1 else {
+            return self.files[0].pages?.first
+        }
+        return (self.files[0].pages?.first(where: { currentPage in
+            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+        }))
+    }
+    
+    public var firstPageId: String? {
+        return self.firstPage?.id
+    }
+
+    public func firstValidPageFor(currentPageID: String) -> Page? {
+        return pages.first { currentPage in
+            currentPage.id == currentPageID &&
+            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+        } ?? firstPage
+    }
+
+    public func firstPageFor(currentPageID: String) -> Page? {
+        return pages.first { currentPage in
+            currentPage.id == currentPageID &&
+            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
+        }
+    }
 }
 
 extension JoyDoc {
@@ -277,6 +327,19 @@ public struct JoyDocField: Equatable {
         set { dictionary["tipVisible"] = newValue }
     }
     
+    public var logic: Logic? {
+        get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
+        set {
+            dictionary["logic"] = newValue?.dictionary
+        }
+    }
+    
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
+    }
+    
+    
     /// A Boolean property that indicates whether the field supports multiple values.
     ///
     /// If `multi` is set to `true`, the field allows multiple functionalities such as:
@@ -444,6 +507,100 @@ public struct JoyDocField: Equatable {
         self.value = ValueUnion.valueElementArray(elements)
     }
     
+}
+
+public struct Logic: Equatable{
+    public static func == (lhs: Logic, rhs: Logic) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public var dictionary: [String: Any]
+    
+    public init?(field: [String: Any]?) {
+        guard let field = field else {
+            return nil
+        }
+        self.dictionary = field
+    }
+    
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+
+    public var action: String? {
+        get { dictionary["action"] as? String }
+        set { dictionary["action"] = newValue }
+    }
+    
+    public var eval: String? {
+        get { dictionary["eval"] as? String }
+        set { dictionary["eval"] = newValue }
+    }
+
+    public var conditions: [Condition]? {
+        get { (dictionary["conditions"] as? [[String: Any]])?.compactMap(Condition.init) ?? [] }
+        set { dictionary["conditions"] = newValue?.compactMap { $0.dictionary } }
+    }
+
+    public func isValid(conditionsResults: [Bool]) -> Bool {
+        if eval == "and" {
+            if conditionsResults.andConditionIsTrue {
+                return true
+            }
+        }  else {
+            if conditionsResults.orConditionIsTrue {
+                return true
+            } 
+        }
+        return false
+    }
+}
+
+public struct Condition: Equatable{
+    public static func == (lhs: Condition, rhs: Condition) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public var dictionary: [String: Any]
+    
+
+    public init?(field: [String: Any]?) {
+        guard let field = field else {
+            return nil
+        }
+        self.dictionary = field
+    }
+    
+    public var id: String?{
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    public var file: String? {
+        get { dictionary["file"] as? String }
+        set { dictionary["file"] = newValue }
+    }
+    
+    public var page: String? {
+        get { dictionary["page"] as? String }
+        set { dictionary["page"] = newValue }
+    }
+    
+    public var field: String? {
+        get { dictionary["field"] as? String }
+        set { dictionary["field"] = newValue }
+    }
+    
+    public var condition: String? {
+        get { dictionary["condition"] as? String }
+        set { dictionary["condition"] = newValue }
+    }
+
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
+    }
 }
 
 /// Represents the configuration for a chart axis.
@@ -1274,7 +1431,11 @@ public struct Page {
         get { dictionary["backgroundImage"] as? String }
         set { dictionary["backgroundImage"] = newValue }
     }
-
+    
+    public var logic: Logic? {
+        get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
+        set { dictionary["logic"] = newValue }
+    }
     /// Indicates whether the page is hidden.
     public var hidden: Bool? {
         get { dictionary["hidden"] as? Bool }
@@ -1503,4 +1664,14 @@ public func generateObjectId() -> String {
 
     // Concatenate the timestamp hex and a portion of the random hex string to match the desired length
     return timestampHex + randomHex.prefix(16)
+}
+
+extension Array where Element == Bool {
+    var andConditionIsTrue: Bool {
+        return self.allSatisfy { $0 }
+    }
+
+    var orConditionIsTrue: Bool {
+        return self.contains { $0 }
+    }
 }
