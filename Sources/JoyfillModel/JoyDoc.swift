@@ -448,9 +448,7 @@ public struct JoyDocField: Equatable {
     
     /// Adds a new row with the specified ID to the table field.
     public mutating func addRow(id: String) {
-        guard var elements = valueToValueElements else {
-            return
-        }
+        var elements = valueToValueElements ?? []
         
         elements.append(ValueElement(id: id))
         self.value = ValueUnion.valueElementArray(elements)
