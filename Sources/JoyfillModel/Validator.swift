@@ -7,48 +7,49 @@
 
 import Foundation
 
-class Validator {
-    func validate(document: JoyDoc) -> Validation {
+public class Validator {
+    public static func validate(document: JoyDoc) -> Validation {
         var fieldValidations = [FieldValidation]()
         var isValid = true
         for field in document.fields {
-            guard !field.hidden else {
+            if let hidden = field.hidden, hidden {
                 fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue
             }
 
-            guard DocumentEngine.shouldShowItem(fields: document.fields, logic: fieldData?.logic,isItemHidden: fieldData?.hidden) else {
+            if !DocumentEngine.shouldShowItem(fields: document.fields, logic: field.logic,isItemHidden: field.hidden) {
                 fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue
             }
 
-            guard field.required else {
+            guard let required = field.required, required else {
                 fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue
             }
 
-            guard let value = field.value, !value.isEmpty {
+            if let value = field.value, !value.isEmpty {
                 isValid = false
-                fieldValidations.append(FieldValidation(field: field, status: .invalid))
+                fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue
             }
-            fieldValidations.append(FieldValidation(field: field, status: .valid))
+            fieldValidations.append(FieldValidation(field: field, status: .invalid))
         }
+
         return Validation(status: isValid ? .valid: .invalid, fieldValidations: fieldValidations)
     }
 }
 
-enum ValidationStatus: String {
+public enum ValidationStatus: String {
     case valid
     case invalid
 }
 
-struct Validation {
-    let status: ValidationStatus
-    let fieldValidations: [FieldValidation]
+public struct Validation {
+    public let status: ValidationStatus
+    public let fieldValidations: [FieldValidation]
 }
 
-struct FieldValidation {
-    let field: JoyDocField
-    let status: ValidationStatus
+public struct FieldValidation {
+    public let field: JoyDocField
+    public let status: ValidationStatus
 }
