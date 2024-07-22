@@ -453,9 +453,13 @@ public struct JoyDocField: Equatable {
         }
 
         var element = elements[index]
-        element.id = generateObjectId()
+        let newRowID = generateObjectId()
+        element.id = newRowID
         elements.insert(element, at: index+1)
         self.value = ValueUnion.valueElementArray(elements)
+        var lastRowOrder = self.rowOrder
+        lastRowOrder?.insert(id, at: index+1)
+        self.rowOrder = self.rowOrder
     }
 
     /// Adds a new row with the specified ID to the table field.
