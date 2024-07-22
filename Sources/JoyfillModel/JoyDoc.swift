@@ -445,7 +445,19 @@ public struct JoyDocField: Equatable {
         
         self.value = ValueUnion.valueElementArray(elements)
     }
-    
+
+    /// Deletes a row with the specified ID from the table field.
+    public mutating func duplicateRow(id: String) {
+        guard var elements = valueToValueElements, let index = elements.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        var element = elements[index]
+        element.id = generateObjectId()
+        elements.insert(element, at: index+1)
+        self.value = ValueUnion.valueElementArray(elements)
+    }
+
     /// Adds a new row with the specified ID to the table field.
     public mutating func addRow(id: String) {
         var elements = valueToValueElements ?? []
