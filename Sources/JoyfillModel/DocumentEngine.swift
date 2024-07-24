@@ -93,7 +93,6 @@ public class DocumentEngine {
                     return selectedArray.isEmpty || selectedArray.allSatisfy { $0.isEmpty }
                 }
             }
-            return fieldValue != condition.value
             if let fieldValueText = fieldValue?.text {
                 return fieldValueText.isEmpty
             } else if fieldValue?.number == nil {
