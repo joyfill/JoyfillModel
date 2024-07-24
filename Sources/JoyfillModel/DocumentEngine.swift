@@ -39,9 +39,17 @@ public class DocumentEngine {
         }
     }
             
-    public static func compareValue(fieldValue: ValueUnion?, condition: Condition) -> Bool {
+    public static func compareValue(fieldValue: ValueUnion?, condition: Condition, fieldType: FieldTypes) -> Bool {
         switch condition.condition {
         case "=":
+            if fieldType == .multiSelect || fieldType == .dropdown {
+                if let valueUnion = fieldValue as? ValueUnion,
+                   let selectedArray = valueUnion.stringArray as? [String],
+                   let conditionText = condition.value?.text {
+                    return selectedArray.contains { $0 == conditionText }
+                }
+            }
+            print(fieldValue!, ": vs :", condition.value!)
             return fieldValue == condition.value
         case "!=":
             return fieldValue != condition.value
@@ -112,7 +120,7 @@ public class DocumentEngine {
             guard let fieldID = condition.field else { continue }
             guard let field = getField(fields: fields, fieldID: fieldID) else { continue }
             
-            let isValueMatching = compareValue(fieldValue: field.value, condition: condition)
+            let isValueMatching = compareValue(fieldValue: field.value, condition: condition, fieldType: field.fieldType)
             conditionsResults.append(isValueMatching)
         }
         
