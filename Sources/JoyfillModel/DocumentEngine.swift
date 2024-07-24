@@ -49,9 +49,15 @@ public class DocumentEngine {
                     return selectedArray.contains { $0 == conditionText }
                 }
             }
-            print(fieldValue!, ": vs :", condition.value!)
             return fieldValue == condition.value
         case "!=":
+            if fieldType == .multiSelect || fieldType == .dropdown {
+                if let valueUnion = fieldValue as? ValueUnion,
+                   let selectedArray = valueUnion.stringArray as? [String],
+                   let conditionText = condition.value?.text {
+                    return !selectedArray.contains { $0 == conditionText }
+                }
+            }
             return fieldValue != condition.value
         case "?=":
             guard let fieldValue = fieldValue else {
@@ -81,14 +87,27 @@ public class DocumentEngine {
                 return false
             }
         case "null=":
+            if fieldType == .multiSelect || fieldType == .dropdown {
+                if let valueUnion = fieldValue as? ValueUnion,
+                   let selectedArray = valueUnion.stringArray as? [String] {
+                    return selectedArray.isEmpty || selectedArray.allSatisfy { $0.isEmpty }
+                }
+            }
+            return fieldValue != condition.value
             if let fieldValueText = fieldValue?.text {
                 return fieldValueText.isEmpty
-            } else if fieldValue?.number == nil{
+            } else if fieldValue?.number == nil {
                 return true
             } else {
                 return false
             }
         case "*=":
+            if fieldType == .multiSelect || fieldType == .dropdown {
+                if let valueUnion = fieldValue as? ValueUnion,
+                   let selectedArray = valueUnion.stringArray as? [String] {
+                    return !(selectedArray.isEmpty || selectedArray.allSatisfy { $0.isEmpty })
+                }
+            }
             if let fieldValueText = fieldValue?.text {
                 return !fieldValueText.isEmpty
             } else if fieldValue?.number == nil{
