@@ -248,7 +248,13 @@ public struct JoyDocField: Equatable {
         get { dictionary["type"] as? String }
         set { dictionary["type"] = newValue }
     }
-    
+
+    /// The type of the field.
+    public var fieldType: FieldTypes {
+        get { FieldTypes(rawValue: dictionary["type"] as! String)! }
+        set { dictionary["type"] = newValue.rawValue }
+    }
+
     /// The ID of the field.
     public var id: String? {
         get { dictionary["_id"] as? String }

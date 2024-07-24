@@ -240,7 +240,17 @@ public extension ValueUnion {
             return nil
         }
     }
-    
+
+    /// Returns the display text value if the `ValueUnion` is a array of string, otherwise returns `nil`.
+    var stringArray: [String]? {
+        switch self {
+        case .array(let stringArray):
+            return stringArray
+        default:
+            return nil
+        }
+    }
+
     /// Returns an array of image URLs if the `ValueUnion` is an array of `ValueElement`, otherwise returns `nil`.
     var imageURLs: [String]? {
         switch self {
