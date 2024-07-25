@@ -12,11 +12,6 @@ public class Validator {
         var fieldValidations = [FieldValidation]()
         var isValid = true
         for field in document.fields {
-            if let hidden = field.hidden, hidden {
-                fieldValidations.append(FieldValidation(field: field, status: .valid))
-                continue
-            }
-
             if !DocumentEngine.shouldShowItem(fields: document.fields, logic: field.logic,isItemHidden: field.hidden) {
                 fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue
@@ -28,10 +23,10 @@ public class Validator {
             }
 
             if let value = field.value, !value.isEmpty {
-                isValid = false
                 fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue
             }
+            isValid = false
             fieldValidations.append(FieldValidation(field: field, status: .invalid))
         }
 
