@@ -373,14 +373,14 @@ public struct JoyDocField: Equatable {
     }
     
     /// The maximum value of the y-axis for the chart field.
-    public var yMax: Int? {
-        get { dictionary["yMax"] as? Int }
+    public var yMax: Double? {
+        get { dictionary["yMax"] as? Double }
         set { dictionary["yMax"] = newValue }
     }
     
     /// The minimum value of the y-axis for the chart field.
-    public var yMin: Int? {
-        get { dictionary["yMin"] as? Int }
+    public var yMin: Double? {
+        get { dictionary["yMin"] as? Double }
         set { dictionary["yMin"] = newValue }
     }
     
@@ -391,14 +391,14 @@ public struct JoyDocField: Equatable {
     }
     
     /// The maximum value of the x-axis for the chart field.
-    public var xMax: Int? {
-        get { dictionary["xMax"] as? Int }
+    public var xMax: Double? {
+        get { dictionary["xMax"] as? Double }
         set { dictionary["xMax"] = newValue }
     }
     
     /// The minimum value of the x-axis for the chart field.
-    public var xMin: Int? {
-        get { dictionary["xMin"] as? Int }
+    public var xMin: Double? {
+        get { dictionary["xMin"] as? Double }
         set { dictionary["xMin"] = newValue }
     }
     
@@ -629,18 +629,18 @@ public struct ChartAxisConfiguration: Equatable{
     /// The title of the y-axis.
     public var yTitle: String?
     /// The maximum value of the y-axis.
-    public var yMax, yMin: Int?
+    public var yMax, yMin: Double?
     /// The title of the x-axis.
     public var xTitle: String?
     /// The maximum value of the x-axis.
-    public var xMax, xMin: Int?
+    public var xMax, xMin: Double?
 
     enum CodingKeys: String, CodingKey {
         case yTitle, yMax, yMin, xTitle, xMax, xMin
     }
 
     /// Initializes a new `ChartAxisConfiguration` object.
-    public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
+    public init(yTitle: String? = nil, yMax: Double? = nil, yMin: Double? = nil, xTitle: String? = nil, xMax: Double? = nil, xMin: Double? = nil) {
         self.yTitle = yTitle
         self.yMax = yMax
         self.yMin = yMin
