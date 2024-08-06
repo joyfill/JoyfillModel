@@ -179,6 +179,7 @@ public enum FieldTypes: String, Codable {
     case richText
     case table
     case image
+    case file
 }
 
 /// `DateFormatType` is an enumeration that represents the types of date formats.
