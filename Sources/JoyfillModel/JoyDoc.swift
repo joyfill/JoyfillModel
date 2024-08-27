@@ -504,7 +504,15 @@ public struct JoyDocField: Equatable {
             return
         }
     }
-    
+
+    public mutating func cellDidChange(rowId: String, colIndex: Int, editedCellId: String, value: String) {
+        guard var elements = valueToValueElements, let index = elements.firstIndex(where: { $0.id == rowId }) else {
+            return
+        }
+
+        changeCell(elements: elements, index: index, editedCellId: editedCellId, newCell: ValueUnion.string(value))
+    }
+
     /// A private function that updates the cell value in the elements array.
     ///
     /// This function is called when a cell's value is edited. It updates the corresponding cell in the `elements` array based on the `index` and `editedCellId` provided. The new cell value is determined by the `newCell` parameter.
