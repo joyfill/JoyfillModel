@@ -831,6 +831,11 @@ public struct FieldTableColumn {
         set { dictionary["defaultDropdownSelectedId"] = newValue }
     }
 
+    public var selectedOptionText: String {
+        options?.filter { $0.id == defaultDropdownSelectedId }.first?.value ?? ""
+    }
+
+
     /// The images associated with the column.
     public var images: [ValueElement]? {
         get { (dictionary["images"] as? [[String: Any]])?.compactMap(ValueElement.init) ?? [] }
