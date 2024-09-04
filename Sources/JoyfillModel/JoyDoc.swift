@@ -1567,9 +1567,9 @@ public struct FieldPosition {
     }
 
     /// The type of the field.
-    public var type: FieldTypes {
-        get { FieldTypes(rawValue: dictionary["type"] as! String)! }
-        set { dictionary["type"] = newValue.rawValue }
+    public var type: FieldTypes? {
+        get { FieldTypes(rawValue: dictionary["type"] as! String) }
+        set { dictionary["type"] = newValue?.rawValue }
     }
 
     /// The font size of the field.
