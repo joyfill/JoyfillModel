@@ -1776,3 +1776,9 @@ public struct FilterModel:Equatable {
         self.colID = colID
     }
 }
+
+public extension Array where Element == FilterModel {
+    var noFilterApplied: Bool {
+        self.allSatisfy { $0.filterText.isEmpty }
+    }
+}
