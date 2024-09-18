@@ -477,7 +477,19 @@ public struct JoyDocField: Equatable {
         self.value = ValueUnion.valueElementArray(elements)
         rowOrder?.append(id)
     }
-    
+
+    /// Adds a new row with the specified ID to the table field.
+    public mutating func addRowWithFilter(id: String, filterModels: [FilterModel]) {
+        var elements = valueToValueElements ?? []
+        var newRow = ValueElement(id: id)
+        elements.append(newRow)
+        self.value = ValueUnion.valueElementArray(elements)
+        rowOrder?.append(id)
+        for filterModel in filterModels {
+            cellDidChange(rowId: id, colIndex: filterModel.colIndex, editedCellId: filterModel.colID, value: filterModel.filterText)
+        }
+    }
+
     /// A function that updates the cell value when a change is detected.
     ///
     /// This function is called when a cell's value is edited. It updates the corresponding cell in the `elements` array based on the `rowId` and `colIndex` provided. The type of the `editedCell` determines how the cell is updated.
@@ -1726,5 +1738,41 @@ extension Array where Element == Bool {
 
     var orConditionIsTrue: Bool {
         return self.contains { $0 }
+    }
+}
+
+public enum SortOder {
+    case ascending
+    case descending
+    case none
+
+    public mutating func next() {
+        switch self {
+        case .ascending:
+            self = .descending
+        case .descending:
+            self = .none
+        case .none:
+            self = .ascending
+        }
+    }
+}
+
+public struct SortModel {
+    public var order: SortOder = .none
+
+    public init() {
+    }
+}
+
+public struct FilterModel:Equatable {
+    public var filterText: String = ""
+    public var colIndex: Int
+    public var colID: String
+
+    public init(filterText: String = "", colIndex: Int, colID: String) {
+        self.filterText = filterText
+        self.colIndex = colIndex
+        self.colID = colID
     }
 }
