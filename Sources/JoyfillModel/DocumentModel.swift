@@ -640,6 +640,8 @@ public protocol FormChangeEventInternal {
     ///   - event: The field change event containing the necessary information for adding a row.
     func addRow(event: FieldChangeEvent, targetRowIndexes: [TargerRowModel])
 
+    func deleteRow(event: FieldChangeEvent, targetRowIndexes: [TargerRowModel])
+
     /// Notifies the form view that it has received focus.
     ///
     /// - Parameter event: The field event associated with the focus.
@@ -668,6 +670,8 @@ public protocol FieldChangeEvents {
     ///
     /// - Parameter event: The `FieldChangeEvent` object that represents the field change event.
     func addRow(event: FieldChangeEvent, targetRowIndexes: [TargerRowModel])
+
+    func deleteRow(event: FieldChangeEvent, targetRowIndexes: [TargerRowModel])
 
     /// Notifies the conforming object when a field gains focus.
     ///
