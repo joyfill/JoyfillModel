@@ -638,7 +638,7 @@ public protocol FormChangeEventInternal {
     ///
     /// - Parameters:
     ///   - event: The field change event containing the necessary information for adding a row.
-    func addRow(event: FieldChangeEvent, targetRowIndexes:[Int])
+    func addRow(event: FieldChangeEvent, targetRowIndexes: [TargerRowModel])
 
     /// Notifies the form view that it has received focus.
     ///
@@ -667,7 +667,7 @@ public protocol FieldChangeEvents {
     /// Adds a new row to the document when a field change event occurs.
     ///
     /// - Parameter event: The `FieldChangeEvent` object that represents the field change event.
-    func addRow(event: FieldChangeEvent, targetRowIndexes: [Int])
+    func addRow(event: FieldChangeEvent, targetRowIndexes: [TargerRowModel])
 
     /// Notifies the conforming object when a field gains focus.
     ///
@@ -678,4 +678,14 @@ public protocol FieldChangeEvents {
     ///
     /// - Parameter event: The `UploadEvent` object that represents the upload event.
     func onUpload(event: UploadEvent)
+}
+
+public struct TargerRowModel {
+    public let id: String
+    public let index: Int
+
+    public init(id: String, index: Int) {
+        self.id = id
+        self.index = index
+    }
 }
