@@ -467,7 +467,7 @@ public struct JoyDocField: Equatable {
             elements.append(element)
             let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
             lastRowOrder.insert(newRowID, at: lastRowIndex+1)
-            targetRows.append(TargerRowModel(id: newRowID, index: lastRowIndex))
+            targetRows.append(TargerRowModel(id: newRowID, index: lastRowIndex+1))
         }
 
         self.value = ValueUnion.valueElementArray(elements)
