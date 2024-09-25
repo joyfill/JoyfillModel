@@ -453,20 +453,26 @@ public struct JoyDocField: Equatable {
     }
 
     /// Deletes a row with the specified ID from the table field.
-    public mutating func duplicateRow(id: String) {
-        guard var elements = valueToValueElements, let index = elements.firstIndex(where: { $0.id == id }) else {
-            return
+    public mutating func duplicateRow(selectedRows: [String]) -> [TargerRowModel] {
+        guard var elements = valueToValueElements else {
+            return []
+        }
+        var targetRows = [TargerRowModel]()
+        var lastRowOrder = self.rowOrder ?? []
+
+        selectedRows.forEach { rowID in
+            var element = elements.first(where: { $0.id == rowID })!
+            let newRowID = generateObjectId()
+            element.id = newRowID
+            elements.append(element)
+            let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
+            lastRowOrder.insert(newRowID, at: lastRowIndex+1)
+            targetRows.append(TargerRowModel(id: newRowID, index: lastRowIndex+1))
         }
 
-        var element = elements[index]
-        let newRowID = generateObjectId()
-        element.id = newRowID
-        elements.append(element)
         self.value = ValueUnion.valueElementArray(elements)
-        var lastRowOrder = self.rowOrder
-        let lastRowIndex = lastRowOrder?.firstIndex(of: id)!
-        lastRowOrder?.insert(newRowID, at: lastRowIndex!+1)
         self.rowOrder = lastRowOrder
+        return targetRows
     }
 
     /// Adds a new row with the specified ID to the table field.
@@ -477,7 +483,19 @@ public struct JoyDocField: Equatable {
         self.value = ValueUnion.valueElementArray(elements)
         rowOrder?.append(id)
     }
-    
+
+    /// Adds a new row with the specified ID to the table field.
+    public mutating func addRowWithFilter(id: String, filterModels: [FilterModel]) {
+        var elements = valueToValueElements ?? []
+        var newRow = ValueElement(id: id)
+        elements.append(newRow)
+        self.value = ValueUnion.valueElementArray(elements)
+        rowOrder?.append(id)
+        for filterModel in filterModels {
+            cellDidChange(rowId: id, colIndex: filterModel.colIndex, editedCellId: filterModel.colID, value: filterModel.filterText)
+        }
+    }
+
     /// A function that updates the cell value when a change is detected.
     ///
     /// This function is called when a cell's value is edited. It updates the corresponding cell in the `elements` array based on the `rowId` and `colIndex` provided. The type of the `editedCell` determines how the cell is updated.
@@ -504,7 +522,15 @@ public struct JoyDocField: Equatable {
             return
         }
     }
-    
+
+    public mutating func cellDidChange(rowId: String, colIndex: Int, editedCellId: String, value: String) {
+        guard var elements = valueToValueElements, let index = elements.firstIndex(where: { $0.id == rowId }) else {
+            return
+        }
+
+        changeCell(elements: elements, index: index, editedCellId: editedCellId, newCell: ValueUnion.string(value))
+    }
+
     /// A private function that updates the cell value in the elements array.
     ///
     /// This function is called when a cell's value is edited. It updates the corresponding cell in the `elements` array based on the `index` and `editedCellId` provided. The new cell value is determined by the `newCell` parameter.
@@ -822,6 +848,11 @@ public struct FieldTableColumn {
         get { dictionary["defaultDropdownSelectedId"] as? String }
         set { dictionary["defaultDropdownSelectedId"] = newValue }
     }
+
+    public var selectedOptionText: String {
+        options?.filter { $0.id == defaultDropdownSelectedId }.first?.value ?? ""
+    }
+
 
     /// The images associated with the column.
     public var images: [ValueElement]? {
@@ -1713,5 +1744,47 @@ extension Array where Element == Bool {
 
     var orConditionIsTrue: Bool {
         return self.contains { $0 }
+    }
+}
+
+public enum SortOder {
+    case ascending
+    case descending
+    case none
+
+    public mutating func next() {
+        switch self {
+        case .ascending:
+            self = .descending
+        case .descending:
+            self = .none
+        case .none:
+            self = .ascending
+        }
+    }
+}
+
+public struct SortModel {
+    public var order: SortOder = .none
+
+    public init() {
+    }
+}
+
+public struct FilterModel:Equatable {
+    public var filterText: String = ""
+    public var colIndex: Int
+    public var colID: String
+
+    public init(filterText: String = "", colIndex: Int, colID: String) {
+        self.filterText = filterText
+        self.colIndex = colIndex
+        self.colID = colID
+    }
+}
+
+public extension Array where Element == FilterModel {
+    var noFilterApplied: Bool {
+        self.allSatisfy { $0.filterText.isEmpty }
     }
 }
