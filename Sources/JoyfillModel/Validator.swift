@@ -11,7 +11,8 @@ public class Validator {
     public static func validate(document: JoyDoc) -> Validation {
         var fieldValidations = [FieldValidation]()
         var isValid = true
-        for field in document.fields {
+        let fieldPositionIDs = document.fieldPositionsForCurrentView.map {  $0.field }
+        for field in document.fields.filter { fieldPositionIDs.contains($0.id) } {
             if !DocumentEngine.shouldShowItem(fields: document.fields, logic: field.logic,isItemHidden: field.hidden) {
                 fieldValidations.append(FieldValidation(field: field, status: .valid))
                 continue

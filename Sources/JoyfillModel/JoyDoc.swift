@@ -87,7 +87,7 @@ public struct JoyDoc {
         set { dictionary["deleted"] = newValue }
     }
     
-    public var pages: [Page] {
+    public var pagesForCurrentView: [Page] {
         get {
             if let views = self.files[0].views, !views.isEmpty, let view = views.first {
                 if let pages = view.pages {
@@ -109,7 +109,11 @@ public struct JoyDoc {
             }
         }
     }
-    
+
+    public var fieldPositionsForCurrentView: [FieldPosition] {
+        return pagesForCurrentView.flatMap { $0.fieldPositions ?? [] }
+    }
+
     public var firstPage: Page? {
         guard let pages = self.files[0].pages, pages.count > 1 else {
             return self.files[0].pages?.first
@@ -124,14 +128,14 @@ public struct JoyDoc {
     }
 
     public func firstValidPageFor(currentPageID: String) -> Page? {
-        return pages.first { currentPage in
+        return pagesForCurrentView.first { currentPage in
             currentPage.id == currentPageID &&
             DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
         } ?? firstPage
     }
 
     public func firstPageFor(currentPageID: String) -> Page? {
-        return pages.first { currentPage in
+        return pagesForCurrentView.first { currentPage in
             currentPage.id == currentPageID &&
             DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
         }
