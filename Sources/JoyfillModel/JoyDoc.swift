@@ -1297,7 +1297,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
 // MARK: - Point
 /// A struct representing a point with x and y coordinates.
-public struct Point: Codable {
+public struct Point: Codable, Identifiable {
     var dictionary = [String: ValueUnion]()
 
     /// Initializes a new instance of `Point` from a decoder.
