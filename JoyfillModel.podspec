@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name              = 'JoyfillModel'
-s.version           = '1.0.7'
+s.version           = '1.0.8'
 s.summary           = 'Joyfill is a form solution SDK.'
 s.description       = 'Joyfill provides form solutions for mobile apps with easy integration.'
 s.homepage          = 'https://github.com/joyfill/components-swift'
