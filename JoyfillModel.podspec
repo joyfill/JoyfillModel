@@ -6,7 +6,7 @@ s.description       = 'Joyfill provides form solutions for mobile apps with easy
 s.homepage          = 'https://github.com/joyfill/components-swift'
 s.license           = { :type => 'MIT', :file => 'LICENSE.txt' }
 s.author            = { 'Your Name' => 'your.email@example.com' }
-s.source = { :git => 'https://github.com/joyfill/JoyfillModel.git', :branch => 'main' }
+s.source = { :git => 'https://github.com/joyfill/JoyfillModel.git', :tag => spec.version.to_s  }
 s.swift_version = '5.0'
 s.ios.deployment_target = '15.0'
 s.module_name      = 'JoyfillModel'
