@@ -457,11 +457,11 @@ public struct JoyDocField: Equatable {
     }
 
     /// Deletes a row with the specified ID from the table field.
-    public mutating func duplicateRow(selectedRows: [String]) -> [TargerRowModel] {
+    public mutating func duplicateRow(selectedRows: [String]) -> [TargetRowModel] {
         guard var elements = valueToValueElements else {
             return []
         }
-        var targetRows = [TargerRowModel]()
+        var targetRows = [TargetRowModel]()
         var lastRowOrder = self.rowOrder ?? []
 
         selectedRows.forEach { rowID in
@@ -471,7 +471,7 @@ public struct JoyDocField: Equatable {
             elements.append(element)
             let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
             lastRowOrder.insert(newRowID, at: lastRowIndex+1)
-            targetRows.append(TargerRowModel(id: newRowID, index: lastRowIndex+1))
+            targetRows.append(TargetRowModel(id: newRowID, index: lastRowIndex+1))
         }
 
         self.value = ValueUnion.valueElementArray(elements)
@@ -480,11 +480,11 @@ public struct JoyDocField: Equatable {
     }
 
 
-    public mutating func moveUP(rowID: String)  -> [TargerRowModel] {
+    public mutating func moveUP(rowID: String)  -> [TargetRowModel] {
         guard var elements = valueToValueElements else {
             return []
         }
-        var targetRows = [TargerRowModel]()
+        var targetRows = [TargetRowModel]()
         var lastRowOrder = self.rowOrder ?? []
         let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
 
@@ -496,11 +496,11 @@ public struct JoyDocField: Equatable {
         return targetRows
     }
 
-    public mutating func moveDown(rowID: String)  -> [TargerRowModel] {
+    public mutating func moveDown(rowID: String)  -> [TargetRowModel] {
         guard var elements = valueToValueElements else {
             return []
         }
-        var targetRows = [TargerRowModel]()
+        var targetRows = [TargetRowModel]()
         var lastRowOrder = self.rowOrder ?? []
         let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
 
@@ -515,7 +515,7 @@ public struct JoyDocField: Equatable {
     }
 
     /// Adds a new row with the specified ID to the table field.
-    public mutating func insetLastRow(id: String) {
+    public mutating func insertLastRow(id: String) {
         var elements = valueToValueElements ?? []
         
         elements.append(ValueElement(id: id))
@@ -524,11 +524,11 @@ public struct JoyDocField: Equatable {
     }
 
     /// Adds a new row with the specified ID to the table field.
-    public mutating func addRow(selectedRows: [String])  -> [TargerRowModel] {
+    public mutating func addRow(selectedRows: [String])  -> [TargetRowModel] {
         guard var elements = valueToValueElements else {
             return []
         }
-        var targetRows = [TargerRowModel]()
+        var targetRows = [TargetRowModel]()
         var lastRowOrder = self.rowOrder ?? []
 
         selectedRows.forEach { rowID in
@@ -537,7 +537,7 @@ public struct JoyDocField: Equatable {
             elements.append(element)
             let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
             lastRowOrder.insert(newRowID, at: lastRowIndex+1)
-            targetRows.append(TargerRowModel(id: newRowID, index: lastRowIndex+1))
+            targetRows.append(TargetRowModel(id: newRowID, index: lastRowIndex+1))
         }
 
         self.value = ValueUnion.valueElementArray(elements)
