@@ -479,8 +479,43 @@ public struct JoyDocField: Equatable {
         return targetRows
     }
 
+
+    public mutating func moveUP(rowID: String)  -> [TargerRowModel] {
+        guard var elements = valueToValueElements else {
+            return []
+        }
+        var targetRows = [TargerRowModel]()
+        var lastRowOrder = self.rowOrder ?? []
+        let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
+
+        guard lastRowIndex != 0 else {
+            return []
+        }
+        lastRowOrder.swapAt(lastRowIndex, lastRowIndex-1)
+        self.rowOrder = lastRowOrder
+        return targetRows
+    }
+
+    public mutating func moveDown(rowID: String)  -> [TargerRowModel] {
+        guard var elements = valueToValueElements else {
+            return []
+        }
+        var targetRows = [TargerRowModel]()
+        var lastRowOrder = self.rowOrder ?? []
+        let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
+
+        guard (lastRowOrder.count - 1) != lastRowIndex else {
+            return []
+        }
+
+        lastRowOrder.swapAt(lastRowIndex, lastRowIndex+1)
+
+        self.rowOrder = lastRowOrder
+        return targetRows
+    }
+
     /// Adds a new row with the specified ID to the table field.
-    public mutating func addRow(id: String) {
+    public mutating func insetLastRow(id: String) {
         var elements = valueToValueElements ?? []
         
         elements.append(ValueElement(id: id))
@@ -489,8 +524,31 @@ public struct JoyDocField: Equatable {
     }
 
     /// Adds a new row with the specified ID to the table field.
+    public mutating func addRow(selectedRows: [String])  -> [TargerRowModel] {
+        guard var elements = valueToValueElements else {
+            return []
+        }
+        var targetRows = [TargerRowModel]()
+        var lastRowOrder = self.rowOrder ?? []
+
+        selectedRows.forEach { rowID in
+            let newRowID = generateObjectId()
+            var element = ValueElement(id: newRowID)
+            elements.append(element)
+            let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
+            lastRowOrder.insert(newRowID, at: lastRowIndex+1)
+            targetRows.append(TargerRowModel(id: newRowID, index: lastRowIndex+1))
+        }
+
+        self.value = ValueUnion.valueElementArray(elements)
+        self.rowOrder = lastRowOrder
+        return targetRows
+    }
+
+    /// Adds a new row with the specified ID to the table field.
     public mutating func addRowWithFilter(id: String, filterModels: [FilterModel]) {
         var elements = valueToValueElements ?? []
+
         var newRow = ValueElement(id: id)
         elements.append(newRow)
         self.value = ValueUnion.valueElementArray(elements)
