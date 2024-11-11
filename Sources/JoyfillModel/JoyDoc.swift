@@ -484,7 +484,6 @@ public struct JoyDocField: Equatable {
         guard var elements = valueToValueElements else {
             return []
         }
-        var targetRows = [TargetRowModel]()
         var lastRowOrder = self.rowOrder ?? []
         let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
 
@@ -493,7 +492,7 @@ public struct JoyDocField: Equatable {
         }
         lastRowOrder.swapAt(lastRowIndex, lastRowIndex-1)
         self.rowOrder = lastRowOrder
-        return targetRows
+        return [TargetRowModel(id: rowID, index: lastRowIndex-1)]
     }
 
     public mutating func moveDown(rowID: String)  -> [TargetRowModel] {
