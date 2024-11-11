@@ -500,18 +500,15 @@ public struct JoyDocField: Equatable {
         guard var elements = valueToValueElements else {
             return []
         }
-        var targetRows = [TargetRowModel]()
         var lastRowOrder = self.rowOrder ?? []
         let lastRowIndex = lastRowOrder.firstIndex(of: rowID)!
 
         guard (lastRowOrder.count - 1) != lastRowIndex else {
             return []
         }
-
         lastRowOrder.swapAt(lastRowIndex, lastRowIndex+1)
-
         self.rowOrder = lastRowOrder
-        return targetRows
+        return [TargetRowModel(id: rowID, index: lastRowIndex+1)]
     }
 
     /// Adds a new row with the specified ID to the table field.
