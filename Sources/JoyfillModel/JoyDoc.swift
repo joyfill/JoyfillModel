@@ -454,6 +454,9 @@ public struct JoyDocField: Equatable {
         elements[index] = element
         
         self.value = ValueUnion.valueElementArray(elements)
+        var lastRowOrder = self.rowOrder ?? []
+        lastRowOrder.removeAll(where: { $0 == id })
+        self.rowOrder = lastRowOrder
     }
 
     /// Deletes a row with the specified ID from the table field.
