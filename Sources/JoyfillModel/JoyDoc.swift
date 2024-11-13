@@ -575,6 +575,8 @@ public struct JoyDocField: Equatable {
         switch editedCell.type {
         case "text":
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
+        case "number":
+            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.double(editedCell.number ?? 0))
         case "dropdown":
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.defaultDropdownSelectedId ?? ""))
         case "image":
@@ -878,6 +880,12 @@ public struct FieldTableColumn {
     public var title: String? {
         get { dictionary["title"] as? String }
         set { dictionary["title"] = newValue }
+    }
+    
+    /// The number value of the column
+    public var number: Double? {
+        get { dictionary["number"] as? Double }
+        set { dictionary["number"] = newValue }
     }
 
     /// The width of the column.
