@@ -1842,18 +1842,24 @@ public struct SortModel {
 
 public struct FilterModel:Equatable {
     public var filterText: String = ""
+    public var filterNumber: Double = 0.0
     public var colIndex: Int
     public var colID: String
 
-    public init(filterText: String = "", colIndex: Int, colID: String) {
+    public init(filterText: String = "", filterNumber: Double = 0.0, colIndex: Int, colID: String) {
         self.filterText = filterText
+        self.filterNumber = filterNumber
         self.colIndex = colIndex
         self.colID = colID
     }
 }
 
 public extension Array where Element == FilterModel {
-    var noFilterApplied: Bool {
+    var noFilterAppliedForText: Bool {
         self.allSatisfy { $0.filterText.isEmpty }
+    }
+    
+    var noFilterAppliedForNumber: Bool {
+        self.allSatisfy { $0.filterNumber == 0.0 }
     }
 }
