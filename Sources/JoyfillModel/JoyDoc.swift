@@ -919,6 +919,12 @@ public struct FieldTableColumn {
         get { dictionary["value"] as? String }
         set { dictionary["value"] = newValue }
     }
+    
+    /// The format of the date column.
+    public var format: String? {
+        get { dictionary["format"] as? String }
+        set { dictionary["format"] = newValue }
+    }
 
     /// The default selected ID for dropdown options.
     public var defaultDropdownSelectedId: String? {
