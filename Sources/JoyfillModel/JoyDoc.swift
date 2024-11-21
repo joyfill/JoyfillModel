@@ -575,10 +575,6 @@ public struct JoyDocField: Equatable {
         switch editedCell.type {
         case "text":
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
-        case "number":
-            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.double(editedCell.number ?? 0))
-        case "date":
-            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: editedCell.date ?? ValueUnion.null)
         case "dropdown":
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.defaultDropdownSelectedId ?? ""))
         case "image":
@@ -882,18 +878,6 @@ public struct FieldTableColumn {
     public var title: String? {
         get { dictionary["title"] as? String }
         set { dictionary["title"] = newValue }
-    }
-    
-    /// The number value of the column
-    public var number: Double? {
-        get { dictionary["number"] as? Double }
-        set { dictionary["number"] = newValue }
-    }
-    
-    /// The date value of the  date column
-    public var date: ValueUnion? {
-        get { dictionary["date"] as? ValueUnion }
-        set { dictionary["date"] = newValue }
     }
 
     /// The width of the column.
@@ -1850,24 +1834,18 @@ public struct SortModel {
 
 public struct FilterModel:Equatable {
     public var filterText: String = ""
-    public var filterNumber: Double = 0.0
     public var colIndex: Int
     public var colID: String
 
-    public init(filterText: String = "", filterNumber: Double = 0.0, colIndex: Int, colID: String) {
+    public init(filterText: String = "", colIndex: Int, colID: String) {
         self.filterText = filterText
-        self.filterNumber = filterNumber
         self.colIndex = colIndex
         self.colID = colID
     }
 }
 
 public extension Array where Element == FilterModel {
-    var noFilterAppliedForText: Bool {
+    var noFilterApplied: Bool {
         self.allSatisfy { $0.filterText.isEmpty }
-    }
-    
-    var noFilterAppliedForNumber: Bool {
-        self.allSatisfy { $0.filterNumber == 0.0 }
     }
 }
