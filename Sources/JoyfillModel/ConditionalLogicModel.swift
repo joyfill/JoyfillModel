@@ -57,5 +57,5 @@ public struct ConditionModel {
 public struct ConditionalLogicModel {
     let logic: LogicModel?
     let isItemHidden: Bool?
-    let fieldCount: Int
+    let itemCount: Int
 }

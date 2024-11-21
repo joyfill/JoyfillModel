@@ -15,7 +15,7 @@ public class DocumentEditor {
         self.document = document
         document.fields.forEach { field in
             guard let fieldID = field.id else { return }
-            self.fieldMap = [fieldID: field]
+            self.fieldMap[fieldID] =  field
         }
     }
 
@@ -103,10 +103,10 @@ public class DocumentEditor {
         let conditionModels = conditions.compactMap { condition ->  ConditionModel? in
             guard let fieldID = condition.field else { return nil }
             guard let field = fieldMap[condition.field!] else { return nil }
-            return ConditionModel(fieldValue: field.value, fieldType: FieldTypes(rawValue: field.type!)!, condition: condition.condition, value: condition.value)
+            return ConditionModel(fieldValue: field.value, fieldType: FieldTypes(field.type), condition: condition.condition, value: condition.value)
         }
         let logicModel = LogicModel(id: logic.id, action: logic.action, conditions: conditionModels)
-        let conditionModel = ConditionalLogicModel(logic: logicModel, isItemHidden: page.hidden, fieldCount: document.fields.count)
+        let conditionModel = ConditionalLogicModel(logic: logicModel, isItemHidden: page.hidden, itemCount: document.pagesForCurrentView.count)
         return conditionModel
     }
 
@@ -116,10 +116,10 @@ public class DocumentEditor {
         guard let conditions = logic.conditions else { return nil }
 
         let conditionModels = conditions.flatMap { condition in
-            ConditionModel(fieldValue: field.value, fieldType: FieldTypes(rawValue: field.type!)!, condition: condition.condition, value: condition.value)
+            ConditionModel(fieldValue: field.value, fieldType: FieldTypes(field.type), condition: condition.condition, value: condition.value)
         }
         let logicModel = LogicModel(id: field.logic?.id, action: logic.action, conditions: conditionModels)
-        let conditionModel = ConditionalLogicModel(logic: logicModel, isItemHidden: field.hidden, fieldCount: document.fields.count)
+        let conditionModel = ConditionalLogicModel(logic: logicModel, isItemHidden: field.hidden, itemCount: fieldMap.count)
         return conditionModel
     }
 
@@ -132,7 +132,7 @@ public class DocumentEditor {
         guard let model = model else {
             return true
         }
-        guard model.fieldCount > 1 else {
+        guard model.itemCount > 1 else {
             return true
         }
         guard let logic = model.logic else { return !(model.isItemHidden ?? false) }
@@ -260,5 +260,4 @@ public class DocumentEditor {
             return conditionsResults.contains { $0 }
         }
     }
-
 }

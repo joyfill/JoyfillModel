@@ -179,6 +179,15 @@ public enum FieldTypes: String, Codable {
     case richText
     case table
     case image
+    case unknown
+
+    init(_ value: String?) {
+        if let value = value {
+            self = FieldTypes(rawValue: value) ?? .unknown
+            return
+        }
+        self = .unknown
+    }
 }
 
 /// `DateFormatType` is an enumeration that represents the types of date formats.
