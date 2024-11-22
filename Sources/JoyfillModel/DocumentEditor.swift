@@ -8,7 +8,7 @@
 import Foundation
 
 public class DocumentEditor {
-    var document: JoyDoc
+    private var document: JoyDoc
     private var fieldMap = [String: JoyDocField]()
     private var fieldPositionMap = [String: FieldPosition]()
 
@@ -25,9 +25,22 @@ public class DocumentEditor {
         }
     }
 
+    public var pagesForCurrentView: [Page] {
+        document.pagesForCurrentView
+    }
+
+    public func updatefield(field: JoyDocField?) {
+        guard let fieldID = field?.id else { return }
+        fieldMap[fieldID] = field
+    }
+
     public func field(fieldID: String?) -> JoyDocField? {
         guard let fieldID = fieldID else { return nil }
         return fieldMap[fieldID]
+    }
+
+    public var allFields: [JoyDocField] {
+        return fieldMap.map { $1 }
     }
 
     public func fieldPosition(fieldID: String?) -> FieldPosition? {
