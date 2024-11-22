@@ -2,7 +2,24 @@ import Foundation
 /// Represents a Joy document.
 ///
 /// Use the `JoyDoc` struct to create and manipulate Joy documents.
-public struct JoyDoc {
+public struct JoyDoc: Equatable {
+    public static func == (lhs: JoyDoc, rhs: JoyDoc) -> Bool {
+        guard lhs.id == rhs.id else { return false }
+        guard lhs.fields.count == rhs.fields.count else { return false }
+        var fieldMap = [String: JoyDocField]()
+        rhs.fields.forEach { field in
+            guard let fieldID = field.id else { return }
+            fieldMap[fieldID] = field
+        }
+
+        for field in lhs.fields {
+            if field.value != fieldMap[field.id!]?.value {
+                return false
+            }
+        }
+        return true
+    }
+
     /// A structure representing a Joy document.
     /// The dictionary representation of the Joy document.
     public var dictionary: [String: Any]
@@ -211,9 +228,13 @@ public struct File {
 
 // MARK: - JoyDocField
 /// Represents a field in a Joy document.
+///
+var count  = 0
 public struct JoyDocField: Equatable {
     public static func == (lhs: JoyDocField, rhs: JoyDocField) -> Bool {
-        lhs.id == rhs.id
+        count = count + 1
+        print(count)
+        return lhs.id == rhs.id
     }
     public var dictionary: [String: Any]
     
