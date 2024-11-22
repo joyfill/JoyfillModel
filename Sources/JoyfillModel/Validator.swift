@@ -15,9 +15,19 @@ public enum ValidationStatus: String {
 public struct Validation {
     public let status: ValidationStatus
     public let fieldValidations: [FieldValidation]
+
+    public init(status: ValidationStatus, fieldValidations: [FieldValidation]) {
+        self.status = status
+        self.fieldValidations = fieldValidations
+    }
 }
 
 public struct FieldValidation {
     public let field: JoyDocField
     public let status: ValidationStatus
+
+    public init(field: JoyDocField, status: ValidationStatus) {
+        self.field = field
+        self.status = status
+    }
 }

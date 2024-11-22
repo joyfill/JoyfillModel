@@ -181,7 +181,7 @@ public enum FieldTypes: String, Codable {
     case image
     case unknown
 
-    init(_ value: String?) {
+    public init(_ value: String?) {
         if let value = value {
             self = FieldTypes(rawValue: value) ?? .unknown
             return

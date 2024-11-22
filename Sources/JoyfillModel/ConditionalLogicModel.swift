@@ -55,7 +55,13 @@ public struct ConditionModel {
 }
 
 public struct ConditionalLogicModel {
-    let logic: LogicModel?
-    let isItemHidden: Bool?
-    let itemCount: Int
+    public let logic: LogicModel?
+    public let isItemHidden: Bool?
+    public let itemCount: Int
+
+    public init(logic: LogicModel?, isItemHidden: Bool?, itemCount: Int) {
+        self.logic = logic
+        self.isItemHidden = isItemHidden
+        self.itemCount = itemCount
+    }
 }
