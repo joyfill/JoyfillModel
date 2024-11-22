@@ -921,6 +921,25 @@ public enum ValueUnion: Codable, Hashable {
         self = .dictionary(dcitonary)
     }
 
+    public var nullOrEmpty: Bool {
+        switch self {
+        case .double(let double):
+            return double == 0
+        case .string(let string):
+            return string.isEmpty
+        case .array(let stringArray):
+            return stringArray.isEmpty
+        case .valueElementArray(let valueElementArray):
+            return valueElementArray.map { $0.anyDictionary }.isEmpty
+        case .bool(let bool):
+            return bool
+        case .null:
+            return true
+        case .dictionary(let dictionary):
+            return dictionary.isEmpty
+        }
+    }
+
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
     /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
