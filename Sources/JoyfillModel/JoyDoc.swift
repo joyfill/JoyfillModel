@@ -898,7 +898,27 @@ public struct FieldTableColumn {
 /// `ValueUnion` is an enumeration that represents different types of values.
 ///
 /// It can represent a `Double`, `String`, `Array<String>`, `Array<ValueElement>`, `Dictionary<String, ValueUnion>`, `Bool`, or `null`.
-public enum ValueUnion: Codable, Hashable {
+public enum ValueUnion: Codable, Hashable, Equatable {
+    public static func == (lhs: ValueUnion, rhs: ValueUnion) -> Bool {
+        switch (lhs, rhs) {
+        case (.double(let a), .double(let b)):
+            return a == b
+        case (.string(let a), .string(let b)):
+            return a == b
+        case (.array(let a), .array(let b)):
+            return a == b
+        case (.valueElementArray(let a), .valueElementArray(let b)):
+            return a == b
+        case (.dictionary(let a), .dictionary(let b)):
+            return a == b
+        case (.bool(let a), .bool(let b)):
+            return a == b
+        case (.null, .null):
+            return true
+        default:
+            return false
+        }
+    }
     /// Represents a `Double` value.
     case double(Double)
     /// Represents a `String` value.
@@ -1162,7 +1182,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     ///   - rhs: The right-hand side value element.
     /// - Returns: `true` if the value elements are equal, `false` otherwise.
     public static func == (lhs: ValueElement, rhs: ValueElement) -> Bool {
-        lhs.id == rhs.id
+        lhs.points == rhs.points && lhs.title == rhs.title && lhs.description == rhs.description
     }
 
     /// Initializes a value element with a dictionary.
@@ -1350,7 +1370,11 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
 // MARK: - Point
 /// A struct representing a point with x and y coordinates.
-public struct Point: Codable {
+public struct Point: Codable, Equatable {
+    public static func == (lhs: Point, rhs: Point) -> Bool {
+        return lhs.id == rhs.id && lhs.x == rhs.x && lhs.y == rhs.y && lhs.label == rhs.label
+    }
+
     var dictionary = [String: ValueUnion]()
 
     /// Initializes a new instance of `Point` from a decoder.
