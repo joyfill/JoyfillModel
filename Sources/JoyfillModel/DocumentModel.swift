@@ -426,41 +426,37 @@ public func dateToTimestampMilliseconds(date: Date) -> Double {
 /// Represents an event related to a field in a document.
 public struct FieldEvent {
     /// The field associated with the event.
-    public let field: JoyDocField?
+    public let fieldID: String
     
     /// The page associated with the event.
-    public var page: Page?
+    public var pageID: String?
     
     /// The file associated with the event.
-    public var file: File?
+    public var fileID: String?
     
     /// Initializes a new instance of `FieldEvent`.
     /// - Parameters:
     ///   - field: The field associated with the event. Default value is `nil`.
     ///   - page: The page associated with the event. Default value is `nil`.
     ///   - file: The file associated with the event. Default value is `nil`.
-    public init(field: JoyDocField? = nil, page: Page? = nil, file: File? = nil) {
-        self.field = field
-        self.page = page
-        self.file = file
+    public init(fieldID: String, pageID: String? = nil, fileID: String? = nil) {
+        self.fieldID = fieldID
+        self.pageID = pageID
+        self.fileID = fileID
     }
 }
 
 /// `UploadEvent` is a structure that encapsulates an upload event in the JoyDoc system.
 public struct UploadEvent {
-    public var field: JoyDocField
-    public var page: Page?
-    public var file: File?
+    public var fieldEvent: FieldEvent
     
     ///  A closure of type `([String]) -> Void` that handles the upload process.
     public var uploadHandler: ([String]) -> Void
     
-    public init(field: JoyDocField, page: Page? = nil, file: File? = nil, uploadHandler: @escaping ([String]) -> Void) {
-        self.field = field
-        self.page = page
-        self.file = file
+    public init(fieldEvent: FieldEvent, uploadHandler: @escaping ([String]) -> Void) {
+        self.fieldEvent = fieldEvent
         self.uploadHandler = uploadHandler
-      }
+    }
 }
 
 /// Represents the mode of a document.
