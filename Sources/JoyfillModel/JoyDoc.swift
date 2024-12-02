@@ -1370,7 +1370,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
 // MARK: - Point
 /// A struct representing a point with x and y coordinates.
-public struct Point: Codable, Equatable {
+public struct Point: Codable,Hashable, Equatable {
     public static func == (lhs: Point, rhs: Point) -> Bool {
         return lhs.id == rhs.id && lhs.x == rhs.x && lhs.y == rhs.y && lhs.label == rhs.label
     }
