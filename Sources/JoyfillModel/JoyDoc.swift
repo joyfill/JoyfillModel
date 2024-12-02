@@ -1182,7 +1182,14 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     ///   - rhs: The right-hand side value element.
     /// - Returns: `true` if the value elements are equal, `false` otherwise.
     public static func == (lhs: ValueElement, rhs: ValueElement) -> Bool {
-        lhs.points == rhs.points && lhs.title == rhs.title && lhs.description == rhs.description
+        lhs.points == rhs.points &&
+        lhs.title == rhs.title &&
+        lhs.description == rhs.description &&
+        lhs.filePath == rhs.filePath &&
+        lhs.url == rhs.url &&
+        lhs.fileName == rhs.fileName &&
+        lhs.deleted == rhs.deleted &&
+        lhs.id == rhs.id
     }
 
     /// Initializes a value element with a dictionary.
