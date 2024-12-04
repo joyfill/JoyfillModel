@@ -62,8 +62,8 @@ public struct Document: Codable, Hashable {
         public let height: Int
         public let cols: Int
         public let rowHeight: Int
-        public let layout: String
-        public let presentation: String
+        public let layout: String?
+        public let presentation: String?
         public let margin: Double
         public let padding: Double
         public let borderWidth: Double
