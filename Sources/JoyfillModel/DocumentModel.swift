@@ -423,22 +423,11 @@ public func dateToTimestampMilliseconds(date: Date) -> Double {
     return timestampMilliseconds
 }
 
-/// Represents an event related to a field in a document.
-public struct FieldEvent {
-    /// The field associated with the event.
+public struct FieldIdentifier {
     public let fieldID: String
-    
-    /// The page associated with the event.
     public var pageID: String?
-    
-    /// The file associated with the event.
     public var fileID: String?
-    
-    /// Initializes a new instance of `FieldEvent`.
-    /// - Parameters:
-    ///   - field: The field associated with the event. Default value is `nil`.
-    ///   - page: The page associated with the event. Default value is `nil`.
-    ///   - file: The file associated with the event. Default value is `nil`.
+
     public init(fieldID: String, pageID: String? = nil, fileID: String? = nil) {
         self.fieldID = fieldID
         self.pageID = pageID
@@ -446,29 +435,22 @@ public struct FieldEvent {
     }
 }
 
-/// `UploadEvent` is a structure that encapsulates an upload event in the JoyDoc system.
 public struct UploadEvent {
-    public var fieldEvent: FieldEvent
+    public var fieldEvent: FieldIdentifier
     
-    ///  A closure of type `([String]) -> Void` that handles the upload process.
     public var uploadHandler: ([String]) -> Void
     
-    public init(fieldEvent: FieldEvent, uploadHandler: @escaping ([String]) -> Void) {
+    public init(fieldEvent: FieldIdentifier, uploadHandler: @escaping ([String]) -> Void) {
         self.fieldEvent = fieldEvent
         self.uploadHandler = uploadHandler
     }
 }
 
-/// Represents the mode of a document.
 public enum Mode {
-    /// The fill mode allows modifying the document.
     case fill
-    
-    /// The readonly mode allows only reading the document.
     case readonly
 }
 
-/// A protocol that defines the interface for a form.
 public protocol FormInterface {
     var document: JoyDoc { get }
     var mode: Mode { get }
@@ -596,7 +578,7 @@ public protocol FormChangeEvent {
     ///     - Triggers the field blur event for the focused field.
     ///     - If there are pending changes in the field that have not triggered the `onChange` event yet then the `e.blur()` function will trigger both the change and blur events in the following order: 1) `onChange` 2) `onBlur`.
     ///     - If the focused field utilizes a modal for field modification, ie. signature, image, tables, etc. the `e.blur()` will close the modal.
-    func onFocus(event: FieldEvent)
+    func onFocus(event: FieldIdentifier)
     
     /// Used to listen to field focus events.
     ///
@@ -604,7 +586,7 @@ public protocol FormChangeEvent {
     ///
     ///  params: object :
     ///  - Specifies information about the blurred field.
-    func onBlur(event: FieldEvent)
+    func onBlur(event: FieldIdentifier)
     
     /// Used to listen to file upload events.
     ///
