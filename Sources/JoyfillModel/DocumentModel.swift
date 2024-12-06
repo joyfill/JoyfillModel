@@ -47,7 +47,7 @@ public struct Document: Codable, Hashable {
     public struct Files: Codable, Hashable {
         public let _id: String
         public let version: Int
-        public let name: String
+        public let name: String?
         public let pageOrder: [String]
         public let pages: [Pages]
     }
