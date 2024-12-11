@@ -921,6 +921,7 @@ public enum ValueUnion: Codable, Hashable, Equatable {
     }
     /// Represents a `Double` value.
     case double(Double)
+    case int(Int64)
     /// Represents a `String` value.
     case string(String)
     /// Represents a `Array<String>` value.
@@ -957,6 +958,8 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return true
         case .dictionary(let dictionary):
             return dictionary.isEmpty
+        case .int(let int):
+            return int == 0
         }
     }
 
@@ -1055,6 +1058,8 @@ public enum ValueUnion: Codable, Hashable, Equatable {
                 anyDict[key] = value.dictionary
             }
             return anyDict
+        case .int(let int):
+            return int
         }
     }
 
@@ -1075,6 +1080,8 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return nil
         case .dictionary(let dictionary):
             return dictionary
+        case .int(let int):
+            return int
         }
     }
 
@@ -1134,6 +1141,8 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             try container.encodeNil()
         case .dictionary(let dictionary):
             try container.encode(dictionary)
+        case .int(let x):
+            try container.encode(x)
         }
     }
 
@@ -1153,6 +1162,8 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return true
         case .dictionary(let dictionary):
             return dictionary.isEmpty
+        case .int(let int):
+            return false
         }
     }
 }
