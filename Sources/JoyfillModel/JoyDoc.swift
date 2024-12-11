@@ -990,6 +990,11 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             self = .double(doubleValue)
             return
         }
+        
+        if let int64Value = value as? Int64 {
+            self = .int(int64Value)
+            return
+        }
 
         if let boolValue = value as? Bool {
             self = .bool(boolValue)
