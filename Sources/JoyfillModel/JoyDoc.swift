@@ -848,8 +848,8 @@ public struct FieldTableColumn {
     }
 
     /// The title of the column.
-    public var title: String? {
-        get { dictionary["title"] as? String }
+    public var title: String {
+        get { dictionary["title"] as? String ?? "" }
         set { dictionary["title"] = newValue }
     }
 
