@@ -1786,6 +1786,38 @@ public struct FieldPosition {
         get { dictionary["borderRadius"] as? Double }
         set { dictionary["borderRadius"] = newValue }
     }
+
+    public var tableColumns: [TableColumn]? {
+        get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(TableColumn.init) ?? [] }
+        set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
+    }
+}
+
+public struct TableColumn {
+    var dictionary: [String: Any]
+    
+    /// Initializes a new `TableColumn` with the given dictionary.
+    /// - Parameter dictionary: The dictionary representing the column. Default value is an empty dictionary.
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    /// The ID of the column.
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// The format of the Date column.
+    public var format: String? {
+        get { dictionary["format"] as? String }
+        set { dictionary["format"] = newValue }
+    }
+    
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
+    }
 }
 
 /// MARK: - ModelView
