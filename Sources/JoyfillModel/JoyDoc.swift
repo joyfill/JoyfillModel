@@ -871,10 +871,16 @@ public struct FieldTableColumn {
         set { dictionary["options"] = newValue?.compactMap{ $0.dictionary } }
     }
 
-    /// The value of the column.
-    public var value: String? {
-        get { dictionary["value"] as? String }
-        set { dictionary["value"] = newValue }
+//    /// The value of the column.
+//    public var value: String? {
+//        get { dictionary["value"] as? String }
+//        set { dictionary["value"] = newValue }
+//    }
+    
+    /// The value of the field.
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
     }
 
     /// The default selected ID for dropdown options.
