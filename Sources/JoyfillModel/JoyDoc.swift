@@ -852,6 +852,12 @@ public struct FieldTableColumn {
         get { dictionary["title"] as? String ?? "" }
         set { dictionary["title"] = newValue }
     }
+    
+    /// The number value of the column.
+    public var number: Double {
+        get { dictionary["number"] as? Double ?? 0 }
+        set { dictionary["number"] = newValue }
+    }
 
     /// The width of the column.
     public var width: Int? {
