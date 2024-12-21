@@ -899,11 +899,20 @@ public struct FieldTableColumn {
         options?.filter { $0.id == defaultDropdownSelectedId }.first?.value ?? ""
     }
 
-
     /// The images associated with the column.
     public var images: [ValueElement]? {
         get { (dictionary["images"] as? [[String: Any]])?.compactMap(ValueElement.init) ?? [] }
         set { dictionary["images"] = newValue?.compactMap{ $0.dictionary } }
+    }
+    
+    public var multi: Bool? {
+        get { dictionary["multi"] as? Bool }
+        set { dictionary["multi"] = newValue }
+    }
+    
+    public var multiSelectValues: [String]? {
+        get { dictionary["multiSelectValues"] as? [String] }
+        set { dictionary["multiSelectValues"] = newValue }
     }
 }
 
