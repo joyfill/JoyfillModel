@@ -1919,11 +1919,13 @@ public struct FilterModel:Equatable {
     public var filterText: String = ""
     public var colIndex: Int
     public var colID: String
+    public var type: String
 
-    public init(filterText: String = "", colIndex: Int, colID: String) {
+    public init(filterText: String = "", colIndex: Int, colID: String, type: String) {
         self.filterText = filterText
         self.colIndex = colIndex
         self.colID = colID
+        self.type = type
     }
 }
 
