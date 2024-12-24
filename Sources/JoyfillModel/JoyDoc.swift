@@ -820,6 +820,12 @@ public struct Option: Identifiable {
         get { dictionary["width"] as? Int }
         set { dictionary["width"] = newValue }
     }
+    
+    /// The background color of the option.
+    public var color: String? {
+        get { dictionary["color"] as? String }
+        set { dictionary["color"] = newValue }
+    }
 }
 
 // MARK: - FieldTableColumn
