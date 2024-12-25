@@ -546,11 +546,11 @@ public struct JoyDocField: Equatable {
         }
         
         switch editedCell.type {
-        case "text":
+        case .text:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
-        case "dropdown":
+        case .dropdown:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.defaultDropdownSelectedId ?? ""))
-        case "image":
+        case .image:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.valueElementArray(editedCell.images ?? []))
         default:
             return
@@ -848,9 +848,9 @@ public struct FieldTableColumn {
     }
 
     /// The type of the column.
-    public var type: String? {
-        get { dictionary["type"] as? String }
-        set { dictionary["type"] = newValue }
+    public var type: ColumnTypes? {
+        get { ColumnTypes(rawValue: dictionary["type"] as! String) }
+        set { dictionary["type"] = newValue?.rawValue }
     }
 
     /// The title of the column.
@@ -1930,13 +1930,13 @@ public struct SortModel {
     }
 }
 
-public struct FilterModel:Equatable {
+public struct FilterModel: Equatable {
     public var filterText: String = ""
     public var colIndex: Int
     public var colID: String
-    public var type: String
+    public var type: ColumnTypes
 
-    public init(filterText: String = "", colIndex: Int, colID: String, type: String) {
+    public init(filterText: String = "", colIndex: Int, colID: String, type: ColumnTypes) {
         self.filterText = filterText
         self.colIndex = colIndex
         self.colID = colID

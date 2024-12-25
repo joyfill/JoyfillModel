@@ -190,6 +190,25 @@ public enum FieldTypes: String, Codable {
     }
 }
 
+public enum ColumnTypes: String {
+    case text
+    case dropdown
+    case image
+    case block
+    case date
+    case number
+    case multiSelect
+    case unknown
+    
+    public init(_ value: String?) {
+        if let value = value {
+            self = ColumnTypes(rawValue: value) ?? .unknown
+            return
+        }
+        self = .unknown
+    }
+}
+
 /// `DateFormatType` is an enumeration that represents the types of date formats.
 ///
 /// It includes cases for dateOnly, timeOnly, dateTime, and empty. Each case has a corresponding date format.
