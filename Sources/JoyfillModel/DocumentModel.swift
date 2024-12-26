@@ -363,7 +363,7 @@ public extension ValueUnion {
     /// If the `ValueUnion` is a string, it assumes the string is in ISO8601 format and converts it to the specified format.
     /// If the `ValueUnion` is a double, it assumes the double value represents a timestamp in milliseconds and converts it to the specified format.
     /// Returns `nil` if the `ValueUnion` is neither a string nor a double.
-    func dateTime(format: String) -> String? {
+    func dateTime(format: DateFormatType) -> String? {
         switch self {
         case .string(let string):
             let date = getTimeFromISO8601Format(iso8601String: string)
@@ -415,14 +415,14 @@ public func getTimeFromISO8601Format(iso8601String: String) -> String {
 ///   - format: The desired format for the date string. Supported formats are "MM/DD/YYYY", "hh:mma", and any other custom format.
 ///
 /// - Returns: A formatted date string based on the provided timestamp value and format.
-public func timestampMillisecondsToDate(value: Int, format: String) -> String {
+public func timestampMillisecondsToDate(value: Int, format: DateFormatType) -> String {
     let timestampMilliseconds: TimeInterval = TimeInterval(value)
     let date = Date(timeIntervalSince1970: timestampMilliseconds / 1000.0)
     let dateFormatter = DateFormatter()
     
-    if format == "MM/DD/YYYY" {
+    if format == .dateOnly {
         dateFormatter.dateFormat = "MMMM d, yyyy"
-    } else if format == "hh:mma" {
+    } else if format == .timeOnly {
         dateFormatter.dateFormat = "hh:mm a"
     } else {
         dateFormatter.dateFormat = "MMMM d, yyyy h:mm a"

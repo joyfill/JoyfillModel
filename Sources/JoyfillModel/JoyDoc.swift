@@ -1767,9 +1767,17 @@ public struct FieldPosition {
     }
 
     /// The format of the field.
-    public var format: String? {
-        get { dictionary["format"] as? String }
-        set { dictionary["format"] = newValue }
+    public var format: DateFormatType? {
+        get {
+            if let formatString = dictionary["format"] as? String,
+               let formatType = DateFormatType(rawValue: formatString) {
+                return formatType
+            }
+            return nil
+        }
+        set {
+            dictionary["format"] = newValue?.rawValue
+        }
     }
 
     /// The column associated with the field.
@@ -1830,9 +1838,17 @@ public struct TableColumn {
     }
     
     /// The format of the Date column.
-    public var format: String? {
-        get { dictionary["format"] as? String }
-        set { dictionary["format"] = newValue }
+    public var format: DateFormatType? {
+        get {
+            if let formatString = dictionary["format"] as? String,
+               let formatType = DateFormatType(rawValue: formatString) {
+                return formatType
+            }
+            return nil
+        }
+        set {
+            dictionary["format"] = newValue?.rawValue
+        }
     }
     
     public var hidden: Bool? {
