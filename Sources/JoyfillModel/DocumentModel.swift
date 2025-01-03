@@ -198,6 +198,7 @@ public enum ColumnTypes: String {
     case date
     case number
     case multiSelect
+    case progress
     case unknown
     
     public init(_ value: String?) {
