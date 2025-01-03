@@ -915,6 +915,11 @@ public struct FieldTableColumn {
         get { dictionary["multi"] as? Bool }
         set { dictionary["multi"] = newValue }
     }
+
+    public var required: Bool? {
+        get { dictionary["required"] as? Bool }
+        set { dictionary["required"] = newValue }
+    }
     
     public var multiSelectValues: [String]? {
         get { dictionary["multiSelectValues"] as? [String] }
