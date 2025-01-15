@@ -1637,7 +1637,7 @@ public struct Page {
     
     public var logic: Logic? {
         get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
-        set { dictionary["logic"] = newValue }
+        set { dictionary["logic"] = newValue?.dictionary }
     }
     /// Indicates whether the page is hidden.
     public var hidden: Bool? {
