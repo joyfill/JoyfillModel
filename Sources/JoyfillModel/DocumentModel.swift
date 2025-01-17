@@ -199,6 +199,7 @@ public enum ColumnTypes: String {
     case number
     case multiSelect
     case progress
+    case barcode
     case unknown
     
     public init(_ value: String?) {
@@ -466,6 +467,17 @@ public struct UploadEvent {
     }
 }
 
+public struct CaptureEvent {
+    public var fieldEvent: FieldIdentifier
+    
+    public var captureHandler: (ValueUnion) -> Void
+    
+    public init(fieldEvent: FieldIdentifier, captureHandler: @escaping (ValueUnion) -> Void) {
+        self.fieldEvent = fieldEvent
+        self.captureHandler = captureHandler
+    }
+}
+
 public enum Mode {
     case fill
     case readonly
@@ -613,6 +625,8 @@ public protocol FormChangeEvent {
     /// (params: object) => {} :
     /// - Specifies information about the uploaded file.
     func onUpload(event:UploadEvent)
+    
+    func onCapture(event: CaptureEvent)
 }
 
 public struct TargetRowModel {
