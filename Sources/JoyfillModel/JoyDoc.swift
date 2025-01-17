@@ -546,11 +546,11 @@ public struct JoyDocField: Equatable {
         }
         
         switch editedCell.type {
-        case "text":
+        case .text:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
-        case "dropdown":
+        case .dropdown:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.defaultDropdownSelectedId ?? ""))
-        case "image":
+        case .image:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.valueElementArray(editedCell.images ?? []))
         default:
             return
@@ -820,6 +820,12 @@ public struct Option: Identifiable {
         get { dictionary["width"] as? Int }
         set { dictionary["width"] = newValue }
     }
+    
+    /// The background color of the option.
+    public var color: String? {
+        get { dictionary["color"] as? String }
+        set { dictionary["color"] = newValue }
+    }
 }
 
 // MARK: - FieldTableColumn
@@ -842,9 +848,9 @@ public struct FieldTableColumn {
     }
 
     /// The type of the column.
-    public var type: String? {
-        get { dictionary["type"] as? String }
-        set { dictionary["type"] = newValue }
+    public var type: ColumnTypes? {
+        get { ColumnTypes(rawValue: dictionary["type"] as! String) }
+        set { dictionary["type"] = newValue?.rawValue }
     }
 
     /// The title of the column.
@@ -878,9 +884,9 @@ public struct FieldTableColumn {
     }
 
     /// The value of the column.
-    public var value: String? {
-        get { dictionary["value"] as? String }
-        set { dictionary["value"] = newValue }
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
     }
     
     /// The value of the date cell.
@@ -899,11 +905,25 @@ public struct FieldTableColumn {
         options?.filter { $0.id == defaultDropdownSelectedId }.first?.value ?? ""
     }
 
-
     /// The images associated with the column.
     public var images: [ValueElement]? {
         get { (dictionary["images"] as? [[String: Any]])?.compactMap(ValueElement.init) ?? [] }
         set { dictionary["images"] = newValue?.compactMap{ $0.dictionary } }
+    }
+    
+    public var multi: Bool? {
+        get { dictionary["multi"] as? Bool }
+        set { dictionary["multi"] = newValue }
+    }
+
+    public var required: Bool? {
+        get { dictionary["required"] as? Bool }
+        set { dictionary["required"] = newValue }
+    }
+    
+    public var multiSelectValues: [String]? {
+        get { dictionary["multiSelectValues"] as? [String] }
+        set { dictionary["multiSelectValues"] = newValue }
     }
 }
 
@@ -1752,9 +1772,17 @@ public struct FieldPosition {
     }
 
     /// The format of the field.
-    public var format: String? {
-        get { dictionary["format"] as? String }
-        set { dictionary["format"] = newValue }
+    public var format: DateFormatType? {
+        get {
+            if let formatString = dictionary["format"] as? String,
+               let formatType = DateFormatType(rawValue: formatString) {
+                return formatType
+            }
+            return nil
+        }
+        set {
+            dictionary["format"] = newValue?.rawValue
+        }
     }
 
     /// The column associated with the field.
@@ -1815,9 +1843,17 @@ public struct TableColumn {
     }
     
     /// The format of the Date column.
-    public var format: String? {
-        get { dictionary["format"] as? String }
-        set { dictionary["format"] = newValue }
+    public var format: DateFormatType? {
+        get {
+            if let formatString = dictionary["format"] as? String,
+               let formatType = DateFormatType(rawValue: formatString) {
+                return formatType
+            }
+            return nil
+        }
+        set {
+            dictionary["format"] = newValue?.rawValue
+        }
     }
     
     public var hidden: Bool? {
@@ -1915,13 +1951,13 @@ public struct SortModel {
     }
 }
 
-public struct FilterModel:Equatable {
+public struct FilterModel: Equatable {
     public var filterText: String = ""
     public var colIndex: Int
     public var colID: String
-    public var type: String
+    public var type: ColumnTypes
 
-    public init(filterText: String = "", colIndex: Int, colID: String, type: String) {
+    public init(filterText: String = "", colIndex: Int, colID: String, type: ColumnTypes) {
         self.filterText = filterText
         self.colIndex = colIndex
         self.colID = colID
