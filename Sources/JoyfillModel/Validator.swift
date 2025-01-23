@@ -7,34 +7,6 @@
 
 import Foundation
 
-public class Validator {
-    public static func validate(document: JoyDoc) -> Validation {
-        var fieldValidations = [FieldValidation]()
-        var isValid = true
-        let fieldPositionIDs = document.fieldPositionsForCurrentView.map {  $0.field }
-        for field in document.fields.filter { fieldPositionIDs.contains($0.id) } {
-            if !DocumentEngine.shouldShowItem(fields: document.fields, logic: field.logic,isItemHidden: field.hidden) {
-                fieldValidations.append(FieldValidation(field: field, status: .valid))
-                continue
-            }
-
-            guard let required = field.required, required else {
-                fieldValidations.append(FieldValidation(field: field, status: .valid))
-                continue
-            }
-
-            if let value = field.value, !value.isEmpty {
-                fieldValidations.append(FieldValidation(field: field, status: .valid))
-                continue
-            }
-            isValid = false
-            fieldValidations.append(FieldValidation(field: field, status: .invalid))
-        }
-
-        return Validation(status: isValid ? .valid: .invalid, fieldValidations: fieldValidations)
-    }
-}
-
 public enum ValidationStatus: String {
     case valid
     case invalid
@@ -42,10 +14,68 @@ public enum ValidationStatus: String {
 
 public struct Validation {
     public let status: ValidationStatus
-    public let fieldValidations: [FieldValidation]
+    public let fieldValidities: [FieldValidity]
+
+    public init(status: ValidationStatus, fieldValidities: [FieldValidity]) {
+        self.status = status
+        self.fieldValidities = fieldValidities
+    }
 }
 
-public struct FieldValidation {
-    public let field: JoyDocField
+public struct CellValidity {
     public let status: ValidationStatus
+    public let row: ValueElement
+    public let column: FieldTableColumn
+    public let reasons: [String]?
+    
+    public init(status: ValidationStatus, row: ValueElement, column: FieldTableColumn, reasons: [String]? = nil) {
+        self.status = status
+        self.row = row
+        self.column = column
+        self.reasons = reasons
+    }
+}
+
+public struct RowValidity {
+    public let status: ValidationStatus
+    public let cellValidities: [CellValidity]
+    
+    public init(status: ValidationStatus, cellValidities: [CellValidity]) {
+        self.status = status
+        self.cellValidities = cellValidities
+    }
+}
+
+public struct ColumnValidity {
+    public let status: ValidationStatus
+    public let cellValidities: [CellValidity]
+    
+    public init(status: ValidationStatus, cellValidities: [CellValidity]) {
+        self.status = status
+        self.cellValidities = cellValidities
+    }
+}
+
+struct TableValidity {
+    let status: ValidationStatus
+    let rowValidities: [RowValidity]
+    let columnValidities: [ColumnValidity]
+}
+
+public struct FieldValidity {
+    public let status: ValidationStatus
+    public let field: JoyDocField
+    public let children: [FieldValidity]? // For fields with nested structures
+    public let rowValidities: [RowValidity]? // Only available if field is a table
+    public let columnValidities: [ColumnValidity]? // Only available if field is a table
+    public let reasons: [String]? // Available only if status is invalid
+    
+    public init(field: JoyDocField, status: ValidationStatus, children: [FieldValidity]? = nil, rowValidities: [RowValidity]? = nil, columnValidities: [ColumnValidity]? = nil, reasons: [String]? = nil) {
+        self.field = field
+        self.status = status
+        self.children = children
+        self.rowValidities = rowValidities
+        self.columnValidities = columnValidities
+        self.reasons = reasons
+    }
 }

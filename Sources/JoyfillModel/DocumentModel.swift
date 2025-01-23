@@ -47,7 +47,7 @@ public struct Document: Codable, Hashable {
     public struct Files: Codable, Hashable {
         public let _id: String
         public let version: Int
-        public let name: String
+        public let name: String?
         public let pageOrder: [String]
         public let pages: [Pages]
     }
@@ -62,8 +62,8 @@ public struct Document: Codable, Hashable {
         public let height: Int
         public let cols: Int
         public let rowHeight: Int
-        public let layout: String
-        public let presentation: String
+        public let layout: String?
+        public let presentation: String?
         public let margin: Double
         public let padding: Double
         public let borderWidth: Double
@@ -179,6 +179,36 @@ public enum FieldTypes: String, Codable {
     case richText
     case table
     case image
+    case unknown
+
+    public init(_ value: String?) {
+        if let value = value {
+            self = FieldTypes(rawValue: value) ?? .unknown
+            return
+        }
+        self = .unknown
+    }
+}
+
+public enum ColumnTypes: String {
+    case text
+    case dropdown
+    case image
+    case block
+    case date
+    case number
+    case multiSelect
+    case progress
+    case barcode
+    case unknown
+    
+    public init(_ value: String?) {
+        if let value = value {
+            self = ColumnTypes(rawValue: value) ?? .unknown
+            return
+        }
+        self = .unknown
+    }
 }
 
 /// `DateFormatType` is an enumeration that represents the types of date formats.
@@ -335,7 +365,7 @@ public extension ValueUnion {
     /// If the `ValueUnion` is a string, it assumes the string is in ISO8601 format and converts it to the specified format.
     /// If the `ValueUnion` is a double, it assumes the double value represents a timestamp in milliseconds and converts it to the specified format.
     /// Returns `nil` if the `ValueUnion` is neither a string nor a double.
-    func dateTime(format: String) -> String? {
+    func dateTime(format: DateFormatType) -> String? {
         switch self {
         case .string(let string):
             let date = getTimeFromISO8601Format(iso8601String: string)
@@ -387,14 +417,14 @@ public func getTimeFromISO8601Format(iso8601String: String) -> String {
 ///   - format: The desired format for the date string. Supported formats are "MM/DD/YYYY", "hh:mma", and any other custom format.
 ///
 /// - Returns: A formatted date string based on the provided timestamp value and format.
-public func timestampMillisecondsToDate(value: Int, format: String) -> String {
+public func timestampMillisecondsToDate(value: Int, format: DateFormatType) -> String {
     let timestampMilliseconds: TimeInterval = TimeInterval(value)
     let date = Date(timeIntervalSince1970: timestampMilliseconds / 1000.0)
     let dateFormatter = DateFormatter()
     
-    if format == "MM/DD/YYYY" {
+    if format == .dateOnly {
         dateFormatter.dateFormat = "MMMM d, yyyy"
-    } else if format == "hh:mma" {
+    } else if format == .timeOnly {
         dateFormatter.dateFormat = "hh:mm a"
     } else {
         dateFormatter.dateFormat = "MMMM d, yyyy h:mm a"
@@ -414,77 +444,49 @@ public func dateToTimestampMilliseconds(date: Date) -> Double {
     return timestampMilliseconds
 }
 
-/// Represents an event related to a field in a document.
-public struct FieldEvent {
-    /// The field associated with the event.
-    public let field: JoyDocField?
-    
-    /// The page associated with the event.
-    public var page: Page?
-    
-    /// The file associated with the event.
-    public var file: File?
-    
-    /// Initializes a new instance of `FieldEvent`.
-    /// - Parameters:
-    ///   - field: The field associated with the event. Default value is `nil`.
-    ///   - page: The page associated with the event. Default value is `nil`.
-    ///   - file: The file associated with the event. Default value is `nil`.
-    public init(field: JoyDocField? = nil, page: Page? = nil, file: File? = nil) {
-        self.field = field
-        self.page = page
-        self.file = file
+public struct FieldIdentifier {
+    public let fieldID: String
+    public var pageID: String?
+    public var fileID: String?
+
+    public init(fieldID: String, pageID: String? = nil, fileID: String? = nil) {
+        self.fieldID = fieldID
+        self.pageID = pageID
+        self.fileID = fileID
     }
 }
 
-/// `UploadEvent` is a structure that encapsulates an upload event in the JoyDoc system.
 public struct UploadEvent {
-    public var field: JoyDocField
-    public var page: Page?
-    public var file: File?
+    public var fieldEvent: FieldIdentifier
     
-    ///  A closure of type `([String]) -> Void` that handles the upload process.
     public var uploadHandler: ([String]) -> Void
     
-    public init(field: JoyDocField, page: Page? = nil, file: File? = nil, uploadHandler: @escaping ([String]) -> Void) {
-        self.field = field
-        self.page = page
-        self.file = file
+    public init(fieldEvent: FieldIdentifier, uploadHandler: @escaping ([String]) -> Void) {
+        self.fieldEvent = fieldEvent
         self.uploadHandler = uploadHandler
-      }
+    }
 }
 
-/// Represents the mode of a document.
-public enum Mode {
-    /// The fill mode allows modifying the document.
-    case fill
+public struct CaptureEvent {
+    public var fieldEvent: FieldIdentifier
     
-    /// The readonly mode allows only reading the document.
+    public var captureHandler: (ValueUnion) -> Void
+    
+    public init(fieldEvent: FieldIdentifier, captureHandler: @escaping (ValueUnion) -> Void) {
+        self.fieldEvent = fieldEvent
+        self.captureHandler = captureHandler
+    }
+}
+
+public enum Mode {
+    case fill
     case readonly
 }
 
-/// A protocol that defines the interface for a form.
 public protocol FormInterface {
     var document: JoyDoc { get }
     var mode: Mode { get }
     var events: FormChangeEvent? { get set }
-}
-
-/// `FieldChangeEvent` is a structure that encapsulates the changes in a field.
-///
-/// It contains information about the position of the field, the field itself, the page containing the field, and the file associated with the field.
-public struct FieldChangeEvent {
-    public let fieldPosition: FieldPosition
-    public let field: JoyDocField?
-    public var page: Page?
-    public var file: File?
-    
-    public init(fieldPosition: FieldPosition, field: JoyDocField?, page: Page? = nil, file: File? = nil) {
-        self.fieldPosition = fieldPosition
-        self.field = field
-        self.page = page
-        self.file = file
-    }
 }
 
 /// A struct representing a change in a document.
@@ -608,7 +610,7 @@ public protocol FormChangeEvent {
     ///     - Triggers the field blur event for the focused field.
     ///     - If there are pending changes in the field that have not triggered the `onChange` event yet then the `e.blur()` function will trigger both the change and blur events in the following order: 1) `onChange` 2) `onBlur`.
     ///     - If the focused field utilizes a modal for field modification, ie. signature, image, tables, etc. the `e.blur()` will close the modal.
-    func onFocus(event: FieldEvent)
+    func onFocus(event: FieldIdentifier)
     
     /// Used to listen to field focus events.
     ///
@@ -616,75 +618,15 @@ public protocol FormChangeEvent {
     ///
     ///  params: object :
     ///  - Specifies information about the blurred field.
-    func onBlur(event: FieldEvent)
+    func onBlur(event: FieldIdentifier)
     
     /// Used to listen to file upload events.
     ///
     /// (params: object) => {} :
     /// - Specifies information about the uploaded file.
     func onUpload(event:UploadEvent)
-}
-
-/// `FormChangeEventInternal` is a protocol that defines the methods to handle form change events.
-public protocol FormChangeEventInternal {
     
-    /// A method that is called when a field's value changes.
-    ///
-    /// - Parameter event: The `FieldChangeEvent` object that contains information about the field change event.
-    func onChange(event: FieldChangeEvent)
-    
-    /// Adds a row to the form with the specified field change event.
-    ///
-    /// - Parameters:
-    ///   - event: The field change event containing the necessary information for adding a row.
-    func addRow(event: FieldChangeEvent, targetRowIndexes: [TargetRowModel])
-
-    func moveRow(event: FieldChangeEvent, targetRowIndexes: [TargetRowModel])
-
-    func deleteRow(event: FieldChangeEvent, targetRowIndexes: [TargetRowModel])
-
-    /// Notifies the form view that it has received focus.
-    ///
-    /// - Parameter event: The field event associated with the focus.
-    func onFocus(event: FieldEvent)
-    
-    /// Calls the `onBlur` event handler with the specified `event`.
-    ///
-    /// - Parameter event: The `FieldEvent` to pass to the `onBlur` event handler.
-    func onBlur(event: FieldEvent)
-    
-    /// Calls the `onUpload` method of the `events` object, passing the provided `event`.
-    ///
-    /// - Parameter event: The `UploadEvent` to be passed to the `onUpload` method.
-    func onUpload(event:UploadEvent)
-}
-
-/// A protocol that defines the field change events for a document.
-public protocol FieldChangeEvents {
-    
-    /// Notifies the conforming object when a field change event occurs.
-    ///
-    /// - Parameter event: The `FieldChangeEvent` object that represents the field change event.
-    func onChange(event: FieldChangeEvent)
-    
-    /// Adds a new row to the document when a field change event occurs.
-    ///
-    /// - Parameter event: The `FieldChangeEvent` object that represents the field change event.
-    func addRow(event: FieldChangeEvent, targetRowIndexes: [TargetRowModel])
-
-    func moveRow(event: FieldChangeEvent, targetRowIndexes: [TargetRowModel])
-
-    func deleteRow(event: FieldChangeEvent, targetRowIndexes: [TargetRowModel])
-
-    /// Notifies the conforming object when a field gains focus.
-    ///
-    /// - Parameter event: The `FieldEvent` object that represents the field event.
-    func onFocus(event: FieldEvent)
-    
-    /// Notifies the conforming object when an upload event occurs.
-    ///
-    /// - Parameter event: The `UploadEvent` object that represents the upload event.
-    func onUpload(event: UploadEvent)
+    func onCapture(event: CaptureEvent)
 }
 
 public struct TargetRowModel {

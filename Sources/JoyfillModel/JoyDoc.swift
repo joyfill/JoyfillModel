@@ -113,33 +113,6 @@ public struct JoyDoc {
     public var fieldPositionsForCurrentView: [FieldPosition] {
         return pagesForCurrentView.flatMap { $0.fieldPositions ?? [] }
     }
-
-    public var firstPage: Page? {
-        guard let pages = self.files[0].pages, pages.count > 1 else {
-            return self.files[0].pages?.first
-        }
-        return (self.files[0].pages?.first(where: { currentPage in
-            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
-        }))
-    }
-    
-    public var firstPageId: String? {
-        return self.firstPage?.id
-    }
-
-    public func firstValidPageFor(currentPageID: String) -> Page? {
-        return pagesForCurrentView.first { currentPage in
-            currentPage.id == currentPageID &&
-            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
-        } ?? firstPage
-    }
-
-    public func firstPageFor(currentPageID: String) -> Page? {
-        return pagesForCurrentView.first { currentPage in
-            currentPage.id == currentPageID &&
-            DocumentEngine.shouldShowItem(fields: self.fields, logic: currentPage.logic, isItemHidden: currentPage.hidden)
-        }
-    }
 }
 
 extension JoyDoc {
@@ -377,14 +350,14 @@ public struct JoyDocField: Equatable {
     }
     
     /// The maximum value of the y-axis for the chart field.
-    public var yMax: Int? {
-        get { dictionary["yMax"] as? Int }
+    public var yMax: Double? {
+        get { dictionary["yMax"] as? Double }
         set { dictionary["yMax"] = newValue }
     }
     
     /// The minimum value of the y-axis for the chart field.
-    public var yMin: Int? {
-        get { dictionary["yMin"] as? Int }
+    public var yMin: Double? {
+        get { dictionary["yMin"] as? Double }
         set { dictionary["yMin"] = newValue }
     }
     
@@ -395,14 +368,14 @@ public struct JoyDocField: Equatable {
     }
     
     /// The maximum value of the x-axis for the chart field.
-    public var xMax: Int? {
-        get { dictionary["xMax"] as? Int }
+    public var xMax: Double? {
+        get { dictionary["xMax"] as? Double }
         set { dictionary["xMax"] = newValue }
     }
     
     /// The minimum value of the x-axis for the chart field.
-    public var xMin: Int? {
-        get { dictionary["xMin"] as? Int }
+    public var xMin: Double? {
+        get { dictionary["xMin"] as? Double }
         set { dictionary["xMin"] = newValue }
     }
     
@@ -573,15 +546,11 @@ public struct JoyDocField: Equatable {
         }
         
         switch editedCell.type {
-        case "text":
+        case .text:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.title ?? ""))
-        case "number":
-            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.double(editedCell.number ?? 0))
-        case "date":
-            changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: editedCell.date ?? ValueUnion.null)
-        case "dropdown":
+        case .dropdown:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.string(editedCell.defaultDropdownSelectedId ?? ""))
-        case "image":
+        case .image:
             changeCell(elements: elements, index: index, editedCellId: editedCell.id, newCell: ValueUnion.valueElementArray(editedCell.images ?? []))
         default:
             return
@@ -720,18 +689,18 @@ public struct ChartAxisConfiguration: Equatable{
     /// The title of the y-axis.
     public var yTitle: String?
     /// The maximum value of the y-axis.
-    public var yMax, yMin: Int?
+    public var yMax, yMin: Double?
     /// The title of the x-axis.
     public var xTitle: String?
     /// The maximum value of the x-axis.
-    public var xMax, xMin: Int?
+    public var xMax, xMin: Double?
 
     enum CodingKeys: String, CodingKey {
         case yTitle, yMax, yMin, xTitle, xMax, xMin
     }
 
     /// Initializes a new `ChartAxisConfiguration` object.
-    public init(yTitle: String? = nil, yMax: Int? = nil, yMin: Int? = nil, xTitle: String? = nil, xMax: Int? = nil, xMin: Int? = nil) {
+    public init(yTitle: String? = nil, yMax: Double? = nil, yMin: Double? = nil, xTitle: String? = nil, xMax: Double? = nil, xMin: Double? = nil) {
         self.yTitle = yTitle
         self.yMax = yMax
         self.yMin = yMin
@@ -851,6 +820,12 @@ public struct Option: Identifiable {
         get { dictionary["width"] as? Int }
         set { dictionary["width"] = newValue }
     }
+    
+    /// The background color of the option.
+    public var color: String? {
+        get { dictionary["color"] as? String }
+        set { dictionary["color"] = newValue }
+    }
 }
 
 // MARK: - FieldTableColumn
@@ -873,27 +848,21 @@ public struct FieldTableColumn {
     }
 
     /// The type of the column.
-    public var type: String? {
-        get { dictionary["type"] as? String }
-        set { dictionary["type"] = newValue }
+    public var type: ColumnTypes? {
+        get { ColumnTypes(rawValue: dictionary["type"] as! String) }
+        set { dictionary["type"] = newValue?.rawValue }
     }
 
     /// The title of the column.
-    public var title: String? {
-        get { dictionary["title"] as? String }
+    public var title: String {
+        get { dictionary["title"] as? String ?? "" }
         set { dictionary["title"] = newValue }
     }
     
-    /// The number value of the column
-    public var number: Double? {
-        get { dictionary["number"] as? Double }
+    /// The number value of the column.
+    public var number: Double {
+        get { dictionary["number"] as? Double ?? 0 }
         set { dictionary["number"] = newValue }
-    }
-    
-    /// The date value of the  date column
-    public var date: ValueUnion? {
-        get { dictionary["date"] as? ValueUnion }
-        set { dictionary["date"] = newValue }
     }
 
     /// The width of the column.
@@ -915,9 +884,15 @@ public struct FieldTableColumn {
     }
 
     /// The value of the column.
-    public var value: String? {
-        get { dictionary["value"] as? String }
-        set { dictionary["value"] = newValue }
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
+    }
+    
+    /// The value of the date cell.
+    public var date: Double? {
+        get {  dictionary["date"] as? Double}
+        set { dictionary["date"] = newValue }
     }
     
     /// The format of the date column.
@@ -936,20 +911,55 @@ public struct FieldTableColumn {
         options?.filter { $0.id == defaultDropdownSelectedId }.first?.value ?? ""
     }
 
-
     /// The images associated with the column.
     public var images: [ValueElement]? {
         get { (dictionary["images"] as? [[String: Any]])?.compactMap(ValueElement.init) ?? [] }
         set { dictionary["images"] = newValue?.compactMap{ $0.dictionary } }
+    }
+    
+    public var multi: Bool? {
+        get { dictionary["multi"] as? Bool }
+        set { dictionary["multi"] = newValue }
+    }
+
+    public var required: Bool? {
+        get { dictionary["required"] as? Bool }
+        set { dictionary["required"] = newValue }
+    }
+    
+    public var multiSelectValues: [String]? {
+        get { dictionary["multiSelectValues"] as? [String] }
+        set { dictionary["multiSelectValues"] = newValue }
     }
 }
 
 /// `ValueUnion` is an enumeration that represents different types of values.
 ///
 /// It can represent a `Double`, `String`, `Array<String>`, `Array<ValueElement>`, `Dictionary<String, ValueUnion>`, `Bool`, or `null`.
-public enum ValueUnion: Codable, Hashable {
+public enum ValueUnion: Codable, Hashable, Equatable {
+    public static func == (lhs: ValueUnion, rhs: ValueUnion) -> Bool {
+        switch (lhs, rhs) {
+        case (.double(let a), .double(let b)):
+            return a == b
+        case (.string(let a), .string(let b)):
+            return a == b
+        case (.array(let a), .array(let b)):
+            return a == b
+        case (.valueElementArray(let a), .valueElementArray(let b)):
+            return a == b
+        case (.dictionary(let a), .dictionary(let b)):
+            return a == b
+        case (.bool(let a), .bool(let b)):
+            return a == b
+        case (.null, .null):
+            return true
+        default:
+            return false
+        }
+    }
     /// Represents a `Double` value.
     case double(Double)
+    case int(Int64)
     /// Represents a `String` value.
     case string(String)
     /// Represents a `Array<String>` value.
@@ -968,6 +978,27 @@ public enum ValueUnion: Codable, Hashable {
     /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
     public init(dcitonary: [String: ValueUnion]) {
         self = .dictionary(dcitonary)
+    }
+
+    public var nullOrEmpty: Bool {
+        switch self {
+        case .double(let double):
+            return double == 0
+        case .string(let string):
+            return string.isEmpty
+        case .array(let stringArray):
+            return stringArray.isEmpty
+        case .valueElementArray(let valueElementArray):
+            return valueElementArray.map { $0.anyDictionary }.isEmpty
+        case .bool(let bool):
+            return bool
+        case .null:
+            return true
+        case .dictionary(let dictionary):
+            return dictionary.isEmpty
+        case .int(let int):
+            return int == 0
+        }
     }
 
     /// Creates a new `ValueUnion` with the given dictionary.
@@ -995,6 +1026,11 @@ public enum ValueUnion: Codable, Hashable {
     public init?(value: Any) {
         if let doubleValue = value as? Double {
             self = .double(doubleValue)
+            return
+        }
+        
+        if let int64Value = value as? Int64 {
+            self = .int(int64Value)
             return
         }
 
@@ -1065,6 +1101,8 @@ public enum ValueUnion: Codable, Hashable {
                 anyDict[key] = value.dictionary
             }
             return anyDict
+        case .int(let int):
+            return int
         }
     }
 
@@ -1085,6 +1123,8 @@ public enum ValueUnion: Codable, Hashable {
             return nil
         case .dictionary(let dictionary):
             return dictionary
+        case .int(let int):
+            return int
         }
     }
 
@@ -1144,6 +1184,8 @@ public enum ValueUnion: Codable, Hashable {
             try container.encodeNil()
         case .dictionary(let dictionary):
             try container.encode(dictionary)
+        case .int(let x):
+            try container.encode(x)
         }
     }
 
@@ -1163,6 +1205,8 @@ public enum ValueUnion: Codable, Hashable {
             return true
         case .dictionary(let dictionary):
             return dictionary.isEmpty
+        case .int(let int):
+            return false
         }
     }
 }
@@ -1192,6 +1236,13 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     ///   - rhs: The right-hand side value element.
     /// - Returns: `true` if the value elements are equal, `false` otherwise.
     public static func == (lhs: ValueElement, rhs: ValueElement) -> Bool {
+        lhs.points == rhs.points &&
+        lhs.title == rhs.title &&
+        lhs.description == rhs.description &&
+        lhs.filePath == rhs.filePath &&
+        lhs.url == rhs.url &&
+        lhs.fileName == rhs.fileName &&
+        lhs.deleted == rhs.deleted &&
         lhs.id == rhs.id
     }
 
@@ -1380,7 +1431,11 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
 
 // MARK: - Point
 /// A struct representing a point with x and y coordinates.
-public struct Point: Codable {
+public struct Point: Codable,Hashable, Equatable {
+    public static func == (lhs: Point, rhs: Point) -> Bool {
+        return lhs.id == rhs.id && lhs.x == rhs.x && lhs.y == rhs.y && lhs.label == rhs.label
+    }
+
     var dictionary = [String: ValueUnion]()
 
     /// Initializes a new instance of `Point` from a decoder.
@@ -1588,7 +1643,7 @@ public struct Page {
     
     public var logic: Logic? {
         get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
-        set { dictionary["logic"] = newValue }
+        set { dictionary["logic"] = newValue?.dictionary }
     }
     /// Indicates whether the page is hidden.
     public var hidden: Bool? {
@@ -1723,9 +1778,17 @@ public struct FieldPosition {
     }
 
     /// The format of the field.
-    public var format: String? {
-        get { dictionary["format"] as? String }
-        set { dictionary["format"] = newValue }
+    public var format: DateFormatType? {
+        get {
+            if let formatString = dictionary["format"] as? String,
+               let formatType = DateFormatType(rawValue: formatString) {
+                return formatType
+            }
+            return nil
+        }
+        set {
+            dictionary["format"] = newValue?.rawValue
+        }
     }
 
     /// The column associated with the field.
@@ -1762,6 +1825,46 @@ public struct FieldPosition {
     public var borderRadius: Double? {
         get { dictionary["borderRadius"] as? Double }
         set { dictionary["borderRadius"] = newValue }
+    }
+
+    public var tableColumns: [TableColumn]? {
+        get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(TableColumn.init) ?? [] }
+        set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
+    }
+}
+
+public struct TableColumn {
+    var dictionary: [String: Any]
+    
+    /// Initializes a new `TableColumn` with the given dictionary.
+    /// - Parameter dictionary: The dictionary representing the column. Default value is an empty dictionary.
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    /// The ID of the column.
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// The format of the Date column.
+    public var format: DateFormatType? {
+        get {
+            if let formatString = dictionary["format"] as? String,
+               let formatType = DateFormatType(rawValue: formatString) {
+                return formatType
+            }
+            return nil
+        }
+        set {
+            dictionary["format"] = newValue?.rawValue
+        }
+    }
+    
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
     }
 }
 
@@ -1854,26 +1957,22 @@ public struct SortModel {
     }
 }
 
-public struct FilterModel:Equatable {
+public struct FilterModel: Equatable {
     public var filterText: String = ""
-    public var filterNumber: Double = 0.0
     public var colIndex: Int
     public var colID: String
+    public var type: ColumnTypes
 
-    public init(filterText: String = "", filterNumber: Double = 0.0, colIndex: Int, colID: String) {
+    public init(filterText: String = "", colIndex: Int, colID: String, type: ColumnTypes) {
         self.filterText = filterText
-        self.filterNumber = filterNumber
         self.colIndex = colIndex
         self.colID = colID
+        self.type = type
     }
 }
 
 public extension Array where Element == FilterModel {
-    var noFilterAppliedForText: Bool {
+    var noFilterApplied: Bool {
         self.allSatisfy { $0.filterText.isEmpty }
-    }
-    
-    var noFilterAppliedForNumber: Bool {
-        self.allSatisfy { $0.filterNumber == 0.0 }
     }
 }
