@@ -200,6 +200,7 @@ public enum ColumnTypes: String {
     case multiSelect
     case progress
     case barcode
+    case signature
     case unknown
     
     public init(_ value: String?) {
