@@ -931,6 +931,12 @@ public struct FieldTableColumn {
         get { dictionary["multiSelectValues"] as? [String] }
         set { dictionary["multiSelectValues"] = newValue }
     }
+    
+    /// The columns of the field in a table.
+    public var tableColumns: [FieldTableColumn]? {
+        get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
+        set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
+    }
 }
 
 /// `ValueUnion` is an enumeration that represents different types of values.
