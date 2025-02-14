@@ -89,16 +89,19 @@ public struct JoyDoc {
     
     public var pagesForCurrentView: [Page] {
         get {
+            var pages: [Page] = []
+            let pageOrder = self.files[0].pageOrder ?? []
+            
             if let views = self.files[0].views, !views.isEmpty, let view = views.first {
-                if let pages = view.pages {
-                    return pages
-                }
+                pages = view.pages ?? []
             } else {
-                if let pages = self.files[0].pages {
-                    return pages
-                }
+                pages = self.files[0].pages ?? []
             }
-            return []
+            return pages.sorted { page1, page2 in
+                let index1 = pageOrder.firstIndex(of: page1.id ?? "") ?? Int.max
+                let index2 = pageOrder.firstIndex(of: page2.id ?? "") ?? Int.max
+                return index1 < index2
+            }
         }
         set {
             if var views = self.files[0].views, !views.isEmpty {
