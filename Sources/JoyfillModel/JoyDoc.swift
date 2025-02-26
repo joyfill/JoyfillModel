@@ -391,6 +391,18 @@ public struct JoyDocField: Equatable {
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
     }
     
+    public var schema: [String : Schema]? {
+        get {
+            guard let schemaDict = dictionary["schema"] as? [String: [String: Any]] else { return nil }
+            return Dictionary(uniqueKeysWithValues: schemaDict.map { key, value in
+                (key, Schema(dictionary: value))
+            })
+        }
+        set {
+            dictionary["schema"] = newValue?.mapValues { $0.dictionary }
+        }
+    }
+    
     /// The order of the columns in the field table.
     public var tableColumnOrder: [String]? {
         get { dictionary["tableColumnOrder"] as? [String] }
@@ -931,8 +943,35 @@ public struct FieldTableColumn {
         get { dictionary["multiSelectValues"] as? [String] }
         set { dictionary["multiSelectValues"] = newValue }
     }
+}
+
+public struct Schema {
+    var dictionary: [String: Any]
+
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
     
-    /// The columns of the field in a table.
+    public var title: String? {
+        get { dictionary["title"] as? String }
+        set { dictionary["title"] = newValue }
+    }
+    
+    public var root: Bool? {
+        get { dictionary["root"] as? Bool }
+        set { dictionary["root"] = newValue }
+    }
+    
+    public var children: [String]? {
+        get { dictionary["children"] as? [String] }
+        set { dictionary["children"] = newValue }
+    }
+    
+    public var identifier: String? {
+        get { dictionary["identifier"] as? String }
+        set { dictionary["identifier"] = newValue }
+    }
+    
     public var tableColumns: [FieldTableColumn]? {
         get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
@@ -1428,10 +1467,58 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
             self.dictionary["cells"] = ValueUnion.dictionary(value)
         }
     }
+    
+    public var childrens: [String: Children]? {
+        get {
+            guard let value = dictionary["children"] as? ValueUnion,
+                  let rawDict = value.dictionaryWithValueUnionTypes as? [String: ValueUnion] else {
+                return nil
+            }
+            return rawDict.compactMapValues {
+                if let childDict = $0.dictionary as? [String: Any] {
+                    return Children(dictionary: childDict)
+                }
+                return nil
+            }
+        }
+        set {
+            guard let newValue = newValue else { return }
+            dictionary["children"] = ValueUnion.dictionary(newValue.mapValues { ValueUnion(dcitonary: $0.dictionary) })
+        }
+    }
 
     /// Sets the deleted flag to `true`.
     public mutating func setDeleted() {
         deleted = true
+    }
+}
+
+public struct Children {
+    var dictionary: [String: Any]
+    
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// The value of the field.
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
+    }
+    
+    /// Returns the value of the field as an array of `ValueElement` objects.
+    public var valueToValueElements: [ValueElement]? {
+        switch value {
+        case .valueElementArray(let array):
+            return array
+        default:
+            return nil
+        }
     }
 }
 

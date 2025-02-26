@@ -178,6 +178,7 @@ public enum FieldTypes: String, Codable {
     case chart
     case richText
     case table
+    case collection
     case image
     case unknown
 
