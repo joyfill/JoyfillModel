@@ -178,6 +178,7 @@ public enum FieldTypes: String, Codable {
     case chart
     case richText
     case table
+    case collection
     case image
     case unknown
 
@@ -200,6 +201,7 @@ public enum ColumnTypes: String {
     case multiSelect
     case progress
     case barcode
+    case table
     case unknown
     
     public init(_ value: String?) {
