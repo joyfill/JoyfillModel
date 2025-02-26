@@ -792,7 +792,7 @@ public struct Metadata {
 ///
 /// This structure uses a dictionary to store option properties. Each property is accessed and modified through its own computed property.
 public struct Option: Identifiable {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes an `Option` with the given dictionary.
     /// - Parameter dictionary: The dictionary representing the option. Default value is an empty dictionary.
@@ -830,7 +830,7 @@ public struct Option: Identifiable {
 ///
 ///  It uses a dictionary to store various properties of the column. Each property is accessed and modified using computed properties.
 public struct FieldTableColumn {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes a new `FieldTableColumn` with the given dictionary.
     /// - Parameter dictionary: The dictionary representing the column. Default value is an empty dictionary.
@@ -1183,7 +1183,7 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     
     /// The dictionary that stores the properties of the value element.
-    var dictionary = [String: ValueUnion]()
+    public var dictionary = [String: ValueUnion]()
 
     /// The dictionary representation of the `ValueElement` with `Any` types.
     public var anyDictionary: [String: Any] {
@@ -1401,7 +1401,7 @@ public struct Point: Codable,Hashable, Equatable {
         return lhs.id == rhs.id && lhs.x == rhs.x && lhs.y == rhs.y && lhs.label == rhs.label
     }
 
-    var dictionary = [String: ValueUnion]()
+    public var dictionary = [String: ValueUnion]()
 
     /// Initializes a new instance of `Point` from a decoder.
     /// - Parameter decoder: The decoder to read data from.
@@ -1514,7 +1514,7 @@ public struct Point: Codable,Hashable, Equatable {
 // MARK: - Page
 /// Represents a page in a document.
 public struct Page {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes a new `Page` instance with the given dictionary.
     /// - Parameter dictionary: The dictionary representing the page.
@@ -1788,7 +1788,7 @@ public struct FieldPosition {
 /// MARK: - ModelView
 /// A struct representing a model view.
 public struct ModelView {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes a `ModelView` with an optional dictionary.
     /// - Parameter dictionary: An optional dictionary to initialize the `ModelView` with. Default value is an empty dictionary.
