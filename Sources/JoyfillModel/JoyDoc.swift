@@ -89,14 +89,17 @@ public struct JoyDoc {
     
     public var pagesForCurrentView: [Page] {
         get {
-            var pages: [Page] = []
-            let pageOrder = self.files[0].pageOrder ?? []
+            guard let firstFile = self.files.first else { return [] } 
             
-            if let views = self.files[0].views, !views.isEmpty, let view = views.first {
+            var pages: [Page] = []
+            let pageOrder = firstFile.pageOrder ?? []
+            
+            if let views = firstFile.views, !views.isEmpty, let view = views.first {
                 pages = view.pages ?? []
             } else {
-                pages = self.files[0].pages ?? []
+                pages = firstFile.pages ?? []
             }
+            
             return pages.sorted { page1, page2 in
                 let index1 = pageOrder.firstIndex(of: page1.id ?? "") ?? Int.max
                 let index2 = pageOrder.firstIndex(of: page2.id ?? "") ?? Int.max
@@ -104,27 +107,32 @@ public struct JoyDoc {
             }
         }
         set {
-            if var views = self.files[0].views, !views.isEmpty {
+            guard var firstFile = self.files.first else { return } // Ensure files exist
+            
+            if var views = firstFile.views, !views.isEmpty {
                 views[0].pages = newValue
-                self.files[0].views = views
+                firstFile.views = views
             } else {
-                self.files[0].pages = newValue
+                firstFile.pages = newValue
             }
+            
+            self.files[0] = firstFile
         }
     }
     
     public var pageOrderForCurrentView: [String] {
         get {
+            guard let firstFile = self.files.first else { return [] }
             var pageOrder: [String] = []
             
-            if let views = self.files[0].views, !views.isEmpty, let view = views.first {
+            if let views = firstFile.views, !views.isEmpty, let view = views.first {
                 pageOrder = view.pageOrder ?? []
             } else {
-                pageOrder = self.files[0].pageOrder ?? []
+                pageOrder = firstFile.pageOrder ?? []
             }
             return pageOrder
-            }
         }
+    }
 
     public var fieldPositionsForCurrentView: [FieldPosition] {
         return pagesForCurrentView.flatMap { $0.fieldPositions ?? [] }
