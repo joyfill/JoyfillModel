@@ -112,6 +112,19 @@ public struct JoyDoc {
             }
         }
     }
+    
+    public var pageOrderForCurrentView: [String] {
+        get {
+            var pageOrder: [String] = []
+            
+            if let views = self.files[0].views, !views.isEmpty, let view = views.first {
+                pageOrder = view.pageOrder ?? []
+            } else {
+                pageOrder = self.files[0].pageOrder ?? []
+            }
+            return pageOrder
+            }
+        }
 
     public var fieldPositionsForCurrentView: [FieldPosition] {
         return pagesForCurrentView.flatMap { $0.fieldPositions ?? [] }

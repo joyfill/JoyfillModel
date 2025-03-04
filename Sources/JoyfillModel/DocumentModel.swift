@@ -533,6 +533,16 @@ public struct Change {
     public var xTitle: String? {
         dictionary["xTitle"] as? String
     }
+    
+    /// The view of the change.
+    public var view: String? {
+        dictionary["view"] as? String
+    }
+    
+    /// The viewId of the change.
+    public var viewId: String? {
+        dictionary["viewId"] as? String
+    }
 
     /// Initializes a `Change` instance with the provided values.
     public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
@@ -549,6 +559,32 @@ public struct Change {
         dictionary["change"] = change
         dictionary["createdOn"] = createdOn
     }
+    
+    // instance for page.create and field.create
+    public init(v: Int, sdk: String, id: String, identifier: String, target: String, fileId: String, change: [String: Any], createdOn: Double) {
+        dictionary["v"] = v
+        dictionary["sdk"] = sdk
+        dictionary["target"] = target
+        dictionary["_id"] = id
+        dictionary["identifier"] = identifier
+        dictionary["fileId"] = fileId
+        dictionary["change"] = change
+        dictionary["createdOn"] = createdOn
+    }
+    
+    // instance for page.create with views
+    public init(v: Int, sdk: String, id: String, identifier: String, target: String, fileId: String, viewType: String, viewId: String, change: [String: Any], createdOn: Double) {
+        dictionary["v"] = v
+        dictionary["sdk"] = sdk
+        dictionary["target"] = target
+        dictionary["_id"] = id
+        dictionary["identifier"] = identifier
+        dictionary["fileId"] = fileId
+        dictionary["view"] = viewType
+        dictionary["viewId"] = viewId
+        dictionary["change"] = change
+        dictionary["createdOn"] = createdOn
+    }    
 }
 
 /// `FormChangeEvent` is a protocol that defines methods for listening to form change events.
