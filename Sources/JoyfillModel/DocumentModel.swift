@@ -202,6 +202,7 @@ public enum ColumnTypes: String {
     case progress
     case barcode
     case table
+    case signature
     case unknown
     
     public init(_ value: String?) {
