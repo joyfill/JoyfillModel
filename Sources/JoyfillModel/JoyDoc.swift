@@ -1924,6 +1924,31 @@ public struct FieldPosition {
         get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(TableColumn.init) ?? [] }
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
     }
+    
+    public var schema: [String : FieldPositionSchema]? {
+        get {
+            guard let schemaDict = dictionary["schema"] as? [String: [String: Any]] else { return nil }
+            return Dictionary(uniqueKeysWithValues: schemaDict.map { key, value in
+                (key, FieldPositionSchema(dictionary: value))
+            })
+        }
+        set {
+            dictionary["schema"] = newValue?.mapValues { $0.dictionary }
+        }
+    }
+}
+
+public struct FieldPositionSchema {
+    var dictionary: [String: Any]
+
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    public var tableColumns: [TableColumn]? {
+        get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(TableColumn.init) ?? [] }
+        set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
+    }
 }
 
 public struct TableColumn {
