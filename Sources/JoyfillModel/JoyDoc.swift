@@ -992,7 +992,7 @@ public struct FieldTableColumn {
 }
 
 public struct Schema {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
