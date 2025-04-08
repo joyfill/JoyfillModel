@@ -635,6 +635,11 @@ public struct Logic: Equatable{
         get { (dictionary["conditions"] as? [[String: Any]])?.compactMap(Condition.init) ?? [] }
         set { dictionary["conditions"] = newValue?.compactMap { $0.dictionary } }
     }
+    
+    public var schemaConditions: [SchemaCondition]? {
+        get { (dictionary["conditions"] as? [[String: Any]])?.compactMap(SchemaCondition.init) ?? [] }
+        set { dictionary["conditions"] = newValue?.compactMap { $0.dictionary } }
+    }
 
     public func isValid(conditionsResults: [Bool]) -> Bool {
         if eval == "and" {
@@ -647,6 +652,47 @@ public struct Logic: Equatable{
             } 
         }
         return false
+    }
+}
+
+public struct SchemaCondition: Equatable {
+    public static func == (lhs: SchemaCondition, rhs: SchemaCondition) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public var dictionary: [String: Any]
+    
+
+    public init?(field: [String: Any]?) {
+        guard let field = field else {
+            return nil
+        }
+        self.dictionary = field
+    }
+    
+    public var id: String?{
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    public var columnID: String? {
+        get { dictionary["column"] as? String }
+        set { dictionary["column"] = newValue }
+    }
+    
+    public var schema: String? {
+        get { dictionary["schema"] as? String }
+        set { dictionary["schema"] = newValue }
+    }
+    
+    public var condition: String? {
+        get { dictionary["condition"] as? String }
+        set { dictionary["condition"] = newValue }
+    }
+
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
     }
 }
 
@@ -946,7 +992,7 @@ public struct FieldTableColumn {
 }
 
 public struct Schema {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     public init(dictionary: [String: Any] = [:]) {
         self.dictionary = dictionary
@@ -975,6 +1021,16 @@ public struct Schema {
     public var tableColumns: [FieldTableColumn]? {
         get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
+    }
+    
+    public var logic: Logic? {
+        get { Logic.init(field: dictionary["logic"] as? [String: Any]) }
+        set { dictionary["logic"] = newValue?.dictionary }
+    }
+    /// Indicates whether the page is hidden.
+    public var hidden: Bool? {
+        get { dictionary["hidden"] as? Bool }
+        set { dictionary["hidden"] = newValue }
     }
 }
 
