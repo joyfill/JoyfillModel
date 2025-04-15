@@ -1018,6 +1018,11 @@ public struct Schema {
         set { dictionary["identifier"] = newValue }
     }
     
+    public var required: Bool? {
+        get { dictionary["required"] as? Bool }
+        set { dictionary["required"] = newValue }
+    }
+    
     public var tableColumns: [FieldTableColumn]? {
         get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
