@@ -79,14 +79,3 @@ public struct FieldValidity {
         self.reasons = reasons
     }
 }
-public struct SchemaValidity {
-    public let schemaID: String
-    public let status: ValidationStatus
-    public let columnValidities: [ColumnValidity]
-    
-    public init(schemaID: String, status: ValidationStatus, columnValidities: [ColumnValidity]) {
-        self.schemaID = schemaID
-        self.status = status
-        self.columnValidities = columnValidities
-    }
-}
