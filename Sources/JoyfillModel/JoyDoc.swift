@@ -89,24 +89,48 @@ public struct JoyDoc {
     
     public var pagesForCurrentView: [Page] {
         get {
-            if let views = self.files[0].views, !views.isEmpty, let view = views.first {
-                if let pages = view.pages {
-                    return pages
-                }
+            guard let firstFile = self.files.first else { return [] } 
+            
+            var pages: [Page] = []
+            let pageOrder = firstFile.pageOrder ?? []
+            
+            if let views = firstFile.views, !views.isEmpty, let view = views.first {
+                pages = view.pages ?? []
             } else {
-                if let pages = self.files[0].pages {
-                    return pages
-                }
+                pages = firstFile.pages ?? []
             }
-            return []
+            
+            return pages.sorted { page1, page2 in
+                let index1 = pageOrder.firstIndex(of: page1.id ?? "") ?? Int.max
+                let index2 = pageOrder.firstIndex(of: page2.id ?? "") ?? Int.max
+                return index1 < index2
+            }
         }
         set {
-            if var views = self.files[0].views, !views.isEmpty {
+            guard var firstFile = self.files.first else { return } // Ensure files exist
+            
+            if var views = firstFile.views, !views.isEmpty {
                 views[0].pages = newValue
-                self.files[0].views = views
+                firstFile.views = views
             } else {
-                self.files[0].pages = newValue
+                firstFile.pages = newValue
             }
+            
+            self.files[0] = firstFile
+        }
+    }
+    
+    public var pageOrderForCurrentView: [String] {
+        get {
+            guard let firstFile = self.files.first else { return [] }
+            var pageOrder: [String] = []
+            
+            if let views = firstFile.views, !views.isEmpty, let view = views.first {
+                pageOrder = view.pageOrder ?? []
+            } else {
+                pageOrder = firstFile.pageOrder ?? []
+            }
+            return pageOrder
         }
     }
 
@@ -389,6 +413,18 @@ public struct JoyDocField: Equatable {
     public var tableColumns: [FieldTableColumn]? {
         get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
         set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
+    }
+    
+    public var schema: [String : Schema]? {
+        get {
+            guard let schemaDict = dictionary["schema"] as? [String: [String: Any]] else { return nil }
+            return Dictionary(uniqueKeysWithValues: schemaDict.map { key, value in
+                (key, Schema(dictionary: value))
+            })
+        }
+        set {
+            dictionary["schema"] = newValue?.mapValues { $0.dictionary }
+        }
     }
     
     /// The order of the columns in the field table.
@@ -789,7 +825,7 @@ public struct Metadata {
 ///
 /// This structure uses a dictionary to store option properties. Each property is accessed and modified through its own computed property.
 public struct Option: Identifiable {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes an `Option` with the given dictionary.
     /// - Parameter dictionary: The dictionary representing the option. Default value is an empty dictionary.
@@ -833,7 +869,7 @@ public struct Option: Identifiable {
 ///
 ///  It uses a dictionary to store various properties of the column. Each property is accessed and modified using computed properties.
 public struct FieldTableColumn {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes a new `FieldTableColumn` with the given dictionary.
     /// - Parameter dictionary: The dictionary representing the column. Default value is an empty dictionary.
@@ -930,6 +966,39 @@ public struct FieldTableColumn {
     public var multiSelectValues: [String]? {
         get { dictionary["multiSelectValues"] as? [String] }
         set { dictionary["multiSelectValues"] = newValue }
+    }
+}
+
+public struct Schema {
+    var dictionary: [String: Any]
+
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    public var title: String? {
+        get { dictionary["title"] as? String }
+        set { dictionary["title"] = newValue }
+    }
+    
+    public var root: Bool? {
+        get { dictionary["root"] as? Bool }
+        set { dictionary["root"] = newValue }
+    }
+    
+    public var children: [String]? {
+        get { dictionary["children"] as? [String] }
+        set { dictionary["children"] = newValue }
+    }
+    
+    public var identifier: String? {
+        get { dictionary["identifier"] as? String }
+        set { dictionary["identifier"] = newValue }
+    }
+    
+    public var tableColumns: [FieldTableColumn]? {
+        get { (dictionary["tableColumns"] as? [[String: Any]])?.compactMap(FieldTableColumn.init) ?? [] }
+        set { dictionary["tableColumns"] = newValue?.compactMap{ $0.dictionary } }
     }
 }
 
@@ -1033,6 +1102,11 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             self = .int(int64Value)
             return
         }
+        
+        if let intValue = value as? Int {
+            self = .int(Int64(intValue))
+            return
+        }
 
         if let boolValue = value as? Bool {
             self = .bool(boolValue)
@@ -1074,7 +1148,7 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return
         }
 #if DEBUG
-        fatalError()
+        fatalError("ValueUnion init: unsupported type \(type(of: value))")
 #else
         self = .null
 #endif
@@ -1218,7 +1292,7 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
     
     /// The dictionary that stores the properties of the value element.
-    var dictionary = [String: ValueUnion]()
+    public var dictionary = [String: ValueUnion]()
 
     /// The dictionary representation of the `ValueElement` with `Any` types.
     public var anyDictionary: [String: Any] {
@@ -1422,10 +1496,58 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
             self.dictionary["cells"] = ValueUnion.dictionary(value)
         }
     }
+    
+    public var childrens: [String: Children]? {
+        get {
+            guard let value = dictionary["children"] as? ValueUnion,
+                  let rawDict = value.dictionaryWithValueUnionTypes as? [String: ValueUnion] else {
+                return nil
+            }
+            return rawDict.compactMapValues {
+                if let childDict = $0.dictionary as? [String: Any] {
+                    return Children(dictionary: childDict)
+                }
+                return nil
+            }
+        }
+        set {
+            guard let newValue = newValue else { return }
+            dictionary["children"] = ValueUnion.dictionary(newValue.mapValues { ValueUnion(dcitonary: $0.dictionary) })
+        }
+    }
 
     /// Sets the deleted flag to `true`.
     public mutating func setDeleted() {
         deleted = true
+    }
+}
+
+public struct Children {
+    var dictionary: [String: Any]
+    
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// The value of the field.
+    public var value: ValueUnion? {
+        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        set { dictionary["value"] = newValue?.dictionary }
+    }
+    
+    /// Returns the value of the field as an array of `ValueElement` objects.
+    public var valueToValueElements: [ValueElement]? {
+        switch value {
+        case .valueElementArray(let array):
+            return array
+        default:
+            return nil
+        }
     }
 }
 
@@ -1436,7 +1558,7 @@ public struct Point: Codable,Hashable, Equatable {
         return lhs.id == rhs.id && lhs.x == rhs.x && lhs.y == rhs.y && lhs.label == rhs.label
     }
 
-    var dictionary = [String: ValueUnion]()
+    public var dictionary = [String: ValueUnion]()
 
     /// Initializes a new instance of `Point` from a decoder.
     /// - Parameter decoder: The decoder to read data from.
@@ -1549,7 +1671,7 @@ public struct Point: Codable,Hashable, Equatable {
 // MARK: - Page
 /// Represents a page in a document.
 public struct Page {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes a new `Page` instance with the given dictionary.
     /// - Parameter dictionary: The dictionary representing the page.
@@ -1871,7 +1993,7 @@ public struct TableColumn {
 /// MARK: - ModelView
 /// A struct representing a model view.
 public struct ModelView {
-    var dictionary: [String: Any]
+    public var dictionary: [String: Any]
 
     /// Initializes a `ModelView` with an optional dictionary.
     /// - Parameter dictionary: An optional dictionary to initialize the `ModelView` with. Default value is an empty dictionary.
