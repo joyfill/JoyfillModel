@@ -1019,6 +1019,11 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             self = .int(int64Value)
             return
         }
+        
+        if let intValue = value as? Int {
+            self = .int(Int64(intValue))
+            return
+        }
 
         if let boolValue = value as? Bool {
             self = .bool(boolValue)
@@ -1060,7 +1065,7 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return
         }
 #if DEBUG
-        fatalError()
+        fatalError("ValueUnion init: unsupported type \(type(of: value))")
 #else
         self = .null
 #endif
