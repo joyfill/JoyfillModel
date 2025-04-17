@@ -352,6 +352,10 @@ public extension ValueUnion {
         case .double(let integer):
             let date = timestampMillisecondsToDate(value: Int(integer), format: format)
             return date
+        case .int(let intValue):
+            let date = timestampMillisecondsToDate(value: Int(intValue), format: format)
+            return date
+            
         default:
             return nil
         }
