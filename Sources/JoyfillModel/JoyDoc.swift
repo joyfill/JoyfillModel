@@ -137,6 +137,12 @@ public struct JoyDoc {
     public var fieldPositionsForCurrentView: [FieldPosition] {
         return pagesForCurrentView.flatMap { $0.fieldPositions ?? [] }
     }
+
+    /// The formulas defined in the JoyDoc.
+    public var formulas: [Formula] {
+        get { (dictionary["formulas"] as? [[String: Any]])?.compactMap(Formula.init) ?? [] }
+        set { dictionary["formulas"] = newValue.compactMap { $0.dictionary } }
+    }
 }
 
 extension JoyDoc {
@@ -252,7 +258,7 @@ public struct JoyDocField: Equatable {
 
     /// The type of the field.
     public var fieldType: FieldTypes {
-        get { FieldTypes(rawValue: dictionary["type"] as! String)! }
+        get { FieldTypes(dictionary["type"] as! String) }
         set { dictionary["type"] = newValue.rawValue }
     }
 
@@ -624,6 +630,11 @@ public struct JoyDocField: Equatable {
         self.value = ValueUnion.valueElementArray(elements)
     }
     
+    /// The formulas applied to this field.
+    public var formulas: [AppliedFormula]? {
+        get { (dictionary["formulas"] as? [[String: Any]])?.compactMap(AppliedFormula.init) }
+        set { dictionary["formulas"] = newValue?.compactMap { $0.dictionary } }
+    }
 }
 
 public struct Logic: Equatable{
@@ -1833,6 +1844,12 @@ public struct Page {
         get { dictionary["hidden"] as? Bool }
         set { dictionary["hidden"] = newValue }
     }
+
+    /// The formulas applied to this page.
+    public var formulas: [AppliedFormula]? {
+        get { (dictionary["formulas"] as? [[String: Any]])?.compactMap(AppliedFormula.init) }
+        set { dictionary["formulas"] = newValue?.compactMap { $0.dictionary } }
+    }
 }
 
 // MARK: - FieldPosition
@@ -2182,5 +2199,73 @@ public struct FilterModel: Equatable {
 public extension Array where Element == FilterModel {
     var noFilterApplied: Bool {
         self.allSatisfy { $0.filterText.isEmpty }
+    }
+}
+
+// MARK: - Formula
+/// Represents a formula that can be applied to fields or pages.
+public struct Formula {
+    public var dictionary: [String: Any]
+    
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    /// The unique identifier of the formula.
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// A readable name/description for easily identifying the formula.
+    public var desc: String? {
+        get { dictionary["desc"] as? String }
+        set { dictionary["desc"] = newValue }
+    }
+    
+    /// The type of formula (e.g., 'calc').
+    public var type: String? {
+        get { dictionary["type"] as? String }
+        set { dictionary["type"] = newValue }
+    }
+    
+    /// Specifies if this formula is global or private to an individual field/page.
+    public var scope: String? {
+        get { dictionary["scope"] as? String }
+        set { dictionary["scope"] = newValue }
+    }
+    
+    /// The actual formula string (e.g., 'sum(10, age1)').
+    public var formula: String? {
+        get { dictionary["formula"] as? String }
+        set { dictionary["formula"] = newValue }
+    }
+}
+
+// MARK: - AppliedFormula
+/// Represents a formula applied to a field or page.
+public struct AppliedFormula {
+    public var dictionary: [String: Any]
+    
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    /// The unique identifier of the applied formula.
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// The reference to the formula by its identifier.
+    public var formula: String? {
+        get { dictionary["formula"] as? String }
+        set { dictionary["formula"] = newValue }
+    }
+    
+    /// Which property on the field or page should be updated after formula evaluation.
+    public var key: String? {
+        get { dictionary["key"] as? String }
+        set { dictionary["key"] = newValue }
     }
 }

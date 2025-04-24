@@ -329,6 +329,8 @@ public extension ValueUnion {
                 return 1
             }
             return 0
+        case .int(let int)
+            : return Double(int)
         default:
             return nil
         }
