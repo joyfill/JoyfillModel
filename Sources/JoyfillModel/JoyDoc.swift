@@ -715,7 +715,7 @@ public struct SchemaCondition: Equatable {
     }
 
     public var value: ValueUnion? {
-        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        get { ValueUnion.init(valueFromDictionary: dictionary)}
         set { dictionary["value"] = newValue?.dictionary }
     }
 }
@@ -967,7 +967,7 @@ public struct FieldTableColumn {
 
     /// The value of the column.
     public var value: ValueUnion? {
-        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        get { ValueUnion.init(valueFromDictionary: dictionary)}
         set { dictionary["value"] = newValue?.dictionary }
     }
     
@@ -1573,7 +1573,7 @@ public struct ValueElement: Codable, Equatable, Hashable, Identifiable {
         }
         set {
             guard let newValue = newValue else { return }
-            dictionary["children"] = ValueUnion.dictionary(newValue.mapValues { ValueUnion(dcitonary: $0.dictionary) })
+            dictionary["children"] = ValueUnion.dictionary(newValue.mapValues { ValueUnion(anyDictionary: $0.dictionary) })
         }
     }
 
@@ -1597,7 +1597,7 @@ public struct Children {
     
     /// The value of the field.
     public var value: ValueUnion? {
-        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        get { ValueUnion.init(valueFromDictionary: dictionary)}
         set { dictionary["value"] = newValue?.dictionary }
     }
     
