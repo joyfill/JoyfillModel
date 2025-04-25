@@ -318,8 +318,8 @@ public extension ValueUnion {
         }
     }
     
-    /// Returns the number value if the `ValueUnion` is a double.
-    /// If the `ValueUnion` is a boolean, it returns 1 if the boolean value is `true`, otherwise returns 0.
+    /// Returns the number value if the `ValueUnion` is a numeric type.
+    /// Handles .double, .int, .bool, and .string (if convertible to Int64 or Double).
     var number: Double? {
         switch self {
         case .double(let int):
@@ -329,6 +329,16 @@ public extension ValueUnion {
                 return 1
             }
             return 0
+        case .int(let value):
+            return Double(value)
+        case .string(let str):
+            if let intVal = Int64(str) {
+                return Double(intVal)
+            }
+            if let doubleVal = Double(str) {
+                return doubleVal
+            }
+            return nil
         default:
             return nil
         }
