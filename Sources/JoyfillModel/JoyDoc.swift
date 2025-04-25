@@ -282,7 +282,7 @@ public struct JoyDocField: Equatable {
     
     /// The value of the field.
     public var value: ValueUnion? {
-        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        get { ValueUnion.init(valueFromDictionary: dictionary)}
         set { dictionary["value"] = newValue?.dictionary }
     }
     
@@ -703,7 +703,7 @@ public struct Condition: Equatable{
     }
 
     public var value: ValueUnion? {
-        get { ValueUnion.init(valueFromDcitonary: dictionary)}
+        get { ValueUnion.init(valueFromDictionary: dictionary)}
         set { dictionary["value"] = newValue?.dictionary }
     }
 }
@@ -961,9 +961,9 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
-    /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
-    public init(dcitonary: [String: ValueUnion]) {
-        self = .dictionary(dcitonary)
+    /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
+    public init(valueUnionDictionary: [String: ValueUnion]) {
+        self = .dictionary(valueUnionDictionary)
     }
 
     public var nullOrEmpty: Bool {
@@ -989,10 +989,10 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
-    /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
-    public init(dcitonary: [String: Any]) {
+    /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
+    public init(anyDictionary: [String: Any]) {
         var dictionary = [String : ValueUnion]()
-        dcitonary.forEach { dict in
+        anyDictionary.forEach { dict in
             dictionary[dict.key] = ValueUnion(value: dict.value)
         }
         self = .dictionary(dictionary)
@@ -1000,9 +1000,9 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
-    /// - Parameter valueFromDcitonary: The dictionary that contains the initial properties of the column.
-    public init?(valueFromDcitonary: [String: Any]) {
-        guard let value = valueFromDcitonary["value"] else { return nil }
+    /// - Parameter valueFromDictionary: The dictionary that contains the initial properties of the column.
+    public init?(valueFromDictionary: [String: Any]) {
+        guard let value = valueFromDictionary["value"] else { return nil }
         self.init(value: value)
     }
 
@@ -1055,12 +1055,12 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return
         }
 
-        if let valueDictonary = value as? [String: Any] {
-            self = ValueUnion.init(dcitonary: valueDictonary)
+        if let valueDictionary = value as? [String: Any] {
+            self = ValueUnion.init(anyDictionary: valueDictionary)
             return
         }
 
-        if let valueDictonary = value as? NSNull {
+        if let valueDictionary = value as? NSNull {
             self = .null
             return
         }
