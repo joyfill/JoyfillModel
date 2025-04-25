@@ -962,8 +962,8 @@ public enum ValueUnion: Codable, Hashable, Equatable {
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
     /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
-    public init(dictionary: [String: ValueUnion]) {
-        self = .dictionary(dictionary)
+    public init(valueUnionDictionary: [String: ValueUnion]) {
+        self = .dictionary(valueUnionDictionary)
     }
 
     public var nullOrEmpty: Bool {
@@ -990,9 +990,9 @@ public enum ValueUnion: Codable, Hashable, Equatable {
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
     /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
-    public init(dictionary: [String: Any]) {
+    public init(anyDictionary: [String: Any]) {
         var dictionary = [String : ValueUnion]()
-        dictionary.forEach { dict in
+        anyDictionary.forEach { dict in
             dictionary[dict.key] = ValueUnion(value: dict.value)
         }
         self = .dictionary(dictionary)
@@ -1055,12 +1055,12 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return
         }
 
-        if let valueDictonary = value as? [String: Any] {
-            self = ValueUnion.init(dictionary: valueDictonary)
+        if let valueDictionary = value as? [String: Any] {
+            self = ValueUnion.init(anyDictionary: valueDictionary)
             return
         }
 
-        if let valueDictonary = value as? NSNull {
+        if let valueDictionary = value as? NSNull {
             self = .null
             return
         }
