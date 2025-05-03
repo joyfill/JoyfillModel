@@ -437,7 +437,7 @@ public func dateToTimestampMilliseconds(date: Date) -> Double {
     return timestampMilliseconds
 }
 
-public struct FieldIdentifier {
+public struct FieldIdentifier: Equatable {
     public let fieldID: String
     public var pageID: String?
     public var fileID: String?
