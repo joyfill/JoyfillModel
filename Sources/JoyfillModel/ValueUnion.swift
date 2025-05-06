@@ -49,9 +49,9 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
-    /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
-    public init(dcitonary: [String: ValueUnion]) {
-        self = .dictionary(dcitonary)
+    /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
+    public init(valueUnionDictionary: [String: ValueUnion]) {
+        self = .dictionary(valueUnionDictionary)
     }
 
     public var nullOrEmpty: Bool {
@@ -77,10 +77,10 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
-    /// - Parameter dcitonary: The dictionary that contains the initial properties of the column.
-    public init(dcitonary: [String: Any]) {
+    /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
+    public init(anyDictionary: [String: Any]) {
         var dictionary = [String : ValueUnion]()
-        dcitonary.forEach { dict in
+        anyDictionary.forEach { dict in
             dictionary[dict.key] = ValueUnion(value: dict.value)
         }
         self = .dictionary(dictionary)
@@ -88,9 +88,9 @@ public enum ValueUnion: Codable, Hashable, Equatable {
 
     /// Creates a new `ValueUnion` with the given dictionary.
     ///
-    /// - Parameter valueFromDcitonary: The dictionary that contains the initial properties of the column.
-    public init?(valueFromDcitonary: [String: Any]) {
-        guard let value = valueFromDcitonary["value"] else { return nil }
+    /// - Parameter valueFromDictionary: The dictionary that contains the initial properties of the column.
+    public init?(valueFromDictionary: [String: Any]) {
+        guard let value = valueFromDictionary["value"] else { return nil }
         self.init(value: value)
     }
 
@@ -102,12 +102,12 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             self = .double(doubleValue)
             return
         }
-
+        
         if let int64Value = value as? Int64 {
             self = .int(int64Value)
             return
         }
-
+        
         if let intValue = value as? Int {
             self = .int(Int64(intValue))
             return
@@ -143,12 +143,12 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             return
         }
 
-        if let valueDictonary = value as? [String: Any] {
-            self = ValueUnion.init(dcitonary: valueDictonary)
+        if let valueDictionary = value as? [String: Any] {
+            self = ValueUnion.init(anyDictionary: valueDictionary)
             return
         }
 
-        if let valueDictonary = value as? NSNull {
+        if let valueDictionary = value as? NSNull {
             self = .null
             return
         }
@@ -238,7 +238,7 @@ public enum ValueUnion: Codable, Hashable, Equatable {
         }
         throw DecodingError.typeMismatch(ValueUnion.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for ValueUnion"))
     }
-
+    
     /// Encodes this `ValueUnion` into the given encoder.
     ///
     /// - Parameter encoder: The encoder to write data to.
