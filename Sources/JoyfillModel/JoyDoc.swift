@@ -137,6 +137,12 @@ public struct JoyDoc {
     public var fieldPositionsForCurrentView: [FieldPosition] {
         return pagesForCurrentView.flatMap { $0.fieldPositions ?? [] }
     }
+
+    /// The formulas defined in the JoyDoc.
+    public var formulas: [Formula] {
+        get { (dictionary["formulas"] as? [[String: Any]])?.compactMap(Formula.init) ?? [] }
+        set { dictionary["formulas"] = newValue.compactMap { $0.dictionary } }
+    }
 }
 
 extension JoyDoc {
@@ -624,6 +630,11 @@ public struct JoyDocField: Equatable {
         self.value = ValueUnion.valueElementArray(elements)
     }
     
+    /// The formulas applied to this field.
+    public var formulas: [AppliedFormula]? {
+        get { (dictionary["formulas"] as? [[String: Any]])?.compactMap(AppliedFormula.init) }
+        set { dictionary["formulas"] = newValue?.compactMap { $0.dictionary } }
+    }
 }
 
 public struct Logic: Equatable{
@@ -1060,289 +1071,6 @@ public struct Schema {
     public var hidden: Bool? {
         get { dictionary["hidden"] as? Bool }
         set { dictionary["hidden"] = newValue }
-    }
-}
-
-/// `ValueUnion` is an enumeration that represents different types of values.
-///
-/// It can represent a `Double`, `String`, `Array<String>`, `Array<ValueElement>`, `Dictionary<String, ValueUnion>`, `Bool`, or `null`.
-public enum ValueUnion: Codable, Hashable, Equatable {
-    public static func == (lhs: ValueUnion, rhs: ValueUnion) -> Bool {
-        switch (lhs, rhs) {
-        case (.double(let a), .double(let b)):
-            return a == b
-        case (.string(let a), .string(let b)):
-            return a == b
-        case (.array(let a), .array(let b)):
-            return a == b
-        case (.valueElementArray(let a), .valueElementArray(let b)):
-            return a == b
-        case (.dictionary(let a), .dictionary(let b)):
-            return a == b
-        case (.bool(let a), .bool(let b)):
-            return a == b
-        case (.null, .null):
-            return true
-        default:
-            return false
-        }
-    }
-    /// Represents a `Double` value.
-    case double(Double)
-    case int(Int64)
-    /// Represents a `String` value.
-    case string(String)
-    /// Represents a `Array<String>` value.
-    case array([String])
-    /// Represents a `Array<ValueElement>` value.
-    case valueElementArray([ValueElement])
-    /// Represents a `Dictionary<String, ValueUnion>` value.
-    case dictionary([String: ValueUnion])
-    /// Represents a `Bool` value.
-    case bool(Bool)
-    /// Represents a `null` value.
-    case null
-
-    /// Creates a new `ValueUnion` with the given dictionary.
-    ///
-    /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
-    public init(valueUnionDictionary: [String: ValueUnion]) {
-        self = .dictionary(valueUnionDictionary)
-    }
-
-    public var nullOrEmpty: Bool {
-        switch self {
-        case .double(let double):
-            return double == 0
-        case .string(let string):
-            return string.isEmpty
-        case .array(let stringArray):
-            return stringArray.isEmpty
-        case .valueElementArray(let valueElementArray):
-            return valueElementArray.map { $0.anyDictionary }.isEmpty
-        case .bool(let bool):
-            return bool
-        case .null:
-            return true
-        case .dictionary(let dictionary):
-            return dictionary.isEmpty
-        case .int(let int):
-            return int == 0
-        }
-    }
-
-    /// Creates a new `ValueUnion` with the given dictionary.
-    ///
-    /// - Parameter dictionary: The dictionary that contains the initial properties of the column.
-    public init(anyDictionary: [String: Any]) {
-        var dictionary = [String : ValueUnion]()
-        anyDictionary.forEach { dict in
-            dictionary[dict.key] = ValueUnion(value: dict.value)
-        }
-        self = .dictionary(dictionary)
-    }
-
-    /// Creates a new `ValueUnion` with the given dictionary.
-    ///
-    /// - Parameter valueFromDictionary: The dictionary that contains the initial properties of the column.
-    public init?(valueFromDictionary: [String: Any]) {
-        guard let value = valueFromDictionary["value"] else { return nil }
-        self.init(value: value)
-    }
-
-    /// Creates a new `ValueUnion` with the given value.
-    ///
-    /// - Parameter value: The value that the `ValueUnion` should represent.
-    public init?(value: Any) {
-        if let doubleValue = value as? Double {
-            self = .double(doubleValue)
-            return
-        }
-        
-        if let int64Value = value as? Int64 {
-            self = .int(int64Value)
-            return
-        }
-        
-        if let intValue = value as? Int {
-            self = .int(Int64(intValue))
-            return
-        }
-
-        if let boolValue = value as? Bool {
-            self = .bool(boolValue)
-            return
-        }
-
-        if let valueUnion = value as? ValueUnion {
-            self = valueUnion
-            return
-        }
-
-        if let strValue = value as? String {
-            self = .string(strValue)
-            return
-        }
-
-        if let arrayValue = value as? [String] {
-            self = .array(arrayValue)
-            return
-        }
-
-        if let valueElementArray = value as? [[String: Any]] {
-            self = .valueElementArray(valueElementArray.map(ValueElement.init))
-            return
-        }
-
-        if let valueElementArray = value as? [ValueElement] {
-            self = .valueElementArray(valueElementArray)
-            return
-        }
-
-        if let valueDictionary = value as? [String: Any] {
-            self = ValueUnion.init(anyDictionary: valueDictionary)
-            return
-        }
-
-        if let valueDictionary = value as? NSNull {
-            self = .null
-            return
-        }
-#if DEBUG
-        fatalError("ValueUnion init: unsupported type \(type(of: value))")
-#else
-        self = .null
-#endif
-    }
-
-    /// The dictionary representation of the `ValueUnion`.
-    public var dictionary: Any? {
-        switch self {
-        case .double(let double):
-            return double
-        case .string(let string):
-            return string
-        case .array(let stringArray):
-            return stringArray
-        case .valueElementArray(let valueElementArray):
-            return valueElementArray.map { $0.anyDictionary }
-        case .bool(let bool):
-            return bool
-        case .null:
-            return nil
-        case .dictionary(let dictionary):
-            var anyDict = [String: Any]()
-            dictionary.forEach { (key: String, value: ValueUnion) in
-                anyDict[key] = value.dictionary
-            }
-            return anyDict
-        case .int(let int):
-            return int
-        }
-    }
-
-    /// The dictionary representation of the `ValueUnion` with `ValueUnion` types.
-    var dictionaryWithValueUnionTypes: Any? {
-        switch self {
-        case .double(let double):
-            return double
-        case .string(let string):
-            return string
-        case .array(let stringArray):
-            return stringArray
-        case .valueElementArray(let valueElementArray):
-            return valueElementArray
-        case .bool(let bool):
-            return bool
-        case .null:
-            return nil
-        case .dictionary(let dictionary):
-            return dictionary
-        case .int(let int):
-            return int
-        }
-    }
-
-    /// Creates a new `ValueUnion` by decoding from the given decoder.
-    ///
-    /// - Parameter decoder: The decoder to decode data from.
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let x = try? container.decode(Double.self) {
-            self = .double(x)
-            return
-        }
-        if let x = try? container.decode([ValueElement].self) {
-            self = .valueElementArray(x)
-            return
-        }
-        if let x = try? container.decode(String.self) {
-            self = .string(x)
-            return
-        }
-        if let x = try? container.decode([String].self) {
-            self = .array(x)
-            return
-        }
-        if let x = try? container.decode(Bool.self) {
-            self = .bool(x)
-            return
-        }
-        if container.decodeNil() {
-            self = .null
-            return
-        }
-        throw DecodingError.typeMismatch(ValueUnion.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for ValueUnion"))
-    }
-    
-    /// Encodes this `ValueUnion` into the given encoder.
-    ///
-    /// - Parameter encoder: The encoder to write data to.
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .double(let x):
-            if x.truncatingRemainder(dividingBy: 1) == 0 {
-                try container.encode(Double(x))
-            } else {
-                try container.encode(x)
-            }
-        case .string(let x):
-            try container.encode(x)
-        case .valueElementArray(let x):
-            try container.encode(x)
-        case .array(let x):
-            try container.encode(x)
-        case .bool(let x):
-            try container.encode(x)
-        case .null:
-            try container.encodeNil()
-        case .dictionary(let dictionary):
-            try container.encode(dictionary)
-        case .int(let x):
-            try container.encode(x)
-        }
-    }
-
-    public var isEmpty: Bool {
-        switch self {
-        case .double(let double):
-            return false
-        case .string(let string):
-            return string.isEmpty
-        case .array(let stringArray):
-            return stringArray.isEmpty
-        case .valueElementArray(let valueElementArray):
-            return valueElementArray.isEmpty
-        case .bool(let bool):
-            return bool
-        case .null:
-            return true
-        case .dictionary(let dictionary):
-            return dictionary.isEmpty
-        case .int(let int):
-            return false
-        }
     }
 }
 
@@ -1833,6 +1561,12 @@ public struct Page {
         get { dictionary["hidden"] as? Bool }
         set { dictionary["hidden"] = newValue }
     }
+
+    /// The formulas applied to this page.
+    public var formulas: [AppliedFormula]? {
+        get { (dictionary["formulas"] as? [[String: Any]])?.compactMap(AppliedFormula.init) }
+        set { dictionary["formulas"] = newValue?.compactMap { $0.dictionary } }
+    }
 }
 
 // MARK: - FieldPosition
@@ -2182,5 +1916,73 @@ public struct FilterModel: Equatable {
 public extension Array where Element == FilterModel {
     var noFilterApplied: Bool {
         self.allSatisfy { $0.filterText.isEmpty }
+    }
+}
+
+// MARK: - Formula
+/// Represents a formula that can be applied to fields or pages.
+public struct Formula {
+    public var dictionary: [String: Any]
+    
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    /// The unique identifier of the formula.
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// A readable name/description for easily identifying the formula.
+    public var desc: String? {
+        get { dictionary["desc"] as? String }
+        set { dictionary["desc"] = newValue }
+    }
+    
+    /// The type of formula (e.g., 'calc').
+    public var type: String? {
+        get { dictionary["type"] as? String }
+        set { dictionary["type"] = newValue }
+    }
+    
+    /// Specifies if this formula is global or private to an individual field/page.
+    public var scope: String? {
+        get { dictionary["scope"] as? String }
+        set { dictionary["scope"] = newValue }
+    }
+    
+    /// The actual formula string (e.g., 'sum(10, age1)').
+    public var formula: String? {
+        get { dictionary["formula"] as? String }
+        set { dictionary["formula"] = newValue }
+    }
+}
+
+// MARK: - AppliedFormula
+/// Represents a formula applied to a field or page.
+public struct AppliedFormula {
+    public var dictionary: [String: Any]
+    
+    public init(dictionary: [String: Any] = [:]) {
+        self.dictionary = dictionary
+    }
+    
+    /// The unique identifier of the applied formula.
+    public var id: String? {
+        get { dictionary["_id"] as? String }
+        set { dictionary["_id"] = newValue }
+    }
+    
+    /// The reference to the formula by its identifier.
+    public var formula: String? {
+        get { dictionary["formula"] as? String }
+        set { dictionary["formula"] = newValue }
+    }
+    
+    /// Which property on the field or page should be updated after formula evaluation.
+    public var key: String? {
+        get { dictionary["key"] as? String }
+        set { dictionary["key"] = newValue }
     }
 }
