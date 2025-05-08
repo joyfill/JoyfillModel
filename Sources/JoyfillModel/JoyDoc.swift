@@ -1731,6 +1731,17 @@ public struct FieldPosition {
         get { dictionary["textDecoration"] as? String }
         set { dictionary["textDecoration"] = newValue }
     }
+    
+    public var textTransform: String? {
+        get { dictionary["textTransform"] as? String }
+        set { dictionary["textTransform"] = newValue }
+    }
+    
+    /// The border radius of the field.
+    public var padding: Double? {
+        get { dictionary["padding"] as? Double }
+        set { dictionary["padding"] = newValue }
+    }
 
     /// The border width of the field.
     public var borderWidth: Double? {
