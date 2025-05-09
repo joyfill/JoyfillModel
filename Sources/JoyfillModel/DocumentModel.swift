@@ -178,6 +178,7 @@ public enum FieldTypes: String, Codable {
     case chart
     case richText
     case table
+    case collection
     case image
     case unknown
 
@@ -200,6 +201,8 @@ public enum ColumnTypes: String {
     case multiSelect
     case progress
     case barcode
+    case table
+    case signature
     case unknown
     
     public init(_ value: String?) {
@@ -231,160 +234,6 @@ public enum DateFormatType: String {
             return "MMMM d, yyyy h:mm a"
         case .empty:
             return "MMMM d, yyyy h:mm a"
-        }
-    }
-}
-
-/// Extension on `ValueUnion` to provide computed properties and methods for different types of values.
-public extension ValueUnion {
-    
-    /// Returns the text value if the `ValueUnion` is a string, otherwise returns `nil`.
-    var text: String? {
-        switch self {
-        case .string(let string):
-            return string
-        default:
-            return nil
-        }
-    }
-
-    /// Returns the boolean value if the `ValueUnion` is a boolean, otherwise returns `nil`.
-    /// If the `ValueUnion` is a double, it returns `true` if the double value is not equal to 0, otherwise returns `false`.
-    var bool: Bool? {
-        switch self {
-        case .bool(let bool):
-            return bool
-        case .double(let double):
-            return double != 0
-        default:
-            return nil
-        }
-    }
-
-    /// Returns the display text value if the `ValueUnion` is a string, otherwise returns `nil`.
-    var displayText: String? {
-        switch self {
-        case .string(let string):
-            return string
-        default:
-            return nil
-        }
-    }
-
-    /// Returns the display text value if the `ValueUnion` is a array of string, otherwise returns `nil`.
-    var stringArray: [String]? {
-        switch self {
-        case .array(let stringArray):
-            return stringArray
-        default:
-            return nil
-        }
-    }
-
-    /// Returns an array of image URLs if the `ValueUnion` is an array of `ValueElement`, otherwise returns `nil`.
-    var imageURLs: [String]? {
-        switch self {
-        case .valueElementArray(let valueElements):
-            var imageURLArray: [String] = []
-            for element in valueElements {
-                imageURLArray.append(element.url ?? "")
-            }
-            return imageURLArray
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns the signature URL value if the `ValueUnion` is a string, otherwise returns `nil`.
-    var signatureURL: String? {
-        switch self {
-        case .string(let string):
-            return string
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns the multiline text value if the `ValueUnion` is a string, otherwise returns `nil`.
-    var multilineText: String? {
-        switch self {
-        case .string(let string):
-            return string
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns the number value if the `ValueUnion` is a double.
-    /// If the `ValueUnion` is a boolean, it returns 1 if the boolean value is `true`, otherwise returns 0.
-    var number: Double? {
-        switch self {
-        case .double(let int):
-            return int
-        case .bool(let value):
-            if value {
-                return 1
-            }
-            return 0
-        default:
-            return nil
-        }
-    }
-
-    /// Returns the dropdown value if the `ValueUnion` is a string, otherwise returns `nil`.
-    var dropdownValue: String? {
-        switch self {
-        case .string(let string):
-            return string
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns the selector value if the `ValueUnion` is a string, otherwise returns `nil`.
-    var selector: String? {
-        switch self {
-        case .string(let string):
-            return string
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns an array of strings if the `ValueUnion` is an array, otherwise returns `nil`.
-    var multiSelector: [String]? {
-        switch self {
-        case .array(let array):
-            return array
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns a formatted date and time string based on the `format` parameter.
-    /// If the `ValueUnion` is a string, it assumes the string is in ISO8601 format and converts it to the specified format.
-    /// If the `ValueUnion` is a double, it assumes the double value represents a timestamp in milliseconds and converts it to the specified format.
-    /// Returns `nil` if the `ValueUnion` is neither a string nor a double.
-    func dateTime(format: DateFormatType) -> String? {
-        switch self {
-        case .string(let string):
-            let date = getTimeFromISO8601Format(iso8601String: string)
-            return date
-        case .double(let integer):
-            let date = timestampMillisecondsToDate(value: Int(integer), format: format)
-            return date
-        default:
-            return nil
-        }
-    }
-    
-    /// Returns an array of `ValueElement` if the `ValueUnion` is an array of `ValueElement`, otherwise returns `nil`.
-    var valueElements: [ValueElement]? {
-        switch self {
-        case .valueElementArray(let valueElements):
-            return valueElements
-        default:
-            return nil
         }
     }
 }
@@ -444,7 +293,7 @@ public func dateToTimestampMilliseconds(date: Date) -> Double {
     return timestampMilliseconds
 }
 
-public struct FieldIdentifier {
+public struct FieldIdentifier: Equatable {
     public let fieldID: String
     public var pageID: String?
     public var fileID: String?
@@ -565,6 +414,16 @@ public struct Change {
     public var xTitle: String? {
         dictionary["xTitle"] as? String
     }
+    
+    /// The view of the change.
+    public var view: String? {
+        dictionary["view"] as? String
+    }
+    
+    /// The viewId of the change.
+    public var viewId: String? {
+        dictionary["viewId"] as? String
+    }
 
     /// Initializes a `Change` instance with the provided values.
     public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
@@ -581,6 +440,32 @@ public struct Change {
         dictionary["change"] = change
         dictionary["createdOn"] = createdOn
     }
+    
+    // instance for page.create and field.create
+    public init(v: Int, sdk: String, id: String, identifier: String, target: String, fileId: String, change: [String: Any], createdOn: Double) {
+        dictionary["v"] = v
+        dictionary["sdk"] = sdk
+        dictionary["target"] = target
+        dictionary["_id"] = id
+        dictionary["identifier"] = identifier
+        dictionary["fileId"] = fileId
+        dictionary["change"] = change
+        dictionary["createdOn"] = createdOn
+    }
+    
+    // instance for page.create with views
+    public init(v: Int, sdk: String, id: String, identifier: String, target: String, fileId: String, viewType: String, viewId: String, change: [String: Any], createdOn: Double) {
+        dictionary["v"] = v
+        dictionary["sdk"] = sdk
+        dictionary["target"] = target
+        dictionary["_id"] = id
+        dictionary["identifier"] = identifier
+        dictionary["fileId"] = fileId
+        dictionary["view"] = viewType
+        dictionary["viewId"] = viewId
+        dictionary["change"] = change
+        dictionary["createdOn"] = createdOn
+    }    
 }
 
 /// `FormChangeEvent` is a protocol that defines methods for listening to form change events.
