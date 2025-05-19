@@ -258,7 +258,12 @@ public struct JoyDocField: Equatable {
 
     /// The type of the field.
     public var fieldType: FieldTypes {
-        get { FieldTypes(rawValue: dictionary["type"] as! String) ?? .unknown }
+        get {
+            if let rawValue = dictionary["type"] as? String, let type = FieldTypes(rawValue: rawValue) {
+                return type
+            }
+            return .unknown
+        }
         set { dictionary["type"] = newValue.rawValue }
     }
 
@@ -1654,7 +1659,12 @@ public struct FieldPosition {
 
     /// The type of the field.
     public var type: FieldTypes? {
-        get { FieldTypes(rawValue: dictionary["type"] as! String) }
+        get {
+            if let rawValue = dictionary["type"] as? String, let type = FieldTypes(rawValue: rawValue) {
+                return type
+            }
+            return .unknown
+        }
         set { dictionary["type"] = newValue?.rawValue }
     }
 
