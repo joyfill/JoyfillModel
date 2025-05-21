@@ -426,7 +426,7 @@ public struct Change {
     }
 
     /// Initializes a `Change` instance with the provided values.
-    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String, fieldPositionId: String, change: [String: Any], createdOn: Double) {
+    public init(v: Int, sdk: String, target: String, _id: String, identifier: String?, fileId: String, pageId: String, fieldId: String, fieldIdentifier: String?, fieldPositionId: String, change: [String: Any], createdOn: Double) {
         dictionary["v"] = v
         dictionary["sdk"] = sdk
         dictionary["target"] = target
