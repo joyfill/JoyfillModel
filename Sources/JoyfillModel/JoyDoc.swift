@@ -1925,12 +1925,14 @@ public struct FilterModel: Equatable {
     public var colIndex: Int
     public var colID: String
     public var type: ColumnTypes
+    public var schemaKey: String = ""
 
-    public init(filterText: String = "", colIndex: Int, colID: String, type: ColumnTypes) {
+    public init(filterText: String = "", colIndex: Int, colID: String, type: ColumnTypes, schemaKey: String = "") {
         self.filterText = filterText
         self.colIndex = colIndex
         self.colID = colID
         self.type = type
+        self.schemaKey = schemaKey
     }
 }
 
