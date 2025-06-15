@@ -1025,6 +1025,7 @@ public struct FieldTableColumn {
         set { dictionary["required"] = newValue }
     }
     
+    /// The multi-select values for the column (applicable for multi-select columns).
     public var multiSelectValues: [String]? {
         get { dictionary["multiSelectValues"] as? [String] }
         set { dictionary["multiSelectValues"] = newValue }
@@ -1811,6 +1812,65 @@ public struct TableColumn {
         set { dictionary["_id"] = newValue }
     }
     
+    /// The identifier of the column.
+    public var identifier: String? {
+        get { dictionary["identifier"] as? String }
+        set { dictionary["identifier"] = newValue }
+    }
+    
+    /// The title of the column.
+    public var title: String? {
+        get { dictionary["title"] as? String }
+        set { dictionary["title"] = newValue }
+    }
+    
+    /// The type of the column.
+    public var columnType: FieldTypes? {
+        get {
+            if let rawValue = dictionary["type"] as? String, let type = FieldTypes(rawValue: rawValue) {
+                return type
+            }
+            return .text
+        }
+        set { dictionary["type"] = newValue?.rawValue }
+    }
+    
+    /// The default value of the column.
+    public var defaultValue: String? {
+        get { dictionary["defaultValue"] as? String }
+        set { dictionary["defaultValue"] = newValue }
+    }
+    
+    /// The options associated with the column (for dropdown/multiselect).
+    public var options: [Option]? {
+        get { (dictionary["options"] as? [[String: Any]])?.compactMap(Option.init) ?? [] }
+        set { dictionary["options"] = newValue?.compactMap{ $0.dictionary } }
+    }
+    
+    /// The width of the column.
+    public var width: Double? {
+        get { dictionary["width"] as? Double }
+        set { dictionary["width"] = newValue }
+    }
+    
+    /// Indicates if the column is required.
+    public var required: Bool? {
+        get { dictionary["required"] as? Bool }
+        set { dictionary["required"] = newValue }
+    }
+    
+    /// The maximum width for images in this column.
+    public var maxImageWidth: Double? {
+        get { dictionary["maxImageWidth"] as? Double }
+        set { dictionary["maxImageWidth"] = newValue }
+    }
+    
+    /// The maximum height for images in this column.
+    public var maxImageHeight: Double? {
+        get { dictionary["maxImageHeight"] as? Double }
+        set { dictionary["maxImageHeight"] = newValue }
+    }
+    
     /// The format of the Date column.
     public var format: DateFormatType? {
         get {
@@ -1828,6 +1888,11 @@ public struct TableColumn {
     public var hidden: Bool? {
         get { dictionary["hidden"] as? Bool }
         set { dictionary["hidden"] = newValue }
+    }
+    
+    /// Returns true if this column type needs options (dropdown/multiselect).
+    public var needsOptions: Bool {
+        return columnType == .dropdown || columnType == .multiSelect
     }
 }
 
