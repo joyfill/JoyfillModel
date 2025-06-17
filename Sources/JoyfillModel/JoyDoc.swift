@@ -2039,9 +2039,9 @@ public struct Formula {
     }
     
     /// The actual formula string (e.g., 'sum(10, age1)').
-    public var formula: String? {
-        get { dictionary["formula"] as? String }
-        set { dictionary["formula"] = newValue }
+    public var expression: String? {
+        get { dictionary["expression"] as? String }
+        set { dictionary["expression"] = newValue }
     }
 }
 
