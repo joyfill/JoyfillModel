@@ -1915,6 +1915,8 @@ public enum SortOder {
 
 public struct SortModel {
     public var order: SortOder = .none
+    public var colID: String = ""
+    public var schemaKey: String = ""
 
     public init() {
     }
