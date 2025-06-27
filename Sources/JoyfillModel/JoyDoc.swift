@@ -950,6 +950,11 @@ public struct FieldTableColumn {
         get { ColumnTypes(rawValue: dictionary["type"] as! String) }
         set { dictionary["type"] = newValue?.rawValue }
     }
+    
+    public var multi: Bool? {
+        get { dictionary["multi"] as? Bool }
+        set { dictionary["multi"] = newValue }
+    }
 
     /// The title of the column.
     public var title: String {
