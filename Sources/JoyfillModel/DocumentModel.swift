@@ -451,7 +451,7 @@ public struct FieldIdentifier: Equatable {
 
 public struct UploadEvent {
     public var fieldEvent: FieldIdentifier
-    public var multi: Bool
+    public let multi: Bool
     public var uploadHandler: ([String]) -> Void
     
     public init(fieldEvent: FieldIdentifier, multi: Bool, uploadHandler: @escaping ([String]) -> Void) {
