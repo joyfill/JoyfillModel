@@ -55,6 +55,12 @@ public struct JoyDoc {
         set { dictionary["createdOn"] = newValue }
     }
 
+    /// The version of the Joy document.
+    public var version: String? {
+        get { dictionary["v"] as? String }
+        set { dictionary["v"] = newValue }
+    }
+
     /// The metadata of the Joy document.
     public var metadata: Metadata? {
         get { Metadata.init(dictionary: dictionary["metadata"] as? [String: Any])}
