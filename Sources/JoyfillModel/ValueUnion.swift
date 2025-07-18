@@ -152,7 +152,11 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             self = .null
             return
         }
+#if DEBUG
+        fatalError("ValueUnion init: unsupported type \(type(of: value))")
+#else
         self = .null
+#endif
     }
 
     /// The dictionary representation of the `ValueUnion`.
