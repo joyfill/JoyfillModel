@@ -98,6 +98,11 @@ public enum ValueUnion: Codable, Hashable, Equatable {
     ///
     /// - Parameter value: The value that the `ValueUnion` should represent.
     public init?(value: Any) {
+        if value == nil {
+            self = .null
+            return
+        }
+        
         if let doubleValue = value as? Double {
             self = .double(doubleValue)
             return
@@ -152,6 +157,12 @@ public enum ValueUnion: Codable, Hashable, Equatable {
             self = .null
             return
         }
+        
+        guard let optionalValue = value as? Optional<Any>, let value = optionalValue else {
+            self = .null
+            return
+        }
+        
 #if DEBUG
         fatalError("ValueUnion init: unsupported type \(type(of: value))")
 #else
