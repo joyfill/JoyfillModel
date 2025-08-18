@@ -190,6 +190,27 @@ public enum FieldTypes: String, Codable {
     }
 }
 
+public enum ColumnTypes: String {
+    case text
+    case dropdown
+    case image
+    case block
+    case date
+    case number
+    case multiSelect
+    case progress
+    case barcode
+    case unknown
+    
+    public init(_ value: String?) {
+        if let value = value {
+            self = ColumnTypes(rawValue: value) ?? .unknown
+            return
+        }
+        self = .unknown
+    }
+}
+
 /// `DateFormatType` is an enumeration that represents the types of date formats.
 ///
 /// It includes cases for dateOnly, timeOnly, dateTime, and empty. Each case has a corresponding date format.
@@ -354,7 +375,7 @@ public extension ValueUnion {
     /// If the `ValueUnion` is a string, it assumes the string is in ISO8601 format and converts it to the specified format.
     /// If the `ValueUnion` is a double, it assumes the double value represents a timestamp in milliseconds and converts it to the specified format.
     /// Returns `nil` if the `ValueUnion` is neither a string nor a double.
-    func dateTime(format: String) -> String? {
+    func dateTime(format: DateFormatType) -> String? {
         switch self {
         case .string(let string):
             let date = getTimeFromISO8601Format(iso8601String: string)
@@ -410,14 +431,14 @@ public func getTimeFromISO8601Format(iso8601String: String) -> String {
 ///   - format: The desired format for the date string. Supported formats are "MM/DD/YYYY", "hh:mma", and any other custom format.
 ///
 /// - Returns: A formatted date string based on the provided timestamp value and format.
-public func timestampMillisecondsToDate(value: Int, format: String) -> String {
+public func timestampMillisecondsToDate(value: Int, format: DateFormatType) -> String {
     let timestampMilliseconds: TimeInterval = TimeInterval(value)
     let date = Date(timeIntervalSince1970: timestampMilliseconds / 1000.0)
     let dateFormatter = DateFormatter()
     
-    if format == "MM/DD/YYYY" {
+    if format == .dateOnly {
         dateFormatter.dateFormat = "MMMM d, yyyy"
-    } else if format == "hh:mma" {
+    } else if format == .timeOnly {
         dateFormatter.dateFormat = "hh:mm a"
     } else {
         dateFormatter.dateFormat = "MMMM d, yyyy h:mm a"
@@ -458,6 +479,17 @@ public struct UploadEvent {
         self.fieldEvent = fieldEvent
         self.uploadHandler = uploadHandler
         self.multi = multi
+    }
+}
+
+public struct CaptureEvent {
+    public var fieldEvent: FieldIdentifier
+    
+    public var captureHandler: (ValueUnion) -> Void
+    
+    public init(fieldEvent: FieldIdentifier, captureHandler: @escaping (ValueUnion) -> Void) {
+        self.fieldEvent = fieldEvent
+        self.captureHandler = captureHandler
     }
 }
 
@@ -644,6 +676,8 @@ public protocol FormChangeEvent {
     /// (params: object) => {} :
     /// - Specifies information about the uploaded file.
     func onUpload(event:UploadEvent)
+    
+    func onCapture(event: CaptureEvent)
 }
 
 public struct TargetRowModel {
